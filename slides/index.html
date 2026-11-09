@@ -276,6 +276,104 @@ body.sb .page { padding-right: calc(max(30vw, 320px) + 12px); }
 .lvurl { font-family: var(--f-mono); font-weight: 700; line-height: 1.25; text-align: center; }
 .lvurl .h { font-size: 15px; color: var(--mu2); letter-spacing: -.01em; }
 .lvurl .p { font-size: 33px; color: var(--cy); text-shadow: 0 0 16px rgba(79,209,232,.55); margin-top: 2px; white-space: nowrap; }
+.lvbox.on iframe { pointer-events: auto; }
+.lvbox.on { box-shadow: 0 0 0 3px var(--warn); }
+</style>
+<style>
+/* 11.09. 밤 재구성: 실습 대시보드(허브) · 작업 장(설명 → 실행 화면 → 결과) · 동적 장(AI가 쓴 정리 화면) · 막힘 표시 */
+.hub-g { position: absolute; left: 50px; right: 50px; top: 112px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.hc { position: relative; height: 156px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--panel); padding: 10px 14px; overflow: hidden; cursor: default; }
+body.cdon .hc { cursor: pointer; }
+body.cdon .hc:hover { border-color: var(--cy); }
+.hc .no { font: 700 26px var(--f-mono); color: var(--cy); }
+.hc .kd { position: absolute; right: 12px; top: 12px; font: 700 13px var(--f-ui); padding: 2px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--mu); }
+.hc .kd.p { color: var(--warn); border-color: rgba(244,183,64,.6); }
+.hc .tt { font-size: 23px; font-weight: 900; line-height: 1.25; margin-top: 2px; }
+.hc .wh { font-size: 15px; color: var(--mu); line-height: 1.4; margin-top: 3px; max-height: 42px; overflow: hidden; }
+.hc .st { position: absolute; left: 14px; bottom: 9px; right: 90px; font: 600 14px var(--f-ui); color: var(--mu2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hc .dp { position: absolute; left: 14px; bottom: 30px; right: 90px; font-size: 12.5px; color: var(--warn); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hc .qr { position: absolute; right: 10px; bottom: 10px; width: 70px; height: 70px; background: #fff; border-radius: 6px; padding: 3px; display: none; }
+.hc .qr svg { width: 100%; height: 100%; display: block; }
+.hc.run { border-color: var(--cy); box-shadow: 0 0 22px rgba(79,209,232,.3); }
+.hc.run .st { color: var(--cy); }
+.hc.done { border-color: rgba(95,224,160,.75); }
+.hc.done .st { color: var(--gr); }
+.hc.done .qr.on { display: block; }
+.hc.lock { opacity: .55; }
+.hub-top { position: absolute; right: 60px; top: 44px; display: flex; align-items: center; gap: 10px; font: 600 14px var(--f-ui); color: var(--mu2); }
+.hub-top .gz { width: 120px; height: 9px; border-radius: 5px; background: #13223a; overflow: hidden; border: 1px solid #2b3f60; }
+.hub-top .gz i { display: block; height: 100%; background: var(--gr); }
+.hub-top .gz i.w { background: var(--warn); } .hub-top .gz i.b { background: var(--bad); }
+body.follow .hub-top { display: none; }
+.wsslot { position: absolute; border: 1px solid var(--line); border-radius: 10px; background: rgba(8,22,40,.92); display: flex; align-items: center; justify-content: center; text-align: center; color: var(--mu); font-size: 19px; padding: 20px; line-height: 1.5; }
+#psb.ins { display: flex !important; position: absolute; left: 0; top: 0; width: 400px; min-width: 0; height: 400px; z-index: 6; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+#psb.ins .x { display: none; }
+#psb.ins .tab { font-size: 16px; }
+#psb.ins .cm, #psb.ins textarea, #psb.ins input[type=text] { font-size: 15px; }
+#gateBar { position: absolute; left: 40px; right: 40px; top: 636px; z-index: 7; display: none; align-items: center; gap: 12px; padding: 9px 18px; border-radius: 10px; font: 700 19px var(--f-ui); background: rgba(13,44,58,.94); border: 1.5px solid var(--cy); color: var(--ink); }
+#gateBar.on { display: flex; }
+#gateBar.top { top: 70px; left: auto; right: 40px; width: 600px; font-size: 15px; padding: 6px 14px; }
+.slide.rv .lvbox, .slide.rv .lvside, .slide.rv .note { visibility: hidden; }
+.rvn { position: absolute; right: 40px; top: 96px; z-index: 5; font: 700 14px var(--f-ui); color: var(--warn); background: rgba(40,30,8,.8); border: 1px solid rgba(244,183,64,.6); border-radius: 999px; padding: 2px 10px; }
+.lvbox .loc { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; font: 700 14px var(--f-ui); color: #1a1204; background: var(--warn); padding: 4px 12px; }
+.lvbox .fov { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: rgba(5,9,15,.86); color: var(--ink); font-size: 26px; font-weight: 900; }
+#revBox { position: absolute; left: 60px; right: 60px; top: 470px; z-index: 12; display: none; background: rgba(7,13,23,.97); border: 2px solid var(--warn); border-radius: 12px; padding: 12px 16px; flex-direction: column; gap: 8px; }
+#revBox.on { display: flex; }
+#revBox .h { font: 700 16px var(--f-ui); color: var(--warn); }
+#revBox textarea { font: 400 18px var(--f-ui); color: var(--ink); background: #0d1828; border: 1px solid #2b3f60; border-radius: 8px; padding: 8px 10px; resize: none; height: 72px; }
+#revBox .r { display: flex; gap: 8px; justify-content: flex-end; align-items: center; } #revBox .r span { margin-right: auto; font-size: 14px; color: var(--mu2); }
+#revBox button { font: 700 15px var(--f-ui); padding: 7px 16px; border-radius: 8px; border: 1.5px solid var(--warn); background: #3a2a08; color: var(--ink); cursor: pointer; } #revBox button.c { border-color: #2b3f60; background: #111c2e; }
+#gateBar.done { background: rgba(14,42,34,.95); border-color: var(--gr); }
+#gateBar.flash { animation: gflash .5s 2; }
+@keyframes gflash { 50% { border-color: var(--warn); box-shadow: 0 0 30px rgba(244,183,64,.6); } }
+#gateBar .s { margin-left: auto; font: 600 14px var(--f-ui); color: var(--mu2); }
+body.follow #gateBar { display: none !important; }
+/* 동적 장(흐름2 화면 json — sort · plan · design · result · wrap) */
+.dy { position: absolute; left: 56px; right: 56px; top: 112px; bottom: 82px; display: flex; flex-direction: column; }
+.dy .sub { font-size: 21px; color: var(--mu); margin: 0 0 10px; line-height: 1.4; }
+.dy .stats { display: flex; gap: 12px; margin-bottom: 10px; }
+.dy .stt { flex: 1; background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--cy); border-radius: 10px; padding: 8px 16px; }
+.dy .stt b { display: block; font: 900 36px var(--f-ui); line-height: 1.1; } .dy .stt b small { font-size: 18px; color: var(--cy); margin-left: 4px; }
+.dy .stt span { font-size: 16px; color: var(--mu); }
+.dy .main { flex: 1; min-height: 0; display: flex; gap: 22px; }
+.dy .col { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 9px; overflow: hidden; }
+.dy .col.w2 { flex: 1.35; }
+.dy .hdx { font-size: 16px; font-weight: 800; color: var(--mu2); letter-spacing: .05em; }
+.dy .grp { display: flex; align-items: center; gap: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 7px 14px; }
+.dy .grp .n { flex: none; min-width: 58px; text-align: right; font: 700 28px var(--f-mono); color: var(--cy); } .dy .grp .n small { font-size: 14px; color: var(--mu2); }
+.dy .grp .t { flex: 1; min-width: 0; } .dy .grp .t b { display: block; font-size: 20px; line-height: 1.3; } .dy .grp .t span { display: block; font-size: 14.5px; color: var(--mu2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dy .bar { height: 5px; border-radius: 3px; background: var(--cy); opacity: .75; margin-top: 4px; }
+.dy .cand { position: relative; background: var(--panel); border: 1px solid var(--line); border-left: 5px solid var(--c, var(--cy)); border-radius: 10px; padding: 10px 14px 10px 64px; min-height: 66px; }
+.dy .cand .k { position: absolute; left: 12px; top: 10px; width: 40px; height: 40px; border-radius: 50%; background: var(--c, var(--cy)); color: #04121e; font: 900 22px var(--f-mono); display: flex; align-items: center; justify-content: center; }
+.dy .cand b { display: block; font-size: 21px; line-height: 1.3; } .dy .cand span { display: block; font-size: 15.5px; color: var(--mu); margin-top: 3px; line-height: 1.4; }
+.dy .cand .m { position: absolute; right: 12px; top: 8px; font-size: 14px; color: var(--mu2); }
+.dy .cand.pick { border-color: var(--warn); box-shadow: 0 0 18px rgba(244,183,64,.25); }
+.dy .cands.row { display: flex; gap: 14px; } .dy .cands.row .cand { flex: 1; padding: 10px 12px; } .dy .cands.row .cand .k { position: static; margin-bottom: 6px; }
+.dy .fr { margin-top: 8px; width: 100%; aspect-ratio: 16/9; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: #000; position: relative; }
+.dy .fr iframe { position: absolute; left: 0; top: 0; width: 1600px; height: 900px; border: 0; transform-origin: 0 0; pointer-events: none; }
+.dy .ex { font-size: 15px; color: var(--mu2); line-height: 1.45; border-top: 1px dashed #335789; padding-top: 6px; } .dy .ex b { color: var(--bad); margin-right: 6px; } .dy .ex ul { margin: 2px 0 0; padding-left: 18px; }
+.dy .tm { display: flex; gap: 12px; align-items: flex-start; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 9px 14px; }
+.dy .tm i { flex: none; font-style: normal; width: 36px; height: 36px; border-radius: 9px; background: rgba(79,209,232,.15); border: 1px solid var(--cy); color: var(--cy); font: 900 18px var(--f-mono); display: flex; align-items: center; justify-content: center; }
+.dy .tm b { display: block; font-size: 20px; line-height: 1.3; } .dy .tm span { display: block; font-size: 15.5px; color: var(--mu); line-height: 1.4; } .dy .tm .m { margin-left: auto; flex: none; font: 700 17px var(--f-mono); color: var(--warn); }
+.dy .par { font-size: 15px; font-weight: 800; color: var(--gr); }
+.dy ol.steps { margin: 0; padding: 0; list-style: none; counter-reset: s; } .dy ol.steps li { counter-increment: s; position: relative; padding: 6px 0 6px 40px; font-size: 19px; line-height: 1.4; border-bottom: 1px dashed var(--line); }
+.dy ol.steps li:before { content: counter(s); position: absolute; left: 0; top: 6px; width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--cy); color: var(--cy); font: 700 15px var(--f-mono); display: flex; align-items: center; justify-content: center; }
+.dy .big { background: var(--panel); border: 1px solid rgba(244,183,64,.5); border-radius: 12px; padding: 10px 18px; } .dy .big .v { font: 900 46px var(--f-mono); color: var(--warn); line-height: 1; } .dy .big .v small { font-size: 20px; margin-left: 4px; } .dy .big span { display: block; font-size: 15px; color: var(--mu); margin-top: 4px; }
+.dy .out { font-size: 17px; background: rgba(95,224,160,.08); border: 1px solid rgba(95,224,160,.4); border-radius: 10px; padding: 9px 14px; line-height: 1.4; } .dy .out b { color: var(--gr); margin-right: 8px; }
+.dy ul.ln { margin: 0; padding: 0; list-style: none; } .dy ul.ln li { position: relative; padding: 7px 0 7px 28px; font-size: 21px; line-height: 1.45; border-bottom: 1px dashed var(--line); }
+.dy ul.ln li:before { content: ""; position: absolute; left: 3px; top: 17px; width: 10px; height: 10px; border-radius: 3px; background: var(--cy); box-shadow: 0 0 8px var(--cy); }
+.dy .pollx { font-size: 16px; color: var(--warn); border: 1px dashed rgba(244,183,64,.6); border-radius: 8px; padding: 7px 12px; line-height: 1.4; } .dy .pollx b { margin-right: 6px; }
+.dy .lk div { color: var(--cy); font-size: 17px; padding: 4px 0; border-bottom: 1px dashed var(--line); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dy .wait { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 12px; color: var(--mu); }
+.dy .wait .big2 { font-size: 34px; font-weight: 900; color: var(--ink); }
+.dy .wait .orb { width: 70px; height: 70px; border-radius: 50%; border: 4px solid var(--cy); border-top-color: transparent; animation: dspin 1.1s linear infinite; }
+@keyframes dspin { to { transform: rotate(360deg); } }
+/* 모으기 장: 강사가 질문을 띄운 뒤 올라온 채팅(발표자 화면만) */
+.cfeed { position: absolute; left: 690px; right: 56px; top: 118px; height: 500px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); padding: 12px 16px; display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
+.cfeed .h { font: 700 16px var(--f-ui); color: var(--cy); display: flex; gap: 10px; align-items: baseline; } .cfeed .h b { font: 700 26px var(--f-mono); color: var(--ink); }
+.cfeed .ls { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; gap: 6px; }
+.cfeed .m { font-size: 18px; line-height: 1.4; padding: 6px 10px; border-radius: 8px; background: rgba(10,20,36,.75); border: 1px solid #22385a; }
+.cfeed .e { color: var(--dim); font-size: 17px; margin: auto; text-align: center; }
 </style>
 </head>
 <body>
@@ -1078,19 +1176,184 @@ add({ ch: 10, eb: "END", cr: { poll: "wish" }, sub: ["감사합니다. 궁금한
   <div class="a-rise" ${d(1.3)} style="position:absolute;left:544px;top:530px;font-size:22px;padding:8px 16px;border:1px solid rgba(244,183,64,.7);border-radius:8px;background:rgba(40,30,8,.55)"><b class="warn">마지막 투표</b> — 내일 바로 맡겨 보고 싶은 일은? <span class="mu2" style="font-size:18px">가상 강의실 채팅창에서</span></div>
   </div>` });
 
+/* ════════════ 11.09. 밤 재구성 — 실습 대시보드(허브)에서 골라 들어가는 흐름 ════════════
+   도입부(표지 ～ AI 팀 실시간)는 그대로. 그 뒤 '오늘의 실습' 허브 → 아이템마다 [설명 장 + ▶ 실행] → [실행 화면: Agent4D + 인터랙티브 창(진행기 끝나기 전엔 → 막힘)]
+   → [결과 장: 공개 화면] → 허브로. 옛 장(S8 · S5 · S2·S3 · 쉬는 시간 · 샘플 결과 등)은 위 정의를 지우지 않고 빼 둠(주소 끝 ?old 면 옛 순서 그대로).
+   아이템 · 진행기 단계 · 공개 묶음 · 동적 화면(흐름2 화면틀 json, 러너 GET /conduct/screen?id=) 은 아래 ITEMS 한 곳에서 정함. */
+const OLD_DECK = /[?&]old(=|&|$)/.test(location.search);
+const ITEMS = [
+  { id: "report", title: "보고서 워크플로", kind: "참여형", min: 12, what: "여러분이 고른 주제로 출처가 달린 한글 보고서", steps: ["rep-sort", "rep-plan", "s1"], pub: "s1", mark: "report",
+    screens: { sort: "rep-sort", plan: "rep-plan" } },
+  { id: "slides", title: "보고서 → 발표 슬라이드", kind: "투표", min: 8, what: "디자인 샘플을 보고 투표 → 그 디자인으로 발표 슬라이드", steps: ["sld-design", "s7"], pub: "s7", dep: "report", depNote: "보고서가 없으면 미리 만든 예시 보고서로",
+    screens: { design: "sld-design" } },
+  { id: "survey", title: "설문 자동화", kind: "참여형", min: 11, what: "여러분 주제로 AI가 문항을 만들고, 직접 응답하면 AI가 분석", steps: ["sv-plan", "sv-make", "sv-analyze"], pub: "survey", mark: "survey",
+    screens: { plan: "sv-plan", survey: "sv-survey" } },
+  { id: "motion", title: "모션그래픽 만들기", kind: "참여형", min: 9, what: "여러분이 고른 말로 장면을 짜고, 팀원이 나눠 만든 짧은 영상", steps: ["mo-plan", "mo-make"], pub: "motion", mark: "motion",
+    screens: { plan: "mo-plan" } },
+  { id: "ceo", title: "CEO 대시보드", kind: "참여형", min: 10, what: "여러분 키워드로 센터장이 아침에 볼 한 화면", steps: ["ceo-1", "ceo-2"], pub: "ceo", mark: "ceo" },
+  { id: "s4", title: "공주 일자리 지도", kind: "준비된 작업", min: 9, what: "AI 팀원 셋이 공고를 모아 묶고, 지도로 그리고, 다른 AI가 검사", steps: ["s4-1", "s4-2", "s4-3"], pub: "s4" },
+  { id: "s9", title: "일하는 엄마 지도", kind: "준비된 작업", min: 6, what: "일자리 지도에 어린이집 · 유치원 · 초등학교를 겹쳐 보기", steps: ["s9"], pub: "s9", dep: "s4", depNote: "일자리 지도가 없으면 준비된 공고 목록으로" },
+  { id: "req", title: "여러분의 요청", kind: "참여형 · 여러 번", min: 10, what: "보고 싶은 작업을 적어 주시면 정리 → 계획 → 실행", steps: ["req-sort", "req-plan", "req-run"], pub: "req#", mark: "req", repeat: true,
+    screens: { sort: "req{n}-sort", plan: "req{n}-plan" } },
+  { id: "wrap", title: "마무리 · 링크 보내기", kind: "마무리", min: 10, what: "오늘 수업 정리 페이지를 올리고, 남겨 주신 이메일로 링크", steps: ["wrap"], pub: "wrap" } ];
+const ITEM = Object.fromEntries(ITEMS.map((x, i) => [x.id, Object.assign(x, { no: i + 1 })]));
+
+if (!OLD_DECK) (function rebuild() {
+  const bySub = (p) => S.find((s) => s.sub && s.sub[0] && s.sub[0].indexOf(p) === 0);
+  const introEnd = S.findIndex((s) => s.sub && /^오늘은 공주의 일자리 이야기/.test(s.sub[0]));
+  const intro = S.slice(0, introEnd);
+  const keep = { s4sp: bySub("첫 일은 지금 바로 맡겨"), s4wf: bySub("AI 여섯이 일을 나눕니다"), s9sp: bySub("일자리는 찾았는데"), s9wf: bySub("숫자와 지도는 미리 만든"),
+    s7sp: bySub("방금 만든 보고서를 내일"), s7wf: bySub("프로그램이 한글 파일을 글로"), s1sit: bySub("내년도 사업계획서에"), s1wf: bySub("리서치 책임 에이전트가 일을"),
+    wrong: bySub("오늘 본 장면 가운데 AI가 틀린"), wide: bySub("오늘 본 여덟 가지는"), near: bySub("재취업을 준비하실 때도"), later: bySub("오늘 바로 무언가를"),
+    rules: bySub("마지막으로 꼭 지킬"), get: bySub("오늘 강의 자료와 AI가 만든"), end: S.find((s) => s.eb === "END") };
+  CH.length = 0; CH.push("시작", "강사 소개 · ALRIS", "챗봇과 에이전트", "오늘의 실습", ...ITEMS.map((x) => x.title));
+  const C = (id) => 4 + ITEMS.findIndex((x) => x.id === id);
+  const N = [];
+  const put = (o) => { N.push(o); return o; };
+  const reuse = (o, extra) => put(Object.assign({}, o, extra));
+
+  /* 허브 — 카드 9장, 상태는 진행기(러너)에서 */
+  put({ ch: 3, hub: true, eb: "오늘의 실습", sub: ["오늘은 아홉 가지 일을 AI 팀에게 맡깁니다. 하나가 끝나면 이 화면으로 돌아와 다음 것을 고릅니다.", "주황 글씨는 여러분이 채팅이나 투표로 함께하는 실습입니다."],
+    html: (s) => `<div class="slide">${hd(s, "오늘의 실습 — 골라서 들어갑니다")}
+    <div class="hub-top" id="hubTop"></div>
+    <div class="hub-g">${ITEMS.map((x) => `<div class="hc a-pop" ${d(.1 + x.no * .05)} data-item="${x.id}" role="button" tabindex="-1">
+      <span class="no">${x.no}</span><span class="kd${/참여|투표/.test(x.kind) ? " p" : ""}">${x.kind} · ${x.min}분</span>
+      <div class="tt">${x.title}</div><div class="wh">${x.what}</div>
+      <div class="dp">${x.dep ? "↳ " + x.depNote : ""}</div><div class="st">대기</div><div class="qr"></div></div>`).join("")}</div>
+    <div class="note a-fade" ${d(.8)} style="top:640px;font-size:17px"><span class="k">보는 법</span><span>카드를 누르면 그 실습으로 들어갑니다 · 끝나면 초록 + 걸린 시간 + 결과 QR</span></div>
+    </div>` });
+
+  /* ── 공통 장 만들기 ── */
+  const collect = (it, o) => put({ ch: C(it.id), item: it.id, ref: it.title, collectMark: it.mark,
+    cr: { screen: { kind: "slide", kicker: `${it.no}. ${it.title}`, title: o.q, lines: o.lines || [] } },
+    run: { step: it.steps[0], label: o.runLabel || "의견 정리" }, sub: o.sub,
+    html: (s) => `<div class="slide">${hd(s, o.title)}
+    <div class="pn a-rise" ${d(.15)} style="left:56px;top:118px;width:610px;height:300px;padding:24px 28px;border-color:var(--warn);background:rgba(40,30,8,.55)">
+      <div class="lab" style="color:var(--warn)">여러분께 묻습니다 · 채팅창에 한 줄</div>
+      <div style="font-size:36px;font-weight:900;line-height:1.35;margin-top:12px">${o.q}</div>
+      <div style="font-size:19px;color:var(--mu);margin-top:12px">${(o.lines || []).join(" · ")}</div></div>
+    <div class="a-rise" ${d(.35)} style="position:absolute;left:56px;width:610px;top:438px">
+      <div style="font-size:17px;color:var(--mu2);font-weight:700">예를 들면</div>
+      <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap">${(o.ex || []).map((x) => `<span class="chip" style="font-size:19px;padding:6px 16px;color:var(--ink);border-color:var(--line);background:var(--panel)">${x}</span>`).join("")}</div></div>
+    <div class="cfeed a-rise" ${d(.25)} data-feed="${it.mark}"><div class="h">지금 모인 글 <b>-</b></div><div class="ls"><div class="e">${"강사가 [질문 띄우기]를 누르면<br>그 뒤에 올라온 글이 여기 모입니다"}</div></div></div>
+    <div class="note a-fade" ${d(.8)} style="top:612px;font-size:18px"><span class="k">약속</span><span>대화명은 빼고 <b class="cy">글만</b> AI에게 넘깁니다. 모이면 AI가 비슷한 것끼리 묶어 정리합니다.</span></div>
+    </div>` });
+  const dyn = (it, o) => put({ ch: C(it.id), item: it.id, ref: it.title, dyn: o.screen || ("file:" + o.src.step), dynSrc: o.src || null, dynStep: o.step, surveyWatch: !!o.surveyWatch, gate: o.gate || null, run: o.run || null, pollFromScreen: !!o.poll, sub: o.sub,
+    html: (s) => `<div class="slide">${hd(s, o.title)}<div class="dy" data-dyn="${o.screen || "file"}"><div class="wait"><div class="orb"></div><div class="big2">${o.wait || "AI가 정리하는 중…"}</div><div>${EMB.a4d || CD_ON ? "정리가 끝나면 이 화면에 바로 뜹니다" : "강사 화면에서 보여 드립니다"}</div></div></div></div>` });
+  const runScr = (it, o) => put({ ch: C(it.id), item: it.id, ref: it.title, eb: `${it.no}. ${it.title} · 실행 화면`, a4d: [40, 104, 790, 520], ws: [846, 104, 394, 520], gate: o.gate, sub: o.sub || ["지금 AI 팀이 일하는 모습입니다. 왼쪽은 팀장과 팀원이 일을 주고받는 모습, 오른쪽은 지금 하는 일이 글로 올라오는 창입니다.", "작업이 끝나야 다음 장으로 넘어갑니다."],
+    html: (s) => `<div class="slide">${hd(s, o.title)}
+    <div class="a4slot a-fade" ${d(.1)} style="left:40px;top:104px;width:790px;height:520px"><div class="ph">${EMB.a4d ? `<div style="font-size:24px;font-weight:900;color:var(--ink)">AI 팀 실시간 화면 불러오는 중…</div>` : `<div style="font-size:26px;font-weight:900;color:var(--ink)">AI 팀 실시간 화면은 강사 화면에서</div><div style="font-size:18px;margin-top:8px">내 화면의 'AI 작업 화면' 탭에서 같은 일을 글로 볼 수 있습니다</div>`}</div></div>
+    <div class="wsslot a-fade" ${d(.15)} style="left:846px;top:104px;width:394px;height:520px">${CD_ON ? "인터랙티브 창 불러오는 중…" : "AI 작업 화면 — 내 화면(가상 강의실)의<br><b class=\"cy\">'AI 작업 화면'</b> 탭에서 보세요"}</div>
+    </div>` });
+  const result = (it, o) => put({ ch: C(it.id), item: it.id, ref: "오늘 실습 결과 · 공개 주소", live: it.pub, itemEnd: !o.noHub, mail: !!o.mail, sub: o.sub,
+    html: (s) => liveSlide(s, { st: livePub(it), what: it.title, title: o.title, note: o.note }) });
+  const explain = (it, base, extra) => reuse(base, Object.assign({ ch: C(it.id), item: it.id, cut: null }, extra || {}));
+
+  /* 1. 보고서 — 채팅 주제 → 정리(투표) → 설계 → 실행 */
+  { const it = ITEM.report;
+    collect(it, { title: "1. 보고서 — 어떤 주제로 만들까요?", q: "센터장님께 올릴 보고서, 어떤 주제가 궁금하세요?", lines: ["공주 · 여성 · 일자리 · 돌봄 · 교육 무엇이든", "한 줄이면 됩니다"], ex: ["공주 여성 고용률", "경력단절 이유", "돌봄과 일자리"], runLabel: "주제 정리",
+      sub: ["첫 실습은 보고서입니다. 센터장님께 올릴 보고서 주제를 채팅창에 한 줄씩 적어 주세요.", "2～3분 모은 뒤 AI가 비슷한 것끼리 묶어 후보 셋을 고르고, 투표로 하나를 정합니다."] });
+    dyn(it, { title: "받은 주제 정리", screen: it.screens.sort, step: "rep-sort", gate: ["rep-sort"], poll: true, run: { step: "rep-plan", label: "작업 설계" }, wait: "AI가 주제를 묶고 고르는 중…", sub: ["여러분이 적은 주제를 AI가 묶었습니다. 후보 셋 가운데 하나를 투표로 골라 주세요.", "투표를 마감하고 작업 설계를 보냅니다."] });
+    dyn(it, { title: "작업 설계 — 이렇게 나눠 맡깁니다", screen: it.screens.plan, step: "rep-plan", gate: ["rep-plan"], run: { step: "s1", label: "보고서 만들기" }, wait: "AI가 작업을 설계하는 중…", sub: ["AI 팀장이 세운 작업 계획입니다. 통계 담당과 자료 담당이 동시에 조사하고, 작성 · 확인 담당이 숫자를 대조합니다.", "실행을 누르면 5분 안팎입니다."] });
+    runScr(it, { title: "보고서를 만드는 중", gate: ["s1"] });
+    result(it, { title: "오늘 만든 보고서 — 내 화면에서 넘겨 보세요", sub: ["방금 만든 보고서입니다. 한글 파일을 PDF로 바꿔 올렸습니다. 숫자 옆 출처를 눈여겨보세요."] }); }
+
+  /* 2. 슬라이드 변환 — 디자인 샘플 세 가지(투표) → 전체 */
+  { const it = ITEM.slides;
+    explain(it, keep.s7sp, { run: { step: "sld-design", label: "디자인 샘플 만들기" }, sub: ["방금 만든 보고서를 발표 슬라이드로 바꿉니다. 먼저 AI가 같은 첫 장을 세 가지 꾸밈으로 만들고, 여러분이 투표로 고릅니다.", "보고서가 없으면 미리 만든 예시 보고서로 합니다."] });
+    dyn(it, { title: "디자인을 골라 주세요", screen: it.screens.design, step: "sld-design", gate: ["sld-design"], poll: true, run: { step: "s7", label: "고른 꾸밈으로 전체 만들기" }, wait: "AI가 디자인 샘플을 만드는 중…", sub: ["같은 내용을 세 가지 꾸밈으로 만들었습니다. 마음에 드는 것을 투표로 골라 주세요.", "투표를 마감하면 1등 꾸밈으로 전체 슬라이드를 만듭니다."] });
+    runScr(it, { title: "슬라이드를 만드는 중", gate: ["s7"] });
+    result(it, { title: "오늘 만든 발표 슬라이드 — 내 화면에서 넘겨 보세요", sub: ["방금 만든 발표 슬라이드입니다. 새 창으로 열면 왼쪽 오른쪽 화살표로 넘겨 볼 수 있습니다."] }); }
+
+  /* 3. 설문 자동화 — 채팅 주제 → 설계(설명 장) → 문항 만들기 → [설문 열기] 응답 → 분석 */
+  { const it = ITEM.survey;
+    collect(it, { title: "3. 설문 — 무엇을 물어볼까요?", q: "우리 센터가 수강생에게 설문으로 묻고 싶은 주제는?", lines: ["교육 · 취업 · 돌봄 · 센터 이용 무엇이든", "최근 10분 글을 씁니다"], ex: ["교육 만족도", "듣고 싶은 강좌", "취업 준비 어려움"], runLabel: "주제 고르기 · 설계",
+      sub: ["이번에는 설문을 AI에게 맡깁니다. 어떤 주제로 물어볼지 채팅창에 적어 주세요.", "AI가 주제를 골라 설계하고, 문항을 만들어 여러분 화면에 설문을 띄웁니다."] });
+    dyn(it, { title: "설문 설계", screen: it.screens.plan, step: "sv-plan", gate: ["sv-plan"], run: { step: "sv-make", label: "문항 만들기" }, wait: "AI가 주제를 고르고 설계하는 중…", sub: ["AI가 고른 주제와 문항 설계입니다. 실행을 누르면 팀원 둘이 문항을 나눠 쓰고, 다른 팀원이 점검합니다."] });
+    runScr(it, { title: "설문 문항을 만드는 중", gate: ["sv-make"] });
+    dyn(it, { title: "지금 응답해 주세요", screen: it.screens.survey, step: "sv-make", surveyWatch: true, run: { step: "sv-analyze", label: "응답 분석" }, wait: "문항 정리를 기다리는 중…", sub: ["AI가 만든 설문입니다. [설문 열기]를 누르면 여러분 화면에 설문 카드가 뜹니다. 1분이면 끝납니다.", "응답이 모이면 설문을 마감하고 분석을 맡깁니다."] });
+    runScr(it, { title: "응답을 분석하는 중", gate: ["sv-analyze"] });
+    result(it, { title: "설문 분석 결과 — 내 화면에서 보세요", sub: ["여러분 응답을 집계 프로그램이 세고, AI 팀원들이 해석했습니다."] }); }
+
+  /* 4. 모션그래픽 — 채팅 문구 → 장면 구성(설명 장) → 팀원이 장면 나눠 제작 → mp4 */
+  { const it = ITEM.motion;
+    collect(it, { title: "4. 모션그래픽 — 무엇을 알릴까요?", q: "우리 센터를 알리는 짧은 영상, 어떤 말을 넣고 싶으세요?", lines: ["한 줄 문구 · 넣고 싶은 장면 · 분위기", "최근 10분 글을 씁니다"], ex: ["다시 일하는 엄마들", "따뜻한 분위기", "무료 교육 안내"], runLabel: "장면 구성",
+      sub: ["이번에는 30초 안팎의 짧은 영상을 만듭니다. 넣고 싶은 말이나 장면을 채팅창에 적어 주세요.", "AI가 모아 장면을 짜고, 팀원들이 장면을 나눠 동시에 만든 뒤 영상 파일로 합칩니다."] });
+    dyn(it, { title: "장면 구성", screen: it.screens.plan, step: "mo-plan", gate: ["mo-plan"], run: { step: "mo-make", label: "영상 만들기" }, wait: "AI가 장면을 짜는 중…", sub: ["AI가 짠 장면입니다. 실행을 누르면 팀원들이 장면을 나눠 만들고, 마지막에 영상으로 렌더합니다. 4분 안팎입니다."] });
+    runScr(it, { title: "영상을 만드는 중", gate: ["mo-make"] });
+    result(it, { title: "오늘 만든 영상 — 내 화면에서 보세요", sub: ["방금 만든 영상입니다. 장면마다 다른 팀원이 만들었습니다."] }); }
+
+  /* 5. CEO 대시보드 — 키워드 → 팀 계획(설명 장) → 실행 */
+  { const it = ITEM.ceo;
+    collect(it, { title: "5. CEO 대시보드 — 무엇을 보고 싶으세요?", q: "센터장님이 매일 아침 한눈에 보고 싶은 소식은?", lines: ["관심 키워드 한두 개"], ex: ["육아 지원", "공주 일자리", "물가", "디지털 교육"], runLabel: "키워드 정리 · 팀 계획",
+      sub: ["센터장님이 아침에 한눈에 볼 화면을 만듭니다. 보고 싶은 소식을 키워드로 적어 주세요.", "AI가 키워드를 묶어 분야를 나누고, 팀원마다 맡길 일을 정합니다."] });
+    dyn(it, { title: "AI 팀에게 이렇게 나눠 맡깁니다", src: { step: "ceo-1", file: "out/plan.json", adapt: "ceo" }, step: "ceo-1", gate: ["ceo-1"], run: { step: "ceo-2", label: "대시보드 만들기" }, wait: "AI가 키워드를 묶고 팀을 짜는 중…", sub: ["여러분 키워드를 분야로 묶었습니다. 팀원들이 분야를 나눠 동시에 최근 소식을 찾고, 다른 AI가 출처를 확인합니다.", "실행을 누르면 4분 안팎입니다."] });
+    runScr(it, { title: "대시보드를 만드는 중", gate: ["ceo-2"] });
+    result(it, { title: "오늘 만든 CEO 대시보드", sub: ["방금 만든 센터장 아침 화면입니다. 맨 위에 'AI 초안 · 사실 확인 필요'가 붙어 있습니다."] }); }
+
+  /* 6. 공주 일자리 지도(준비된 작업) */
+  { const it = ITEM.s4;
+    explain(it, keep.s4sp, { sub: ["센터 상담사는 매주 여러 사이트를 돌며 공주 채용공고를 모읍니다. 사람이 하면 반나절입니다.", "이 일을 AI 팀에게 화면의 지시 그대로 맡깁니다. 미리 만들어 둔 도구로 6분 안팎에 끝납니다."],
+      html: (s) => sp(s, { title: "공주 일자리 지도 — AI 팀에게 맡깁니다",
+        sit: "상담사가 매주 고용24 · 채용 사이트 · 시청 게시판을 돌며 공주 공고를 모으고, 경력단절여성에게 맞는 일자리를 골라 상담에 씁니다. <b class=\"warn\">사람이 하면 반나절.</b>",
+        lines: ["공주시에서 지금 사람을 구하는 일자리를 모아 <b>지도</b>로 보여 주세요.", "① <b>세 명이 나눠서 동시에</b> 모으고(고용24 / 민간 채용 사이트 / 시청·대학·병원 게시판),", "② 같은 공고는 하나로 묶고, 직종을 나누고, 경력단절여성에게 맞는지 점수를 매기고,", "③ 지도 대시보드로 만든 뒤,", "④ <b>다른 AI가 원문과 맞춰 보게</b> 해 주세요.", "사이트에 부담 주지 말고, 개인 연락처는 모으지 마세요."],
+        k: "준비된 작업", note: "어제 처음 시켰을 때는 58분, 그때 찾은 방법을 도구로 남겨 오늘은 <b class=\"cy\">6분 안팎</b>입니다. 다음 장에서 [▶ 실행]을 누릅니다." }) });
+    explain(it, keep.s4wf, { run: { step: "s4-1", label: "공주 일자리 지도", group: ["s4-1", "s4-2", "s4-3"] } });
+    runScr(it, { title: "AI 팀원 셋이 공고를 모으는 중", gate: ["s4-1", "s4-2", "s4-3"], sub: ["수집 담당 셋이 동시에 공고를 모으고, 분석 · 지도 · 검사가 차례로 이어집니다. 6분 안팎입니다.", "끝나야 다음 장으로 넘어갑니다."] });
+    result(it, { title: "오늘 만든 공주 일자리 지도 — 눌러 보세요", sub: ["오늘 AI 팀이 모은 공고로 만든 지도입니다. 숫자는 오늘 모은 표본 안의 값입니다."] }); }
+
+  /* 7. 일하는 엄마 지도(준비된 작업) */
+  { const it = ITEM.s9;
+    explain(it, keep.s9sp);
+    explain(it, keep.s9wf, { run: { step: "s9", label: "일하는 엄마 지도" } });
+    runScr(it, { title: "일자리에 돌봄시설을 겹치는 중", gate: ["s9"] });
+    result(it, { title: "오늘 만든 일하는 엄마 지도 — 눌러 보세요", sub: ["일자리 점을 누르면 1킬로미터 안의 어린이집 · 유치원 · 초등학교가 보입니다. 가깝다고 들어갈 수 있는 것은 아닙니다."] }); }
+
+  /* 8. 여러분의 요청(몇 번이고) — 채팅 → 정리(투표) → 계획 → 실행 → 결과 → ↺ */
+  { const it = ITEM.req;
+    collect(it, { title: "8. 여러분의 요청 — AI에게 무엇을 시켜 볼까요?", q: "AI 팀에게 맡겨 보고 싶은 일, 결과를 보고 싶은 작업을 적어 주세요", lines: ["10분 안에 화면으로 보여 드릴 수 있는 것"], ex: ["경력 공백 면접 답변", "아이 방학 계획표", "우리 동네 행사 안내문"], runLabel: "요청 정리",
+      sub: ["이제 여러분 차례입니다. AI 팀에게 맡겨 보고 싶은 일을 채팅창에 적어 주세요.", "모이면 AI가 정리해 후보 셋을 고르고, 투표로 정한 일을 바로 실행합니다. 몇 번이고 다시 할 수 있습니다."] });
+    dyn(it, { title: "받은 요청 정리", screen: it.screens.sort, step: "req-sort", gate: ["req-sort"], poll: true, run: { step: "req-plan", label: "작업 계획" }, wait: "AI가 요청을 묶고 고르는 중…", sub: ["여러분 요청을 AI가 묶었습니다. 하기 어려운 요청은 이유를 붙여 뺐습니다. 후보 가운데 하나를 투표로 골라 주세요."] });
+    dyn(it, { title: "작업 계획", screen: it.screens.plan, step: "req-plan", gate: ["req-plan"], run: { step: "req-run", label: "이 계획대로 실행" }, wait: "AI가 계획을 세우는 중…", sub: ["AI 팀장이 세운 계획입니다. 실행을 누르면 팀원들이 나눠 일합니다."] });
+    runScr(it, { title: "요청을 실행하는 중", gate: ["req-run"] });
+    result(it, { title: "여러분 요청의 결과", sub: ["여러분 요청으로 만든 결과입니다. 한 번 더 하려면 [↺ 한 번 더]를 누릅니다."] }); }
+
+  /* 9. 마무리 — 배운 것 → 수업 정리 페이지 → 링크 메일 → 인사 */
+  { const it = ITEM.wrap, c = C(it.id);
+    if (keep.wrong) reuse(keep.wrong, { ch: c, item: it.id, sub: ["강의를 준비하며 본 장면 가운데 AI가 틀린 곳이 네 군데 있었습니다.", "그래서 검사 담당을 따로 둡니다. 다른 AI든 프로그램이든, 그리고 마지막은 사람이 봅니다."] });
+    if (keep.wide) reuse(keep.wide, { ch: c, sub: ["오늘 본 일들은 시작일 뿐입니다. AI로 할 수 있는 것은 무궁무진합니다.", "중요한 것은 무엇을 맡길지 고르는 눈입니다."] });
+    [keep.near, keep.later, keep.rules].forEach((x) => x && reuse(x, { ch: c }));
+    if (keep.get) reuse(keep.get, { ch: c, item: it.id, run: { step: "wrap", label: "오늘 수업 정리 페이지" }, sub: ["오늘 수업 내용과 AI가 만든 결과물을 한 페이지로 정리해 올리겠습니다.", "자료 받기에 이메일을 남기신 분께는 그 페이지 링크를 보내 드립니다."] });
+    runScr(it, { title: "오늘 수업을 정리하는 중", gate: ["wrap"] });
+    result(it, { title: "오늘 수업 정리 — 이 주소로 보내 드립니다", noHub: true, mail: true, note: "남겨 주신 이메일로 이 주소를 보내 드립니다. 이메일을 남기지 않으셨어도 QR로 열어 보실 수 있습니다.", sub: ["오늘 수업 정리 페이지입니다. 이 주소를 남겨 주신 이메일로 보내 드리겠습니다."] });
+    if (keep.end) reuse(keep.end, { ch: c }); }
+
+  S.length = 0; intro.forEach((x) => S.push(x)); N.forEach((x) => S.push(x));
+})();
+/* 결과 장의 공개 묶음 — 수강생 요청(q#)은 가장 최근 회차 */
+function livePub(it) {
+  if (!it.pub.endsWith("#")) return it.pub;
+  const base = it.pub.slice(0, -1);
+  const hs = (typeof CD !== "undefined" && CD && CD.history || []).filter((h) => h.pub && h.pub.indexOf(base) === 0 && /^\D+\d+$/.test(h.pub));
+  return hs.length ? hs[hs.length - 1].pub : base + "1";
+}
+
 /* ════════════ 발표자 시간표(T 키) ════════════ */
-const TT = [["0:00", "입장(주소창 · QR, 채팅 인사)", 10, 0], ["0:10", "강사 소개, ALRIS(개발 세션 리플레이)", 10, 1], ["0:20", "설문 \"AI를 어디에 써 보셨나요?\" → 챗봇 vs 에이전트 → 팀으로 일하는 AI(실시간 화면) + <b>S4 출발</b>", 12, 2], ["0:32", "S1 리서치 → S7 발표 슬라이드 <b>②</b>", 15, 3, 1], ["0:47", "S4 분석 · 지도 공개(투표: 가장 많은 일자리? 몇 %?)", 12, 4], ["0:59", "S9 일하는 엄마 지도 <b>③</b>", 7, 5, 1], ["1:06", "쉬는 시간(S6 홍보영상 틀어 두기)", 5, 6], ["1:11", "S8 공고 투표 → 맞춤 지원서", 10, 7], ["1:21", "S2 · S3 설문 · CEO 대시보드 <b>①</b>", 12, 8, 1], ["1:33", "S5 수강생 의견 분석(채팅 → 분석)", 10, 9], ["1:43", "마무리 레슨, 자료 받기(이메일), 질문", 15, 10]];
+const TT = OLD_DECK ? [["0:00", "입장(주소창 · QR, 채팅 인사)", 10, 0], ["0:10", "강사 소개, ALRIS(개발 세션 리플레이)", 10, 1], ["0:20", "설문 → 챗봇 vs 에이전트 → 팀으로 일하는 AI + S4 출발", 12, 2]]
+  : [["0:00", "입장(주소창 · QR, 채팅 인사)", 8, 0], ["0:08", "강사 소개, ALRIS(개발 세션 리플레이)", 9, 1], ["0:17", "설문 → 챗봇 vs 에이전트 → 팀으로 일하는 AI(실시간)", 8, 2], ["0:25", "실습 대시보드 — 골라서 들어가기", 1, 3],
+     ["0:26", "① 보고서(채팅 주제 → 정리 · 투표 → 설계 → 실행 5분)", 12, 4], ["0:38", "② 슬라이드 변환(디자인 샘플 투표 → 전체)", 8, 5], ["0:46", "③ 설문 자동화(주제 → 문항 → 응답 → 분석) <b>①</b>", 11, 6, 1], ["0:57", "④ 모션그래픽(문구 → 장면 → 영상) <b>②</b>", 9, 7, 1],
+     ["1:06", "⑤ CEO 대시보드(키워드 → 팀 계획 → 한 장)", 10, 8], ["1:16", "⑥ 공주 일자리 지도(준비된 작업 6분)", 9, 9], ["1:25", "⑦ 일하는 엄마 지도 <b>③</b>", 6, 10, 1], ["1:31", "⑧ 여러분의 요청(회차당 7분 · 남는 시간만큼)", 10, 11], ["1:41", "⑨ 마무리 · 정리 페이지 · 링크 메일 · 질문", 15, 12]];
 function buildTT() {
   const st = CH.map((_, c) => S.findIndex((x) => x.ch === c)), n = CH.map((_, c) => S.filter((x) => x.ch === c).length);
   return `<div style="position:absolute;left:44px;top:26px;font-size:15px;font-weight:700;color:var(--cy);letter-spacing:.06em">발표자 전용 · T 닫기 · P 줄임 표시(⏱) 켜기/끄기 · G AI 팀 실시간 화면</div>
-  <div style="position:absolute;left:44px;top:48px;font-size:30px;font-weight:900">시간표 — 공주 일자리 이야기 (2시간)</div>
+  <div style="position:absolute;left:44px;top:48px;font-size:30px;font-weight:900">시간표 — ${OLD_DECK ? "공주 일자리 이야기 (2시간)" : "오늘의 실습 아홉 가지 (합계 1시간 56분)"}</div>
   <div style="position:absolute;left:44px;top:100px;width:720px"><table><tr><th>시각</th><th>꼭지</th><th>분</th><th>장</th></tr>
     ${TT.map((r) => `<tr class="${r[4] ? "cut" : ""}"><td class="t">${r[0]}</td><td>${r[1]}</td><td class="m">${r[2]}</td><td class="n">${st[r[3]] + 1}～${st[r[3]] + n[r[3]]}</td></tr>`).join("")}</table></div>
   <div style="position:absolute;left:800px;right:40px;top:100px;display:flex;flex-direction:column;gap:12px">
     <div class="pn rel" style="padding:12px 16px;border-color:var(--warn)"><div class="lab" style="color:var(--warn);font-size:15px">늦으면 줄이는 순서</div>
-      <div style="font-size:16.5px;line-height:1.55;margin-top:4px">① S2 · S3 → 녹화본 3분 또는 건너뛰기<br>② S7 → 결과 화면만<br>③ S9 → S4 지도 공개에 합침</div></div>
+      <div style="font-size:16.5px;line-height:1.55;margin-top:4px">${OLD_DECK ? "① S2 · S3 → 녹화본 3분 또는 건너뛰기<br>② S7 → 결과 화면만<br>③ S9 → S4 지도 공개에 합침" : "허브에서 건너뛸 실습을 고르면 됩니다<br>① 설문 · ② 모션그래픽 · ③ 엄마 지도 순으로 뺌<br>⑧ 요청 반복은 남는 시간만큼"}</div></div>
     <div class="pn rel" style="padding:12px 16px"><div class="lab" style="font-size:15px">강의 전 · 진행 팁</div>
-      <ul class="li" style="gap:5px;margin-top:6px">${["러너 켜기 → 점검 화면 localhost:8790 확인, AI 작업 화면 세션 연결", "크롬 '로컬 네트워크 접근' 허용(강의 사이트 [실행] 버튼)", "09시 전 S8 공고 마감 확인: scenarios/s8/check_open.py → [마감?]이면 투표에서 빼기", "S4 진행 화면: ← → 단계 · R 결과 · M 지도 · 막히면 D(어제 기록) · 러너 꺼지면 ?demo", "강의 직전 실행 기록(runs) 비우지 않기 — S3 · S7이 앞 결과를 씀", "발표자 주소 …/slides/#key=…&a4d=…&alris=…(키 · Agent4D 링크는 시크릿 파일, a4d · alris는 URL 인코딩, 리플레이 7장은 6장에서 미리 불러 둠) → 설문 · S8 공고 · 마지막 투표 자동 열기, S5 질문은 강의실 채팅 위 띠로, 오른쪽 위 연동 표시"].map((x) => `<li style="font-size:15.5px;line-height:1.4">${x}</li>`).join("")}</ul></div>
+      <ul class="li" style="gap:5px;margin-top:6px">${(OLD_DECK ? ["발표자 주소 …/slides/#key=…&a4d=…&alris=…"] : ["아침: start-remote.ps1 → ⟲ 강의 초기화 → 발표자 주소(#key · a4d · alris)", "실습 장: 설명 장 [▶ 실행] → 실행 화면(→ 막힘, Shift+→ 비상) → 결과 장(자동 공개 1～2분)", "결과 장 [✎ 보완 지시] → 같은 장에서 고치기 → [⬆ 다시 공개]", "허브로 돌아가면 AI 세션을 뒤에서 새로 띄움(30초) — 그동안 실행 단추는 '새 세션 준비 중'", "참여형: [▶ 질문 띄우기] 뒤 2～3분 채팅 → [▶ 실행] (설문 · 모션은 최근 10분 글만)", "마무리: 정리 페이지 공개 뒤 [✉ 링크 보내기] — 받는 사람 수 · 본문 확인 창"]).map((x) => `<li style="font-size:15.5px;line-height:1.4">${x}</li>`).join("")}</ul></div>
   </div>`;
 }
 
@@ -1132,6 +1395,7 @@ function go(i) {
   if (!RM.matches) sl.classList.add("enter");
   play(sl);
   a4Place(); crEnter(sc); crDeck(); followTell();
+  if (typeof slideEnter === "function") slideEnter(sc, sl);
   document.getElementById("ftc").textContent = CH[sc.ch];
   document.getElementById("ftn").textContent = String(i + 1).padStart(2, "0") + " / " + S.length;
   document.getElementById("pos").textContent = (i + 1) + " / " + S.length;
@@ -1154,7 +1418,24 @@ function stopAuto() { auto = false; clearT(); subEl.hidden = true; subEl.innerHT
 const bAuto = document.getElementById("bAuto");
 bAuto.onclick = () => auto ? stopAuto() : startAuto();
 document.getElementById("bPrev").onclick = () => { stopAuto(); go(cur - 1); };
-document.getElementById("bNext").onclick = () => { stopAuto(); go(cur + 1); };
+document.getElementById("bNext").onclick = () => { stopAuto(); goNext(); };
+/* 다음 장(11.09. 밤): 실행 화면에서 진행기 단계가 끝나기 전엔 막음(Shift+→ = 확인 뒤 넘김) · 실습 마지막 장 다음은 허브로 */
+/* 허브로 — 실습이 끝난 뒤 돌아갈 때 뒤에서 세션 교대(지난 교대 뒤 일을 했을 때만, 러너가 판단) */
+function toHub() {
+  const h = S.findIndex((x) => x.hub); if (h < 0) return;
+  if (CD_ON && typeof cdPost === "function") cdPost("/conduct/rotate", { auto: true, why: "허브로 돌아옴" }).then(() => cdLoad && cdLoad());
+  go(h);
+}
+function goNext(force) {
+  const sc = S[cur];
+  const g = typeof gateOf === "function" ? gateOf(sc) : null;
+  if (g && g.block) {
+    if (force !== "ask") { gateFlash(); return; }
+    if (!confirm("아직 작업이 끝나지 않았습니다(" + g.txt.replace(/^[●⚠ ]+/, "") + ").\n그래도 다음 장으로 넘어갈까요?")) return;
+  }
+  if (sc && sc.itemEnd && !OLD_DECK) return toHub();
+  go(cur + 1);
+}
 document.getElementById("bReplay").onclick = () => play(layer.querySelector(".slide:not(.leave)"));
 function toggleFull() { try { if (document.fullscreenElement) document.exitFullscreen(); else deck.requestFullscreen().catch(() => {}); } catch (e) {} }
 document.getElementById("bFull").onclick = toggleFull;
@@ -1177,7 +1458,8 @@ document.addEventListener("keydown", (e) => {
   if ((k === "g" || k === "G") && a4Has()) { a4Toggle(); return; }
   if (k === "Escape" && a4Over) { a4Toggle(false); return; }
   if (ttEl.classList.contains("on") && k === "Escape") { toggleTT(false); return; }
-  if (k === "ArrowRight" || k === "PageDown" || k === "Enter") { e.preventDefault(); stopAuto(); go(cur + 1); }
+  if (k === "ArrowRight" && e.shiftKey) { e.preventDefault(); stopAuto(); goNext("ask"); }   // 비상: 작업 중이어도 확인 뒤 넘김
+  else if (k === "ArrowRight" || k === "PageDown" || k === "Enter") { e.preventDefault(); stopAuto(); goNext(); }
   else if (k === "ArrowLeft" || k === "PageUp" || k === "Backspace") { e.preventDefault(); stopAuto(); go(cur - 1); }
   else if (k === "Home") { stopAuto(); go(0); } else if (k === "End") { stopAuto(); go(S.length - 1); }
   else if (k === " " || k === "a" || k === "A") { e.preventDefault(); auto ? stopAuto() : startAuto(); }
@@ -1278,6 +1560,7 @@ function promptSet(on) {   // [질문 띄우기]/[질문 내리기] — 그 장�
   const sc = S[cur], scr = sc && sc.cr && sc.cr.screen; if (!scr || !crOK) return;
   crPromptAt = on ? cur : -1;
   if (on) crApi("/screen", scr).catch(crFail);
+  if (on && sc.collectMark && typeof cdPost === "function") cdPost("/conduct/mark", { key: sc.collectMark }).then(() => cdLoad());   // 채팅 모으기 시작점
   crDeck(true); showPoll();
 }
 function crEnter() { crPromptAt = -1; if (crOK) refreshPoll(); else if (typeof actPaint === "function") actPaint(); }
@@ -1399,7 +1682,11 @@ const CD_STEPS = [
   { step: "s8", label: "S8 맞춤 지원서", poll: "s8-job", at: (s, t) => s.ref === "시나리오 S8" && /^이 지시 그대로/.test(t) },     // 공고 투표 바로 다음 장
   { step: "s5", label: "S5 수강생 의견 분석", at: (s, t) => s.ref === "시나리오 S5" && /^모인 글을/.test(t) } ];
 const CD_AT = {};
-S.forEach((s, i) => { const t = (s.sub && s.sub[0]) || ""; const e = CD_STEPS.find((x) => x.at(s, t)); if (e) { CD_AT[i] = e; (e.slides = e.slides || []).push(i + 1); } });
+if (OLD_DECK) S.forEach((s, i) => { const t = (s.sub && s.sub[0]) || ""; const e = CD_STEPS.find((x) => x.at(s, t)); if (e) { CD_AT[i] = e; (e.slides = e.slides || []).push(i + 1); } });
+else {   // 11.09. 밤 재구성: 장의 run {step, label, group?, poll?} 이 곧 실행 단추
+  CD_STEPS.length = 0;
+  S.forEach((s, i) => { if (!s.run) return; let e = CD_STEPS.find((x) => x.step === s.run.step); if (!e) { e = Object.assign({ slides: [] }, s.run); CD_STEPS.push(e); } CD_AT[i] = e; e.slides.push(i + 1); });
+}
 window.__cdMap = CD_STEPS.map((e) => ({ step: e.step, slides: e.slides || [] }));
 const CD_CHAIN = { "s4-1": 1, "s4-2": 1 }; // script.json autoNext — 끝나고 1.5초 뒤 러너가 다음을 저절로 보냄(그 틈에 끼어들지 않음)
 
@@ -1429,16 +1716,24 @@ function cdOption(pollId) {   // 강의실 투표 1등 → 러너 시나리오 o
     if (!p || !p.poll || p.poll.id !== pollId || !Array.isArray(p.counts)) return null;
     let best = 0, bi = -1; p.counts.forEach((n, i) => { if (n > best) { best = n; bi = i; } });
     if (bi < 0) return null;
+    if (pollId !== "s8-job") return { idx: bi, label: p.poll.options && p.poll.options[bi] };   // 화면 json 의 투표(디자인 등): 1등 번호 · 글
+
     return rnFetch("/scenarios").then((r) => r.json()).then((list) => { const sc = (list || []).find((x) => x.id === "s8"), o = sc && sc.options && sc.options[bi]; return o ? o.id : null; }, () => null);
   }).catch(() => null);
 }
 async function cdRun(e, force) {   // [▶ 실행: …] — 누를 때만
   if (!CD || cdPosting) return;
+  const sc0 = S[cur];
+  if (sc0 && sc0.pollFromScreen && crPoll && crPoll.poll && !crPoll.poll.closed && dynCache[sc0.dyn] && dynCache[sc0.dyn].data.poll && crPoll.poll.id === dynCache[sc0.dyn].data.poll.id) {   // 투표 마감 뒤 다음 단계(waitPoll)
+    if (!confirm("투표가 아직 열려 있습니다(" + crPoll.total + "명). 마감하고 진행할까요?")) return;
+    await pollClose();
+  }
   psbAuto("ses");
   cdPosting = e.step; actPaint();
   try {
     const body = { step: e.step, send: true }; if (force) body.force = true;
-    if (e.poll) { const o = await cdOption(e.poll); if (o) body.option = o; }
+    if (e.poll) { const o = await cdOption(e.poll); if (o && typeof o === "object") { body.option = String.fromCharCode(65 + o.idx); body.optionLabel = o.label || ""; } else if (o) body.option = o; }
+    const sc = S[cur]; if (sc && sc.collectMark && CD && CD.marks && CD.marks[sc.collectMark]) body.since = CD.marks[sc.collectMark];
     const r = await cdPost("/conduct/goto", body);
     cdNote(r.ok ? e.label + " 보냄" + (r.j.option && r.j.option.label ? " · " + r.j.option.label : "") : (r.j.message || r.j.error || "실패 " + r.status));
   } catch (err) { cdNote("러너에 연결하지 못했습니다"); }
@@ -1449,6 +1744,7 @@ function stepView(e) {   // 단추 글 · 상태
   if (!CD) return { dis: true, txt: "▶ 실행: " + e.label, note: cdFail ? "러너 연결 안 됨" : "러너 확인 중…" };
   if (cdPosting === e.step) return { dis: true, cls: "run", txt: "보내는 중… " + e.label };
   const c = CD.current, b = cdBusy(CD);
+  if (CD.rotate && CD.rotate.running && !(c && ids.indexOf(c.id) >= 0 && (c.status === "sent" || c.status === "working"))) return { dis: true, cls: "run", txt: "새 세션 준비 중… " + cdFmt(cdNow() - CD.rotate.startedAt), note: "앞 실습이 끝나 AI 세션을 새로 띄우는 중 — 30초쯤" };
   if (c && ids.indexOf(c.id) >= 0 && (c.status === "sent" || c.status === "working" || b === "chain"))
     return { dis: true, cls: "run", txt: "● 실행 중 · " + (ids.length > 1 ? (c.short || c.title) + " · " : "") + cdFmt(cdNow() - c.sentAt) };
   const hs = (CD.history || []).filter((h) => ids.indexOf(h.id) >= 0), h = hs[hs.length - 1];
@@ -1491,7 +1787,8 @@ function actBuild() {
     const b = actBtn("", () => { const v = stepView(e); if (v.dis) return; if (v.again && !confirm(e.label + "을(를) 이미 실행했습니다. 다시 실행할까요?")) return; cdRun(e); });
     actItems.push(() => { const v = stepView(e); b.textContent = v.txt; b.className = "ab " + (v.cls || ""); b.disabled = !!v.dis; return v.note || ""; });
   }
-  const pst = (e && PUB_IDS[e.step]) || (sc && sc.live) || null;   // 결과 공개(11.09. 밤) — 실행이 끝난 뒤에만 누를 수 있음
+  const pst = OLD_DECK ? ((e && PUB_IDS[e.step]) || (sc && sc.live) || null) : (sc && sc.live ? (sc.item ? livePub(ITEM[sc.item]) : sc.live) : null);   // 결과 공개 — 새 덱은 결과 장에서만(자동 공개가 실패했을 때 손으로)
+  if (!OLD_DECK && typeof actExtra === "function") actExtra(sc, "pre");
   if (pst) {
     const b = actBtn("", () => { const v = pubView(pst); if (v.dis) return; pubRun(pst, v.again); });
     actItems.push(() => { const v = pubView(pst); b.textContent = v.txt; b.className = "ab " + (v.cls || ""); b.disabled = !!v.dis; b.title = liveUrl(pst); return v.note || ""; });
@@ -1513,6 +1810,7 @@ function actBuild() {
     const b = actBtn("", () => { psbAuto("chat"); promptSet(crPromptAt !== cur); });
     actItems.push(() => { const on = crPromptAt === cur; b.textContent = on ? "■ 질문 내리기" : "▶ 질문 띄우기"; b.className = "ab " + (on ? "run" : ""); b.disabled = !crOK; return ""; });
   }
+  if (!OLD_DECK && typeof actExtra === "function") actExtra(sc, "post");
   actPaint();
 }
 function actPaint() {
@@ -1522,6 +1820,7 @@ function actPaint() {
   ch.className = st.cls; ch.querySelector(".t").textContent = st.txt;
   const notes = actItems.map((f) => f()).filter(Boolean);
   pAct.querySelector(".an").textContent = notes.join(" · ");
+  if (typeof framePaint === "function") framePaint();
   if (cdPick.classList.contains("on")) cdPickPaint();
   if (pAct.offsetHeight !== actH) { actH = pAct.offsetHeight; fit(); }
 }
@@ -1540,6 +1839,9 @@ function pubView(st) {
   if (j && j.running && j.step === st) return { dis: true, cls: "run", txt: "공개 중… " + cdFmt(cdNow() - j.startedAt) + (j.last && j.last.phase ? " · " + j.last.phase : "") };
   if (j && j.running) return { dis: true, txt: "⬆ 결과 공개", note: "다른 결과(" + (PUB_NAME[j.step] || j.step) + ") 공개 중" };
   if (j && j.step === st && j.day === LIVE_DAY && j.ok === false && (!dn || dn.at < (j.endedAt || 0))) return { txt: "⬆ 결과 공개 (다시)", note: "공개 실패: " + (j.reason || "까닭 모름"), again: !!dn };
+  const itx = ITEMS.find((x) => x.pub === st || (x.pub.endsWith("#") && st.indexOf(x.pub.slice(0, -1)) === 0));
+  const rvd = itx ? revOf(itx.id).doneAt : 0;
+  if (dn && rvd > dn.at) return { txt: "⬆ 다시 공개(수정본)", again: true, note: "수정본은 아직 공개 전입니다" };
   if (dn) return { cls: "done", txt: "공개됨 ✓ " + liveRel(st), again: true, note: dn.pagesOk ? "" : "곧 열립니다(빌드 확인 전)" };
   if (!P.ready || !P.ready[st]) return { dis: true, txt: "⬆ 결과 공개", note: "실행이 끝나면 공개할 수 있습니다" };
   return { txt: "⬆ 결과 공개" };
@@ -1561,7 +1863,9 @@ function liveWatch(p) {
   const m = (p && p.done && p.done[LIVE_DAY]) || {};
   Object.keys(m).forEach((st) => {
     const k = String(m[st].at);
-    if (liveSeen[st] && liveSeen[st] !== k) { liveReload(st); setTimeout(() => liveReload(st), 20000); }   // 공개 직후 + 20초 뒤 한 번 더(Pages 캐시)
+    if (liveSeen[st] && liveSeen[st] !== k) { liveReload(st); setTimeout(() => liveReload(st), 20000);
+      const itx = ITEMS.find((x) => x.pub === st || (x.pub.endsWith("#") && st.indexOf(x.pub.slice(0, -1)) === 0));
+      if (itx && crOK && !FOLLOW && revOf(itx.id).n) crApi("/screen", { kind: "slide", kicker: "rev:" + itx.id, title: "다시 공개됨", lines: [] }).catch(() => {}); }   // 공개 직후 + 20초 뒤 한 번 더(Pages 캐시)
     liveSeen[st] = k;
   });
 }
@@ -1674,6 +1978,7 @@ function psbSetTab(t, quiet) {
 function psbAuto(t) { psbSetTab(t); }   // 단추를 누를 때: 세션 단추 → 세션, 강의실 단추 → 채팅(손으로 고른 탭은 다음 단추까지 그대로)
 function psbBadge(txt) { if (!psbBuilt) return; const bd = PSB.querySelector('.tab[data-t="ses"] .bd'); if (bd) bd.textContent = txt; }
 function psbToggle(on) {
+  if (PSB && PSB.classList.contains("ins")) { wsSb = on === undefined ? !wsSb : !!on; lsSet("gongjuDeck.sb", wsSb ? "1" : "0"); return; }   // 실행 화면에서는 장 안 칸 — 나갈 때 적용
   const v = on === undefined ? !document.body.classList.contains("sb") : on;
   if (v) psbBuild();
   document.body.classList.toggle("sb", v); lsSet("gongjuDeck.sb", v ? "1" : "0");
@@ -1739,6 +2044,368 @@ function psbConnect() {
     ws.onclose = () => { clearInterval(ping); if (psbWS === ws) { psbWS = null; setTimeout(psbConnect, 4000); } };
   } catch (e) { setTimeout(psbConnect, 8000); }
   if (!psbPollT) psbPollT = setInterval(() => { if (!document.hidden && (!psbWS || psbWS.readyState !== 1)) psbChatLoad(false); }, 4000); // 웹소켓이 끊긴 동안만
+}
+
+/* ════════════ 11.09. 밤 재구성 — 작업 장 공통 틀 ════════════
+   gateOf: 실행 화면(장의 gate = 진행기 단계 id 들)에서 그 단계가 끝나기 전엔 → 막음 · #gateBar 표시
+   허브: 카드 상태(대기 · 진행 중 · 완료 + 걸린 시간 + 공개 QR)는 진행기 기록(러너 state.json)에서 — 새로고침 · 다른 기기에서도 같음
+   동적 장: 러너 GET /conduct/screen?id=<화면 id>(흐름2 화면틀 json) → 덱이 직접 그림. 단계를 다시 보낸 뒤 옛 화면은 안 씀
+   실행 화면: 왼쪽 Agent4D(a4d 칸) · 오른쪽 인터랙티브 창(발표자 사이드바를 장 안 칸으로 옮김) */
+if (CD_ON) document.body.classList.add("cdon");
+const gateBar = document.createElement("div"); gateBar.id = "gateBar"; if (!FOLLOW) canvas.appendChild(gateBar);
+function histOf(ids) { return ((CD && CD.history) || []).filter((h) => ids.indexOf(h.id) >= 0); }
+function revOf(itemId) {
+  const hs = histOf(["rev:" + itemId]), h = hs[hs.length - 1];
+  return { n: hs.length, h, active: !!h && (h.status === "sent" || h.status === "working"), doneAt: hs.filter((x) => x.status === "done").reduce((a, x) => Math.max(a, x.doneAt || 0), 0) };
+}
+function gateOf(sc) {
+  if (!OLD_DECK && CD_ON && CD && sc && sc.live && sc.item) {   // 결과 장: 보완 지시를 고치는 동안 막음
+    const r = revOf(sc.item);
+    if (r.active) return { block: true, kind: "run", txt: "● AI가 결과를 고치는 중(수정 " + r.n + "회) · " + cdFmt(cdNow() - r.h.sentAt) + " — 끝나면 넘어갑니다" };
+    return null;
+  }
+  if (OLD_DECK || !CD_ON || !sc || !sc.gate) return null;
+  if (!CD) return { block: false, kind: "wait", txt: "진행기 확인 중…" };
+  const ids = sc.gate, hs = histOf(ids), h = hs[hs.length - 1], last = ids[ids.length - 1];
+  if (!h) return { block: false, kind: "none", txt: "⚠ 아직 실행하지 않았습니다 — 앞 장의 [▶ 실행]을 누르세요" };   // 막지 않음(막힘은 진행 중일 때만)
+  let i0 = hs.length - 1; while (i0 > 0 && ids.indexOf(hs[i0 - 1].id) < ids.indexOf(hs[i0].id)) i0--;   // 이번 회차의 첫 단계
+  const t0 = hs[i0].sentAt;
+  if (h.id === last && h.status === "done") { const ms = hs.slice(i0).reduce((a, x) => a + (x.durationMs || 0), 0); return { block: false, kind: "done", txt: "✓ 끝났습니다 · " + cdFmt(ms) + " — → 를 누르면 다음 장으로" }; }
+  if (h.status === "undelivered") return { block: true, kind: "err", txt: "⚠ 지시가 세션에 전달되지 않았습니다 — 앞 장에서 다시 실행 · 비상: Shift+→" };
+  return { block: true, kind: "run", txt: "● AI 팀이 일하는 중 · " + (ids.length > 1 ? (h.short || h.id) + " · " : "") + cdFmt(cdNow() - t0) + " — 끝나면 넘어갑니다" };
+}
+function gateFlash() { gateBar.classList.remove("flash"); void gateBar.offsetWidth; gateBar.classList.add("flash"); framePaint(); }
+function framePaint() {
+  const sc = S[cur] || {};
+  const g = gateOf(sc);
+  if (g) { gateBar.className = "on" + (g.kind === "done" ? " done" : "") + (sc.dyn || (sc.run && !sc.ws) ? " top" : "") + (gateBar.classList.contains("flash") ? " flash" : ""); gateBar.innerHTML = ""; const a = document.createElement("span"); a.textContent = g.txt; gateBar.appendChild(a); const b = document.createElement("span"); b.className = "s"; b.textContent = g.block ? "Shift+→ 비상 넘기기" : ""; gateBar.appendChild(b); }
+  else gateBar.className = "";
+  if (sc.hub) hubPaint();
+  if (sc.live && sc.item && !OLD_DECK) revPaint(sc);
+}
+/* ── 허브 ── */
+function itemStat(it) {
+  if (!CD) return { cls: "", txt: "대기" };
+  const hs = histOf(it.steps), last = it.steps[it.steps.length - 1];
+  const act = hs.filter((h) => h.status === "sent" || h.status === "working");
+  const chain = hs.length && CD_CHAIN[hs[hs.length - 1].id] && hs[hs.length - 1].status === "done";
+  const rounds = hs.filter((h) => h.id === last && h.status === "done").length;
+  if (act.length || chain) { const h = act[act.length - 1] || hs[hs.length - 1]; return { cls: "run", run: true, txt: "● 진행 중 · " + (h.short || h.id) + " · " + cdFmt(cdNow() - h.sentAt) }; }
+  if (rounds) {
+    let i = hs.length - 1; while (i > 0 && hs[i - 1].sentAt && it.steps.indexOf(hs[i - 1].id) < it.steps.indexOf(hs[i].id)) i--;
+    const ms = hs.slice(i).reduce((a, x) => a + (x.durationMs || 0), 0);
+    return { cls: "done", txt: "✓ 완료 · " + cdFmt(ms) + (it.repeat ? " · " + rounds + "회" : "") };
+  }
+  if (hs.length) { const h = hs[hs.length - 1]; return { cls: "", txt: "진행 중단 · " + (h.short || h.id) + " " + ({ done: "끝", undelivered: "전달 안 됨" }[h.status] || h.status) }; }
+  return { cls: "", txt: "대기" };
+}
+function pubUrlOf(it) {
+  const P = CD && CD.pub, dn = P && P.done && P.done[LIVE_DAY]; if (!dn) return null;
+  const id = livePub(it); return dn[id] ? liveUrl(id) : null;
+}
+const hubQr = {};
+function hubPaint() {
+  const top = layer.querySelector("#hubTop");
+  if (top && CD_ON) {
+    const cx = CD && CD.ctx, rt = CD && CD.rotate;
+    top.innerHTML = "";
+    const lab = document.createElement("span");
+    lab.textContent = rt && rt.running ? "새 세션 준비 중… " + cdFmt(cdNow() - rt.startedAt) : cx ? "AI 세션 기억 " + cx.pct + "%" : "AI 세션 -";
+    const gz = document.createElement("span"); gz.className = "gz"; const gi = document.createElement("i"); const pct = cx ? Math.min(100, cx.pct) : 0;
+    gi.style.width = pct + "%"; gi.className = pct >= 60 ? "b" : pct >= 45 ? "w" : ""; gz.appendChild(gi);
+    top.append(lab, gz);
+  }
+  layer.querySelectorAll(".hc[data-item]").forEach((el) => {
+    const it = ITEM[el.dataset.item]; if (!it) return;
+    const st = it.ready === false && !histOf(it.steps).length ? { cls: "", txt: "준비 중" } : itemStat(it);
+    el.classList.toggle("lock", it.ready === false);
+    el.classList.toggle("run", st.cls === "run"); el.classList.toggle("done", st.cls === "done");
+    const rv = revOf(it.id);
+    el.querySelector(".st").textContent = st.txt + (rv.n ? " · 수정 " + rv.n + "회" + (rv.active ? " 중" : "") : "");
+    const u = pubUrlOf(it), qr = el.querySelector(".qr");
+    if (u && hubQr[it.id] !== u) { hubQr[it.id] = u; }
+    if (u) { if (qr.dataset.u !== u) { qr.dataset.u = u; qr.innerHTML = qrSvg(u); } qr.classList.add("on"); } else qr.classList.remove("on");
+    if (it.dep && !st.cls) { const ds = itemStat(ITEM[it.dep]); el.querySelector(".dp").textContent = ds.cls === "done" ? "↳ " + ITEM[it.dep].title + " 결과를 이어서 씁니다" : "↳ " + it.depNote; }
+  });
+}
+function hubGo(id) {
+  const it = ITEM[id]; if (!it) return;
+  if (it.ready === false && !confirm("「" + it.title + "」은(는) 아직 준비 중입니다. 그래도 들어갈까요?")) return;
+  const runIt = CD && ITEMS.find((x) => x.id !== id && itemStat(x).run);
+  if (runIt && !confirm("「" + runIt.title + "」이(가) 아직 진행 중입니다.\n그래도 「" + it.title + "」(으)로 갈까요? (진행 중인 작업은 계속됩니다)")) return;
+  if (!runIt && CD_ON) cdPost("/conduct/rotate", { auto: true, why: "다음 실습 고름" }).then(() => cdLoad());
+  const i = S.findIndex((s) => s.item === id); if (i >= 0) go(i);
+}
+layer.addEventListener("click", (e) => { const c = e.target.closest && e.target.closest(".hc[data-item]"); if (c && CD_ON && S[cur] && S[cur].hub) hubGo(c.dataset.item); });
+/* ── 동적 장(화면 json) ── */
+const dynCache = {};
+const esc = (v) => String(v == null ? "" : v).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+function dynFrameUrl(d, frame) {
+  if (!frame || rn.remote || !d.folder) return "";
+  return rn.base + "/conduct/files/" + [d.folder].concat(String(frame).split("/")).map(encodeURIComponent).join("/");
+}
+function dynHtml(d) {
+  const CC = ["#4fd1e8", "#5fe0a0", "#f4b740"];
+  const stats = (d.stats || []).slice(0, 4);
+  const cands = (frames) => (d.candidates || []).slice(0, 3).map((c, i) => { const key = c.key || "ABC"[i]; const pick = d.pick && d.pick.key === key;
+    const fu = frames && dynFrameUrl(d, c.frame);
+    return `<div class="cand${pick ? " pick" : ""}" style="--c:${CC[i % 3]}"><span class="k">${esc(key)}</span>${c.minutes ? `<span class="m">약 ${esc(c.minutes)}분</span>` : ""}<b>${esc(c.label)}</b>${c.why ? `<span>${esc(c.why)}</span>` : ""}${fu ? `<div class="fr"><iframe src="${esc(fu)}" tabindex="-1" loading="lazy" sandbox="allow-scripts"></iframe></div>` : ""}</div>`; }).join("");
+  const poll = d.poll ? `<div class="pollx"><b>투표</b>${esc(d.poll.question)} — 강의실 화면에서 골라 주세요</div>` : "";
+  let main = "";
+  if (d.kind === "sort") {
+    const gs = (d.groups || []).slice(0, 6), mx = Math.max(1, ...gs.map((g) => +g.count || 0));
+    const ex = (d.excluded || []).slice(0, 4);
+    main = `<div class="col w2"><div class="hdx">비슷한 요청끼리 묶음</div>${gs.map((g) => `<div class="grp"><div class="n">${esc(g.count)}<small>건</small></div><div class="t"><b>${esc(g.name)}</b><span>${esc((g.examples || []).join(" · "))}</span><div class="bar" style="width:${Math.max(4, 100 * (+g.count || 0) / mx).toFixed(0)}%"></div></div></div>`).join("")}
+      ${ex.length ? `<div class="ex"><b>이번엔 빼요</b><ul>${ex.map((x) => `<li>${esc(x.text)} — ${esc(x.reason)}</li>`).join("")}</ul></div>` : ""}</div>
+      <div class="col"><div class="hdx">${(d.candidates || []).length > 1 ? "고를 후보" : "이번에 할 일"}</div>${cands(false)}${poll}</div>`;
+  } else if (d.kind === "plan") {
+    const tm = (d.team || []).slice(0, 4);
+    main = `<div class="col w2"><div class="hdx">누가 무엇을</div>${tm.length > 1 ? `<div class="par">∥ 팀원들이 동시에 일합니다</div>` : ""}${tm.map((t, i) => `<div class="tm"><i>${i + 1}</i><div><b>${esc(t.role)}</b><span>${esc(t.job)}</span></div>${t.minutes ? `<span class="m">${esc(t.minutes)}분</span>` : ""}</div>`).join("")}</div>
+      <div class="col">${d.minutes ? `<div class="big"><div class="v">${esc(d.minutes)}<small>분</small></div><span>예상 시간</span></div>` : ""}${(d.steps || []).length ? `<div class="hdx">순서</div><ol class="steps">${d.steps.slice(0, 5).map((x) => `<li>${esc(typeof x === "string" ? x : x.t || x.title || "")}</li>`).join("")}</ol>` : ""}${d.output ? `<div class="out"><b>결과물</b>${esc(d.output)}</div>` : ""}${(d.lines || []).slice(0, 3).map((x) => `<div class="ex" style="color:var(--mu)">${esc(x)}</div>`).join("")}</div>`;
+  } else if (d.kind === "design") {
+    main = `<div class="col"><div class="cands row">${cands(true)}</div>${poll}${(d.lines || []).slice(0, 2).map((x) => `<div class="ex" style="color:var(--mu)">${esc(x)}</div>`).join("")}</div>`;
+  } else {
+    main = `<div class="col w2"><ul class="ln">${(d.lines || []).slice(0, 6).map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div>${(d.links || []).length || d.output ? `<div class="col">${(d.links || []).length ? `<div class="hdx">결과 보기</div><div class="lk">${d.links.slice(0, 8).map((x) => `<div>${esc(x.label || x.url)}</div>`).join("")}</div>` : ""}${d.output ? `<div class="out"><b>결과물</b>${esc(d.output)}</div>` : ""}</div>` : ""}`;
+  }
+  return `${d.subtitle ? `<p class="sub">${esc(d.subtitle)}</p>` : ""}${stats.length ? `<div class="stats">${stats.map((s) => `<div class="stt"><b>${esc(s.value)}<small>${esc(s.unit)}</small></b><span>${esc(s.label)}</span></div>`).join("")}</div>` : ""}<div class="main">${main}</div>`;
+}
+/* CEO 계획(out/plan.json, CEO 담당 꼴) → 화면 json(plan) */
+function ceoToScreen(p) {
+  const kw = (p.keywords || []).slice(0, 8).map((k) => k.word + (k.count ? "(" + k.count + ")" : "")).join(" · ");
+  return { kind: "plan", title: p.title || "AI 팀에게 이렇게 나눠 맡깁니다", subtitle: [p.subtitle, p.source === "sample" ? "예시 키워드(가상)" : ""].filter(Boolean).join(" · "),
+    stats: [{ label: "모은 글", value: p.messageCount, unit: "건" }, { label: "분야", value: (p.team || []).length, unit: "개" }, { label: "함께 일하는 AI", value: p.aiCount, unit: "명" }].filter((x) => x.value != null),
+    team: (p.team || []).slice(0, 4).map((t) => ({ role: t.role || t.name || "", job: t.does || t.say || "" })),
+    steps: (p.flow || []).slice(0, 5).map((f) => (f.parallel ? "∥ " : "") + (f.step || "") + (f.does ? " — " + f.does : "")),
+    minutes: p.minutes, output: "센터장 아침 한 장 대시보드", lines: kw ? ["키워드: " + kw] : [] };
+}
+function dynId(sc) {
+  if (sc.dynSrc) return null;
+  let id = sc.dyn;
+  if (id.indexOf("{n}") >= 0) { const first = ITEM[sc.item].steps[0]; id = id.replace("{n}", String(Math.max(1, histOf([first]).length))); }
+  return id;
+}
+function dynLoad() {
+  const sc = S[cur]; if (!sc || !sc.dyn || !CD_ON) return;
+  const box = layer.querySelector(".dy[data-dyn]"); if (!box) return;
+  const id = dynId(sc), url = sc.dynSrc ? "/conduct/deck?step=" + encodeURIComponent(sc.dynSrc.step) + "&file=" + encodeURIComponent(sc.dynSrc.file) : "/conduct/screen?id=" + encodeURIComponent(id);
+  rnFetch(url).then((r) => r.json()).then((j) => {
+    if (j && j.data && sc.dynSrc && sc.dynSrc.adapt === "ceo") j = Object.assign({}, j, { data: ceoToScreen(j.data) });
+    const hs = histOf([sc.dynStep]), h = hs[hs.length - 1];
+    const fresh = j && j.data && j.at && (!h || j.at >= h.sentAt - 2000);   // 단계를 다시 보냈으면 그 뒤에 쓴 화면만
+    const key = fresh ? (id || sc.dyn) + ":" + j.at : "";
+    if (box.dataset.k === key) return;
+    box.dataset.k = key;
+    if (!fresh) return;
+    dynCache[sc.dyn] = j;
+    if (j.data.title) { const t = layer.querySelector(".slide:not(.leave) .hd .t"); if (t) t.textContent = j.data.title; }
+    box.innerHTML = dynHtml(j.data);
+    box.querySelectorAll(".fr").forEach((f) => { const k = f.clientWidth / 1600; const ifr = f.querySelector("iframe"); if (ifr) ifr.style.transform = "scale(" + k + ")"; });
+    if (sc.pollFromScreen) { actSlide = -1; actPaint(); }
+    dynShare(sc, j.data);
+  }, () => {});
+}
+/* 수강생 따라가기(?follow)는 러너에 닿지 못함 → 발표자 덱이 새 정리를 받으면 강의실 GET /api/screen(공개)에 줄 글로 올리고,
+   따라가기 덱은 그 장에서 /api/screen 을 읽어 같은 칸에 그림. 채팅 원문(묶음 예시 · 뺀 글)은 올리지 않음 — 이름 · 숫자 · 할 일만 */
+function dynLines(d) {
+  const L = [];
+  (d.stats || []).slice(0, 3).forEach((x) => L.push(`${x.label} ${x.value}${x.unit || ""}`));
+  if (d.kind === "sort") (d.groups || []).slice(0, 5).forEach((g) => L.push(`${g.name} — ${g.count}건`));
+  (d.candidates || []).slice(0, 3).forEach((c, i) => L.push(`후보 ${c.key || "ABC"[i]}: ${c.label}`));
+  (d.team || []).slice(0, 4).forEach((t) => L.push(`${t.role}: ${t.job}`));
+  if (d.kind !== "plan") (d.lines || []).slice(0, 3).forEach((x) => L.push(String(x)));
+  if (d.minutes) L.push(`예상 ${d.minutes}분`);
+  if (d.poll) L.push(`투표: ${d.poll.question}`);
+  return L.slice(0, 10).map((x) => String(x).slice(0, 150));
+}
+const dynShared = {};
+function dynShare(sc, d) {
+  if (!crOK || FOLLOW) return;
+  const lines = dynLines(d), key = sc.dyn + "|" + (d.title || "") + "|" + lines.join("/");
+  if (dynShared[sc.dyn] === key) return;
+  dynShared[sc.dyn] = key;
+  crApi("/screen", { kind: "slide", kicker: "dyn:" + sc.dyn, title: String(d.title || "").slice(0, 150), lines }).catch(() => {});
+}
+function dynFollowLoad() {
+  const sc = S[cur]; if (!FOLLOW || !sc || !sc.dyn) return;
+  const box = layer.querySelector(".dy[data-dyn]"); if (!box) return;
+  fetch(CR_API + "/screen", { cache: "no-store" }).then((r) => r.json()).then((j) => {
+    const x = j && j.screen; if (!x || x.kicker !== "dyn:" + sc.dyn) return;
+    const key = String(x.ts); if (box.dataset.k === key) return; box.dataset.k = key;
+    if (x.title) { const t = layer.querySelector(".slide:not(.leave) .hd .t"); if (t) t.textContent = x.title; }
+    box.innerHTML = `<div class="main"><div class="col w2"><ul class="ln">${(x.lines || []).map((l) => `<li>${esc(l)}</li>`).join("")}</ul></div></div>`;
+  }, () => {});
+}
+/* ── 모으기 장: 질문을 띄운 뒤 올라온 채팅 ── */
+function feedLoad() {
+  const sc = S[cur]; if (!sc || !sc.collectMark || !crOK) return;
+  const box = layer.querySelector('.cfeed[data-feed="' + sc.collectMark + '"]'); if (!box) return;
+  const since = CD && CD.marks && CD.marks[sc.collectMark];
+  if (!since) return;
+  crApi("/chat?limit=200").then((j) => {
+    const ms = (j.messages || []).filter((m) => (m.ts || 0) >= since && m.nick !== "강사");
+    box.querySelector(".h b").textContent = ms.length + "건";
+    const ls = box.querySelector(".ls"); ls.innerHTML = "";
+    if (!ms.length) { const e = document.createElement("div"); e.className = "e"; e.textContent = "질문을 띄웠습니다 — 채팅을 기다리는 중"; ls.appendChild(e); return; }
+    ms.slice(-9).forEach((m) => { const el = document.createElement("div"); el.className = "m"; el.textContent = m.text; ls.appendChild(el); });
+  }, () => {});
+}
+/* ── 설문 응답 수 ── */
+let svState = { open: false, n: 0 }, svOpenAt = 0;
+function svLoad() {
+  const sc = S[cur]; if (!sc || !sc.surveyWatch || !crOK) return;
+  crApi("/state").then((j) => { svState = { open: !!(j && j.survey), n: (j && j.surveyCount) || 0 }; actPaint(); }, () => {});
+}
+/* ── 실행 화면: 인터랙티브 창(발표자 사이드바)을 장 안 칸으로 ── */
+let wsSb = null;
+function wsPlace() {
+  if (!PSB) return;
+  const sc = S[cur] || {};
+  if (sc.ws && CD_ON && !OLD_DECK) {
+    psbBuild();
+    if (!PSB.classList.contains("ins")) { wsSb = document.body.classList.contains("sb"); document.body.classList.remove("sb"); canvas.appendChild(PSB); PSB.classList.add("ins"); setTimeout(fit, 0); }
+    PSB.style.left = sc.ws[0] + "px"; PSB.style.top = sc.ws[1] + "px"; PSB.style.width = sc.ws[2] + "px"; PSB.style.height = sc.ws[3] + "px";
+    psbSetTab("ses", true);
+  } else if (PSB.classList.contains("ins")) {
+    PSB.classList.remove("ins"); PSB.removeAttribute("style"); document.body.appendChild(PSB);
+    if (wsSb) document.body.classList.add("sb"); wsSb = null; setTimeout(fit, 0);
+  }
+}
+function slideEnter(sc) {
+  if (sc && sc.live && sc.item && !OLD_DECK) { const was = !!sc.a4d; sc._rv = ""; delete sc.a4d; delete sc.ws; revSeen[sc.item] = 0; if (was) a4Place(); revFollowLoad(); }
+  wsPlace();
+  if (sc && sc.dyn) { dynLoad(); dynFollowLoad(); }
+  if (sc && sc.collectMark) feedLoad();
+  if (sc && sc.surveyWatch) svLoad();
+  framePaint();
+}
+if (CD_ON) setInterval(() => { if (document.hidden) return; const sc = S[cur] || {}; if (sc.dyn) dynLoad(); if (sc.collectMark) feedLoad(); if (sc.surveyWatch) svLoad(); }, 3000);
+if (FOLLOW) setInterval(() => { if (!document.hidden && (S[cur] || {}).dyn) dynFollowLoad(); }, 4000);
+/* ── 발표자 단추(새 덱): 허브 · 결과 장 · 동적 장 투표 · 설문 마감 ── */
+function actExtra(sc, phase) {
+  if (!sc) return;
+  if (phase === "pre" && sc.hub) {
+    const b = actBtn("sub", () => { if (!CD) return; const cx = CD.ctx; if (!confirm("AI 세션을 새로 띄울까요?" + (cx ? "\n지금 세션 기억 " + cx.pct + "% 사용" : "") + "\n\n폴더 · AI 작업 화면 기록은 그대로이고, 30초쯤 걸립니다. 작업 중이면 하지 않습니다.")) return;
+      if (CR_DRY) { cdDryLog("runner /conduct/rotate", {}); return; }
+      cdPost("/conduct/rotate", {}).then((r) => { cdNote(r.ok ? "새 세션 준비 시작" : (r.j.message || r.j.error || "실패")); cdLoad(); }); });
+    actItems.push(() => { const rt = CD && CD.rotate; b.textContent = rt && rt.running ? "새 세션 준비 중…" : "⟳ 세션 새로"; b.disabled = !CD || !!(rt && rt.running); return rt && rt.ok === false && !rt.running ? "지난 세션 교대 실패 — 러너 기록 확인" : ""; });
+  }
+  if (phase !== "post") return;
+  if (sc.pollFromScreen) {
+    const j = dynCache[sc.dyn], p = j && j.data && j.data.poll;
+    if (p && p.id && (p.options || []).length) {
+      const def = { id: String(p.id), name: "투표", question: String(p.question || "어느 것이 좋을까요?"), options: p.options.map(String).slice(0, 4), multi: false };
+      CR_POLLS[def.id] = def;
+      const b = actBtn("", () => { psbAuto("chat"); pollOpen(def); });
+      actItems.push(() => { const q = crPoll && crPoll.poll, on = !!q && q.id === def.id && !q.closed; b.textContent = on ? "● 투표 열림 · " + crPoll.total + "명" : "▶ 투표 열기"; b.className = "ab " + (on ? "run" : ""); b.disabled = !crOK || crActBusy || on; return ""; });
+      const x = actBtn("sub", () => pollClose());
+      actItems.push(() => { const q = crPoll && crPoll.poll; x.textContent = "■ 마감"; x.disabled = !crOK || crActBusy || !(q && q.id === def.id && !q.closed); return ""; });
+    }
+  }
+  if (sc.surveyWatch) {   // [설문 열기] = 러너가 문항 단계 폴더의 out/survey.json 을 강의실 설문으로(POST /api/survey/define) · [설문 마감]
+    const o = actBtn("", () => { psbAuto("chat"); cdPost("/conduct/survey/open", { step: sc.dynStep }).then((r) => { cdNote(r.ok ? (r.j.dry ? "(dry) 설문 열기" : "설문 열림 · " + r.j.count + "문항") : (r.j.message || r.j.error || "실패")); svOpenAt = Date.now(); svLoad(); }); });
+    actItems.push(() => { const h = histOf([sc.dynStep]).pop(); o.textContent = svState.open ? "● 설문 열림 · " + svState.n + "명" : "▶ 설문 열기"; o.className = "ab " + (svState.open ? "run" : ""); o.disabled = !h || h.status !== "done" || svState.open; return h && h.status !== "done" ? "문항을 만드는 중" : ""; });
+    const x = actBtn("sub", () => { if (!confirm("설문을 마감할까요? 마감 뒤에는 응답을 받지 않습니다.")) return; cdPost("/conduct/survey/close", {}).then((r) => { cdNote(r.ok ? "설문 마감" : (r.j.message || "실패")); svLoad(); }); });
+    actItems.push(() => { x.textContent = "■ 설문 마감"; x.disabled = !svState.open; return ""; });
+  }
+  if (sc.live && sc.item) {
+    const rb = actBtn("", () => revOpen(sc));
+    actItems.push(() => { const r = revOf(sc.item), last = histOf(ITEM[sc.item].steps).filter((h) => h.id === ITEM[sc.item].steps[ITEM[sc.item].steps.length - 1] && h.status === "done").length;
+      rb.textContent = r.active ? "● 고치는 중 · " + cdFmt(cdNow() - r.h.sentAt) : "✎ 보완 지시" + (r.n ? " (" + r.n + "회 함)" : "");
+      rb.className = "ab " + (r.active ? "run" : ""); rb.disabled = !CD || r.active || !last || (CD.rotate && CD.rotate.running);
+      return !last && CD ? "결과가 나온 뒤 보완 지시를 보낼 수 있습니다" : ""; });
+    const lv = actBtn("sub", () => { const bx = layer.querySelector(".lvbox"); if (bx) bx.classList.toggle("on"); actPaint(); });
+    actItems.push(() => { const bx = layer.querySelector(".lvbox"); lv.textContent = bx && bx.classList.contains("on") ? "■ 화면 조작 끝(덱으로)" : "🖱 화면 조작(넘기기 · 크게)"; return ""; });
+    if (ITEM[sc.item] && ITEM[sc.item].repeat) { const a = actBtn("sub", () => { const i = S.findIndex((s) => s.item === sc.item); if (i >= 0) go(i); }); a.textContent = "↺ 한 번 더(요청 받기부터)"; }
+    if (sc.mail) {
+      const m = actBtn("", () => mailFlow());
+      actItems.push(() => { const ms = CD && CD.mail && CD.mail[LIVE_DAY]; m.textContent = mailBusy ? "보내는 중…" : ms && !ms.test ? "✉ 보냄 " + ms.sent + "/" + ms.count + " — 다시" : "✉ 링크 보내기"; m.disabled = !CD || mailBusy; return ""; });
+    }
+    if (sc.itemEnd) { const h = actBtn("sub", () => toHub()); h.textContent = "⌂ 실습 대시보드로"; }
+  }
+}
+/* ── 결과 장 보완 지시(11.09. 밤): [✎ 보완 지시] → 입력칸 → POST /conduct/revise {item, text}
+   보내면 같은 장이 작업 화면(Agent4D + 인터랙티브 창)으로 바뀌고 → 막힘. 끝나면 수정본(러너 파일, 공개 전)을 칸에 다시 불러옴 → [⬆ 다시 공개]
+   수강생 따라가기: 강의실 /api/screen 에 'rev:<아이템>' 상태(고치는 중 · 수정됨 · 다시 공개됨)를 올려 같은 칸에 표시 ── */
+const revBox = document.createElement("div"); revBox.id = "revBox";
+revBox.innerHTML = '<div class="h">보완 지시 — 방금 만든 결과를 어떻게 고칠까요? (AI가 같은 파일을 고쳐 덮어씁니다)</div><textarea maxlength="1500" placeholder="예: 제목을 더 짧게, 숫자 카드를 하나 더, 글씨를 크게"></textarea><div class="r"><span>[보내기] 또는 Ctrl+Enter · Esc 닫기</span><button type="button" class="c">닫기</button><button type="button" class="go">보내기</button></div>';
+if (CD_ON) canvas.appendChild(revBox);
+let revSc = null;
+function revOpen(sc) { revSc = sc; revBox.classList.add("on"); const t = revBox.querySelector("textarea"); setTimeout(() => t.focus(), 30); }
+function revClose() { revBox.classList.remove("on"); try { revBox.querySelector("textarea").blur(); } catch (e) {} }
+revBox.querySelector(".c").onclick = revClose;
+revBox.querySelector("textarea").addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey) && !e.isComposing) { e.preventDefault(); revSend(); } else if (e.key === "Escape") { e.preventDefault(); revClose(); } });
+revBox.querySelector(".go").onclick = () => revSend();
+async function revSend() {
+  const sc = revSc, t = revBox.querySelector("textarea"), text = t.value.trim();
+  if (!sc || !text) return;
+  const cx = CD && CD.ctx;
+  if (cx && cx.pct >= 60 && !confirm("AI 세션 기억이 " + cx.pct + "% 찼습니다 — 결과 맥락을 지키려고 세션을 바꾸지 않고 보냅니다.\n그래도 보낼까요?")) return;
+  const r = await cdPost("/conduct/revise", { item: sc.item, text });
+  if (r.ok) { t.value = ""; revClose(); cdNote(r.j.dry ? "(dry) 보완 지시" : "보완 지시 보냄(수정 " + r.j.rev + "회)"); psbSetTab && psbSetTab("ses", true); }
+  else cdNote("보완 지시: " + (r.j.message || r.j.error || "실패 " + r.status));
+  await cdLoad();
+}
+/* 결과 장 칸: 보완 중이면 작업 화면, 끝나면 수정본(공개 전이면 러너 파일)으로 */
+const revSeen = {};
+function revPaint(sc) {
+  const r = revOf(sc.item), sl = layer.querySelector(".slide:not(.leave)"); if (!sl) return;
+  let n = sl.querySelector(".rvn"); if (r.n) { if (!n) { n = document.createElement("div"); n.className = "rvn"; sl.appendChild(n); } n.textContent = "수정 " + r.n + "회" + (r.active ? " · 고치는 중" : ""); }
+  const want = r.active ? "rv" : "";
+  if ((sc._rv || "") !== want) {
+    sc._rv = want; sl.classList.toggle("rv", !!want);
+    if (want) { sc.a4d = [40, 104, 790, 520]; sc.ws = [846, 104, 394, 520]; } else { delete sc.a4d; delete sc.ws; }
+    a4Place(); wsPlace();
+    revShare(sc, r);
+  }
+  if (!r.active && r.doneAt && revSeen[sc.item] !== r.doneAt) { revSeen[sc.item] = r.doneAt; revLocal(sc, r); revShare(sc, r); }
+}
+function revLocal(sc, r) {   // 수정본을 칸에(공개가 수정보다 새것이면 공개 화면 그대로)
+  const box = layer.querySelector(".lvbox"); if (!box) return;
+  const it = ITEM[sc.item], pid = livePub(it), dn = CD && CD.pub && CD.pub.done && CD.pub.done[LIVE_DAY] && CD.pub.done[LIVE_DAY][pid];
+  const old = box.querySelector(".loc"); if (old) old.remove();
+  if (dn && dn.at > r.doneAt) { liveReload(pid); return; }
+  const last = histOf(it.steps).filter((h) => h.status === "done" && h.result).pop();
+  const rel = last && last.result;
+  const lab = document.createElement("div"); lab.className = "loc";
+  if (rel && /\.(html|mp4)$/i.test(rel) && !rn.remote) {
+    const f = box.querySelector("iframe"); if (f) { f.setAttribute("sandbox", "allow-scripts allow-popups allow-downloads"); f.src = rn.base + "/conduct/files/" + [last.folder].concat(rel.split("/")).map(encodeURIComponent).join("/") + "?v=" + r.doneAt; }
+    lab.textContent = "수정본(공개 전) — [⬆ 다시 공개]를 누르면 공개 주소도 바뀝니다";
+  } else lab.textContent = "수정 끝 — [⬆ 다시 공개]를 누르면 수정본이 이 칸에 뜹니다";
+  box.appendChild(lab);
+}
+function revShare(sc, r) {
+  if (!crOK || FOLLOW) return;
+  crApi("/screen", { kind: "slide", kicker: "rev:" + sc.item, title: r.active ? "AI가 결과를 고치는 중" : "수정됨", lines: ["수정 " + r.n + "회"] }).catch(() => {});
+}
+function revFollowLoad() {   // 따라가기: 보완 상태를 같은 칸에
+  const sc = S[cur]; if (!FOLLOW || !sc || !sc.live || !sc.item) return;
+  fetch(CR_API + "/screen", { cache: "no-store" }).then((r) => r.json()).then((j) => {
+    const x = j && j.screen, box = layer.querySelector(".lvbox"); if (!x || !box || x.kicker !== "rev:" + sc.item) return;
+    let ov = box.querySelector(".fov");
+    if (/고치는 중/.test(x.title || "")) { if (!ov) { ov = document.createElement("div"); ov.className = "fov"; ov.innerHTML = '<div class="orb" style="width:60px;height:60px;border-radius:50%;border:4px solid var(--cy);border-top-color:transparent;animation:dspin 1.1s linear infinite"></div><div>AI가 결과를 고치는 중입니다</div><div style="font-size:18px;color:var(--mu)">강사 화면에서 작업 모습을 보여 드립니다</div>'; box.appendChild(ov); } }
+    else { if (ov) ov.remove(); if (box.dataset.rts !== String(x.ts)) { box.dataset.rts = String(x.ts); if (/공개/.test(x.title || "")) liveReload(sc.live.endsWith("#") ? livePub(ITEM[sc.item]) : sc.live); } }
+  }, () => {});
+}
+if (FOLLOW) setInterval(() => { if (!document.hidden) revFollowLoad(); }, 4000);
+
+/* ── 마무리 링크 메일: 미리보기(받는 사람 수 · 제목 · 본문) → 확인 → 보내기 ── */
+let mailBusy = false;
+async function mailFlow() {
+  if (mailBusy || !CD) return;
+  mailBusy = true; actPaint();
+  try {
+    const pv = await cdPost("/conduct/mail/preview", { day: LIVE_DAY });
+    if (pv.j && pv.j.dry) { cdNote("(dry) 메일 미리보기 요청만 기록"); return; }
+    if (!pv.ok) { alert("메일 미리보기 실패: " + (pv.j.message || pv.j.error || pv.status)); return; }
+    const p = pv.j, sb = p.sentBefore;
+    if (!p.count) { alert("받는 사람이 없습니다(자료 받기에 남긴 이메일 0건)."); return; }
+    const msg = (sb && !sb.test ? "⚠ 오늘 이미 " + sb.sent + "/" + sb.count + "통 보냈습니다. 다시 보내면 같은 사람이 또 받습니다.\n\n" : "")
+      + "받는 사람: " + p.count + "명 (한 사람에 한 통씩, 서로의 주소는 보이지 않음)\n보내는 곳: llm.dev.auri@gmail.com\n제목: " + p.subject + "\n\n── 본문 ──\n" + p.text + "\n────────\n\n이대로 보낼까요?";
+    if (!confirm(msg)) { cdNote("메일 보내기 취소"); return; }
+    const r = await cdPost("/conduct/mail/send", { token: p.token });
+    cdNote(r.ok ? "메일 " + r.j.sent + "/" + r.j.total + "통 보냄" : "메일: " + (r.j.message || r.j.error || "실패") + (r.j.sent ? " (" + r.j.sent + "통은 감)" : ""));
+  } catch (e) { cdNote("메일: 러너에 연결하지 못했습니다"); }
+  finally { mailBusy = false; await cdLoad(); }
 }
 
 /* 키: Shift+N 단계 고르기(확인 창을 거쳐야 보냄) · ` 또는 S 사이드바 · Esc 고르기 닫기. 글 쓰는 칸에서는 안 먹음 */
