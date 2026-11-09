@@ -163,14 +163,12 @@ ul.li.b li::before { background: var(--bad); box-shadow: 0 0 6px var(--bad); }
 <script>
 /* ════════════════════════════════════════════════════════════
    공주여성새로일하기센터 AI 리터러시 제고교육 · AI 에이전트 활용(2시간)
-   A반 2026. 11. 10.(화) · B반 2026. 11. 17.(화) — B반은 주소 끝에 ?b
+   2026. 11. 10.·11. 17.(화), 10:00
    실습 시나리오는 v2 강의 장치(scenarios/s1·s2·s2b·s3)와 이름을 맞춤.
    결과물 그림은 recordings/의 리허설 녹화본(2026. 11. 7.～8.)에서 가져옴.
    ALRIS 수치는 최종연구심의회 발표(보고서 v13, 2026. 11. 8.)에서 가져옴.
    ════════════════════════════════════════════════════════════ */
-const B = /[?&]b\b/.test(location.search) || /반=B/i.test(decodeURIComponent(location.search));
-const DAY = B ? "2026. 11. 17.(화)" : "2026. 11. 10.(화)";
-const CLS = B ? "B반" : "A반";
+const DAY = "2026. 11. 10.·11. 17.(화)";
 const SITE = "https://ai-agent-gongju.pages.dev";
 const ROOM = "ai-agent-gongju.pages.dev/room";
 const CH = ["시작", "강사 소개", "ALRIS 이야기", "실습 안내", "실습 ① 리서치", "실습 ② 설문조사", "실습 ③ CEO 대시보드", "마무리"];
@@ -238,7 +236,6 @@ add({ ch: 0, sub: ["안녕하세요. 오늘은 AI에게 묻는 법을 넘어, AI
   <div class="a-grow" ${d(.5)} style="position:absolute;left:100px;top:358px;width:240px;height:4px;background:var(--cy);box-shadow:0 0 12px var(--cy)"></div>
   <div class="a-rise" ${d(.4)} style="position:absolute;left:96px;top:384px;font-size:27px;color:var(--mu);line-height:1.45">묻고 답하는 챗봇을 넘어, 조사 · 설문 · 보고를 맡기고 관리하는 법</div>
   <div class="a-rise" ${d(.55)} style="position:absolute;left:96px;top:460px;display:flex;align-items:center;gap:18px">
-    <span style="border:1.5px solid var(--cy);color:var(--cy);font-weight:700;font-size:23px;padding:6px 18px;border-radius:5px">${CLS}</span>
     <span style="font-size:27px;font-weight:700">${DAY} 10:00</span>
     <span style="font-size:22px;color:var(--mu)">국립공주대학교 옥룡캠퍼스 예술관 205호</span></div>
   <div class="a-rise" ${d(.7)} style="position:absolute;left:96px;top:540px;width:820px;border-top:1px solid var(--line);padding-top:18px;display:grid;grid-template-columns:110px 1fr;row-gap:10px;font-size:23px">
