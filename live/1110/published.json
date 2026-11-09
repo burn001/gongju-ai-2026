@@ -16,5 +16,11 @@
   "atLabel": "00:33",
   "pubId": "1110-motion-mw9f8go6",
   "title": "모션그래픽"
+ },
+ "ceo": {
+  "at": 1794238914763,
+  "atLabel": "00:41",
+  "pubId": "1110-ceo-mw9fiqhv",
+  "title": "CEO 대시보드"
  }
 }
