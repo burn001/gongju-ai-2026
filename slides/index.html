@@ -161,6 +161,28 @@ body.pres .cutmark { display: block; }
 #tt td.t { font-family: var(--f-mono); color: var(--cy); white-space: nowrap; }
 #tt td.m, #tt td.n { font-family: var(--f-mono); color: var(--mu2); white-space: nowrap; font-size: 15px; }
 #tt tr.cut td:nth-child(2) b { color: var(--warn); }
+/* 팀원이 동시에 일하는 부분(∥ 동시에) */
+.par-b { display: inline-block; font: 700 14px var(--f-ui); color: #04121e; background: var(--cy); border-radius: 999px; padding: 2px 10px; box-shadow: 0 0 12px rgba(79,209,232,.5); white-space: nowrap; letter-spacing: 0; vertical-align: 2px; }
+.wf-step.par { border-width: 2px; box-shadow: 0 0 22px rgba(79,209,232,.3); }
+.wf-step .sub2.lane { position: relative; border-left: 5px solid var(--cy); padding: 4px 26px 4px 10px; }
+.wf-step .sub2.lane::after { content: "∥"; position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font: 700 16px var(--f-mono); color: var(--cy); }
+/* 발표자 전용: 강의실 연동 표시(키로 열었을 때만) */
+#crChip { position: absolute; right: 10px; top: 12px; z-index: 30; display: flex; align-items: center; gap: 6px; max-width: 46%; font: 600 12px var(--f-ui); color: var(--mu); background: rgba(5,9,15,.82); border: 1px solid #2b3f60; border-radius: 999px; padding: 3px 4px 3px 10px; opacity: .78; }
+#crChip:hover { opacity: 1; }
+#crChip i { width: 8px; height: 8px; border-radius: 50%; background: var(--dim); flex: none; }
+#crChip.ok i { background: var(--gr); box-shadow: 0 0 6px var(--gr); } #crChip.busy i { background: var(--warn); } #crChip.bad i { background: var(--bad); }
+#crChip span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#crChip button { font: 600 11px var(--f-ui); padding: 2px 8px; border-radius: 999px; border: 1px solid #2b3f60; background: #111c2e; color: var(--ink); cursor: pointer; }
+#crChip button:hover { border-color: var(--cy); }
+/* AI 팀 실시간 화면(Agent4D) 칸 — 발표자 주소로 열었을 때만 칸 위에 iframe 하나가 겹침(보기 전용), G는 전체 겹화면(조작 가능) */
+.a4slot { position: absolute; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: rgba(8,22,40,.92); }
+.a4slot.shot img { width: 100%; height: 100%; object-fit: contain; }
+.a4slot .ph { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: var(--mu); padding: 30px;
+  background: radial-gradient(ellipse at 50% 50%, rgba(79,209,232,.10), transparent 70%); }
+#a4d { position: absolute; border: 0; border-radius: 10px; z-index: 4; background: #05090f; pointer-events: none; box-shadow: 0 0 0 1px var(--line); }
+#a4d.over { z-index: 9; border-radius: 0; pointer-events: auto; box-shadow: none; }
+#a4x { position: absolute; right: 14px; top: 14px; z-index: 10; display: none; font: 700 14px var(--f-ui); padding: 6px 12px; border-radius: 6px; border: 1px solid var(--cy); background: rgba(5,9,15,.85); color: var(--cy); cursor: pointer; }
+#a4x.on { display: block; }
 </style>
 </head>
 <body>
@@ -190,7 +212,9 @@ body.pres .cutmark { display: block; }
    시나리오마다 상황 → 발표용 지시 → 일하는 순서 → 결과 화면 → 함께 보기·투표.
    결과물 그림은 recordings/와 실험 폴더의 리허설 화면(2026. 11. 7.～9.)에서 가져옴.
    ALRIS 수치는 최종연구심의회 발표(보고서 v13, 2026. 11. 8.)에서 가져옴.
-   발표자 전용: P 줄임 표시(⏱) 켜기·끄기, T 시간표. 주소 끝 ?p 로 열면 줄임 표시가 켜진 채 시작.
+   발표자 전용: P 줄임 표시(⏱) 켜기·끄기, T 시간표, G AI 팀 실시간 화면. 주소 끝 ?p 로 열면 줄임 표시가 켜진 채 시작.
+   11. 10. 순서 조정: 표지 → 입장 → 강사 · ALRIS → 설문(첫 투표) → 챗봇 vs 에이전트 → 팀으로 일하는 AI → 실시간 화면 → 오늘의 흐름 …
+   발표자 주소(#key=…&a4d=…)로 열면 강의실 투표 · 극장 스크린 · AI 팀 실시간 화면과 연동(아래 '강의실 연동' 참고).
    ════════════════════════════════════════════════════════════ */
 const DAY = "2026. 11. 10.·11. 17.(화)";
 const ROOM = "ai-agent-gongju.pages.dev/room";
@@ -210,13 +234,15 @@ function chCard(no, label, title, items) {
   </div>`;
 }
 /* 일하는 순서 그림: 입력 → 단계들 → 결과물. 단계마다 누가 하는지(who) 표시 */
-const WHO = { ai: ["AI가 판단", "var(--cy)"], prog: ["프로그램", "var(--gr)"], chk: ["검사 담당", "var(--warn)"], ppl: ["여러분", "#ff9ec7"], run: ["자동", "var(--mu2)"] };
+const WHO = { ai: ["AI가 판단", "var(--cy)"], prog: ["프로그램", "var(--gr)"], chk: ["검사 담당", "var(--warn)"], chkai: ["검사 팀원(AI)", "var(--warn)"], ppl: ["여러분", "#ff9ec7"], run: ["자동", "var(--mu2)"] };
 function wf(o) {
   const yIn = o.yIn || 120, hIn = o.hIn || 88, ySt = yIn + hIn + 34, hSt = o.hSt || 230, yOut = ySt + hSt + 34, hOut = o.hOut || 88;
   const steps = o.steps.map((st, i) => {
-    const body = st.par ? st.par.map((p) => `<div class="sub2"><b>${p[0]}</b><span>${p[1]}</span></div>`).join("") : `<div class="dd">${st.d}</div>`;
+    const body = st.par ? st.par.map((p) => `<div class="sub2 lane"><b>${p[0]}</b><span>${p[1]}</span></div>`).join("") : `<div class="dd">${st.d}</div>`;
     const w = st.who ? `<span class="who" style="color:${WHO[st.who][1]}">${WHO[st.who][0]}</span>` : "";
-    return (i ? `<div class="wf-arr a-fade" ${d(.5 + i * .18)}>▶</div>` : "") + `<div class="wf-step a-pop" ${d(.4 + i * .18)} style="${st.w ? `flex:${st.w};` : ""}${st.who === "chk" ? "border-color:var(--warn);box-shadow:0 0 16px rgba(244,183,64,.2)" : ""}"><div class="n">${String(i + 1).padStart(2, "0")}${w}</div><div class="tt">${st.t}</div>${body}</div>`;
+    const pb = st.par ? ` <span class="par-b">∥ 동시에${st.team ? ` · 팀원 ${st.par.length}명` : ""}</span>` : "";
+    const chk = st.who === "chk" || st.who === "chkai";
+    return (i ? `<div class="wf-arr a-fade" ${d(.5 + i * .18)}>▶</div>` : "") + `<div class="wf-step${st.par ? " par" : ""} a-pop" ${d(.4 + i * .18)} style="${st.w ? `flex:${st.w};` : ""}${chk ? "border-color:var(--warn);box-shadow:0 0 16px rgba(244,183,64,.2)" : ""}"><div class="n">${String(i + 1).padStart(2, "0")}${w}${pb}</div><div class="tt">${st.t}</div>${body}</div>`;
   }).join("");
   return `<div class="wf-row wf-in a-rise" ${d(.15)} style="top:${yIn}px;height:${hIn}px"><div class="wf-lab">입력</div><div class="wf-items">${o.inputs.map((x) => `<div class="wf-chip"><span>${x}</span></div>`).join("")}</div></div>
   <div class="wf-down a-fade" ${d(.3)} style="top:${yIn + hIn + 4}px">▼</div>
@@ -302,18 +328,6 @@ add({ ch: 0, sub: ["먼저 가상 강의실에 들어와 주세요. 인터넷 �
   <div class="note a-fade" ${d(1.1)} style="top:590px;font-size:20px"><span class="k">강의실에서</span><span>투표 · 채팅 · 질문, <b class="cy">'AI 작업 화면'</b> 탭에서 에이전트가 일하는 모습 보기, 끝나고 <b class="cy">'자료 받기'</b>까지 여기서 합니다.</span></div>
   </div>` });
 
-add({ ch: 0, sub: ["먼저 하나 여쭙겠습니다. AI를 어디에 써 보셨나요? 가상 강의실 채팅창에 투표가 올라옵니다.", "여러 개 고르셔도 됩니다. 아직 안 써 보셨다면 그것도 좋은 답입니다."],
-  html: (s) => `<div class="slide">${hd(s, "먼저 하나 여쭙겠습니다")}
-  <div class="a-rise" ${d(.15)} style="position:absolute;left:60px;right:60px;top:132px;font-size:48px;font-weight:900;letter-spacing:-.01em">AI를 <span class="cy glow">어디에</span> 써 보셨나요?</div>
-  <div class="a-fade" ${d(.3)} style="position:absolute;left:62px;top:206px;font-size:22px;color:var(--mu)">가상 강의실 채팅창에 투표가 올라옵니다 · <b class="warn">여러 개</b> 골라도 됩니다</div>
-  <div style="position:absolute;left:60px;right:60px;top:270px;display:grid;grid-template-columns:repeat(4,1fr);gap:18px">
-    ${[["검색 · 질문", "궁금한 것 물어보기"], ["문서 작성", "글 · 안내문 · 보고서"], ["번역", "외국어 읽고 쓰기"], ["아직 안 써 봤어요", "오늘이 처음이어도 괜찮습니다"]].map((r, i) => `<div class="pn rel a-pop" ${d(.4 + i * .12)} style="padding:24px 24px;height:220px;${i === 3 ? "border-color:var(--warn)" : ""}">
-      <div class="mono" style="font-size:40px;font-weight:700;color:${i === 3 ? "var(--warn)" : "var(--cy)"}">${i + 1}</div>
-      <div style="font-size:30px;font-weight:900;margin-top:10px;line-height:1.25">${r[0]}</div><div style="font-size:19px;color:var(--mu);margin-top:8px">${r[1]}</div></div>`).join("")}
-  </div>
-  <div class="keymsg a-wipe" ${d(1)} style="top:540px;font-size:24px">마지막에는 <span class="cy">"내일 바로 맡겨 보고 싶은 일"</span>을 여쭙겠습니다. 두 답이 어떻게 달라지는지 보세요.</div>
-  </div>` });
-
 /* ── 강사 소개 · ALRIS ── */
 add({ ch: 1, sub: ["건축공간연구원에서 스마트시티, 녹색건축과 도시, 건축·도시정보체계를 연구합니다.", "요즘은 AI에게 건축법령을 가르치고, AI가 숙제하는 모습을 구경하는 도구도 만듭니다."],
   html: (s) => `<div class="slide">${hd(s, "강사 소개")}
@@ -396,6 +410,19 @@ add({ ch: 1, eb: "제가 AI로 만든 것", sub: ["저는 건축과 도시를 �
   <div class="keymsg a-wipe" ${d(1)} style="top:510px">에이전트는 일을 준비하고, <span class="cy">결정과 책임은 사람</span>이 집니다.</div>
   </div>` });
 
+/* ── 설문(첫 투표) — 발표자 키로 열면 강의실 투표 'warmup'을 자동으로 엶 ── */
+add({ ch: 2, eb: "설문 · 여러분께 묻습니다", cr: { poll: "warmup" }, sub: ["본론에 들어가기 전에 하나 여쭙겠습니다. AI를 어디에 써 보셨나요? 가상 강의실 채팅창에 투표가 올라옵니다.", "여러 개 고르셔도 됩니다. 아직 안 써 보셨다면 그것도 좋은 답입니다."],
+  html: (s) => `<div class="slide">${hd(s, "본론 전에 하나 여쭙겠습니다")}
+  <div class="a-rise" ${d(.15)} style="position:absolute;left:60px;right:60px;top:132px;font-size:48px;font-weight:900;letter-spacing:-.01em">AI를 <span class="cy glow">어디에</span> 써 보셨나요?</div>
+  <div class="a-fade" ${d(.3)} style="position:absolute;left:62px;top:206px;font-size:22px;color:var(--mu)">가상 강의실 채팅창에 투표가 올라옵니다 · <b class="warn">여러 개</b> 골라도 됩니다</div>
+  <div style="position:absolute;left:60px;right:60px;top:270px;display:grid;grid-template-columns:repeat(4,1fr);gap:18px">
+    ${[["검색 · 질문", "궁금한 것 물어보기"], ["문서 작성", "글 · 안내문 · 보고서"], ["번역", "외국어 읽고 쓰기"], ["아직 안 써 봤어요", "오늘이 처음이어도 괜찮습니다"]].map((r, i) => `<div class="pn rel a-pop" ${d(.4 + i * .12)} style="padding:24px 24px;height:220px;${i === 3 ? "border-color:var(--warn)" : ""}">
+      <div class="mono" style="font-size:40px;font-weight:700;color:${i === 3 ? "var(--warn)" : "var(--cy)"}">${i + 1}</div>
+      <div style="font-size:30px;font-weight:900;margin-top:10px;line-height:1.25">${r[0]}</div><div style="font-size:19px;color:var(--mu);margin-top:8px">${r[1]}</div></div>`).join("")}
+  </div>
+  <div class="keymsg a-wipe" ${d(1)} style="top:540px;font-size:24px">마지막에는 <span class="cy">"내일 바로 맡겨 보고 싶은 일"</span>을 여쭙겠습니다. 두 답이 어떻게 달라지는지 보세요.</div>
+  </div>` });
+
 /* ── 챗봇과 에이전트 + S4 출발 ── */
 add({ ch: 2, sub: ["챗봇은 질문 한 번에 답 한 번입니다. 자료를 붙여 넣고 결과를 옮기는 일은 사람이 합니다.", "에이전트는 폴더 안 파일을 직접 읽고 쓰고, 검색과 통계 조회 같은 도구를 쓰며, 여러 단계를 이어서 합니다.", "비유하면 챗봇은 전화 상담, 에이전트는 내 사무실에 앉은 신입 직원입니다."],
   html: (s) => `<div class="slide">${hd(s, "챗봇과 에이전트는 무엇이 다른가")}
@@ -405,6 +432,48 @@ add({ ch: 2, sub: ["챗봇은 질문 한 번에 답 한 번입니다. 자료를 
     <ul class="li ${i ? "" : "w"}" style="margin-top:20px;gap:14px">${c[2].map((x) => `<li>${x}</li>`).join("")}</ul>
     <div style="position:absolute;left:26px;right:26px;bottom:22px;font-size:22px;border-top:1px dashed #335789;padding-top:12px">비유하면 <b style="color:${c[4]}">${c[3]}</b></div></div>`).join("")}
   <div class="note a-fade" ${d(.9)} style="top:582px"><span class="k">그래서</span><span>에이전트는 <b class="cy">일을 잘 시키는 법</b>을 알아야 합니다. 신입 직원에게 일을 맡기듯이요.</span></div>
+  </div>` });
+
+/* 팀으로 일하는 AI — 팀장(메인)이 나눠 팀원(서브) 여럿에게 동시에 맡기고, 검사 담당이 따로 봄 */
+add({ ch: 2, sub: ["에이전트는 혼자 일하지 않습니다. 팀장 역할의 AI가 일을 나눠서 팀원 AI 여러 명에게 동시에 맡깁니다.", "센터 행사 준비를 직원 여럿이 나눠 동시에 하는 것과 같습니다. 차례로 하면 모두 더한 시간, 동시에 하면 가장 오래 걸린 한 사람의 시간이면 됩니다.", "마지막에는 다른 AI가 검사하고, 사람이 확인합니다. 오늘 보실 장면마다 이 팀이 나옵니다."],
+  html: (s) => {
+  const L = [["팀원 1", "고용24"], ["팀원 2", "민간 채용 사이트"], ["팀원 3", "시청 · 대학 · 병원 게시판"]], ly = [36, 120, 204];
+  return `<div class="slide">${hd(s, "혼자 일하는 AI → 팀으로 일하는 AI")}
+  <div style="position:absolute;left:60px;top:146px;width:1160px;height:240px">
+    <svg width="1160" height="240" style="position:absolute;inset:0;overflow:visible">
+      <defs><marker id="tmA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#4fd1e8"/></marker></defs>
+      ${ly.map((y, i) => `<path class="a-draw" ${d(.45 + i * .08)} style="--len:120" d="M222 120 C252 120 250 ${y} 276 ${y}" stroke="#4fd1e8" stroke-width="2.5" fill="none" marker-end="url(#tmA)"/>
+      <path class="a-draw" ${d(1 + i * .08)} style="--len:120" d="M642 ${y} C668 ${y} 670 120 696 120" stroke="#4fd1e8" stroke-width="2.5" fill="none" marker-end="url(#tmA)"/>`).join("")}
+      <path class="a-draw" ${d(1.35)} style="--len:60" d="M922 120 L976 120" stroke="#4fd1e8" stroke-width="2.5" fill="none" marker-end="url(#tmA)"/></svg>
+    <div class="a-pop" ${d(.2)} style="position:absolute;left:0;top:44px;width:220px;height:152px;border:2px solid var(--cy);border-radius:12px;background:var(--bg0);box-shadow:0 0 22px rgba(79,209,232,.22);padding:14px 16px">
+      <div style="font-size:15px;color:var(--cy);font-weight:700">메인 에이전트</div><div style="font-size:30px;font-weight:900;margin-top:2px">팀장 AI</div><div style="font-size:18px;color:var(--mu);line-height:1.4;margin-top:4px">일을 나눠 맡기고<br>결과를 모아 판단</div></div>
+    <div class="par-b a-pop" ${d(.55)} style="position:absolute;left:280px;top:-34px">∥ 동시에 · 3명</div>
+    ${L.map((r, i) => `<div class="a-pop" ${d(.6 + i * .1)} style="position:absolute;left:280px;top:${ly[i] - 36}px;width:360px;height:72px;border:1.5px solid var(--cy);border-left:6px solid var(--cy);border-radius:9px;background:rgba(79,209,232,.08);padding:8px 16px;display:flex;align-items:center;gap:14px">
+      <span style="font-size:22px;font-weight:900;flex:none">${r[0]}</span><span style="font-size:19px;color:var(--mu)">${r[1]}</span><span class="mono cy" style="margin-left:auto;font-size:18px">∥</span></div>`).join("")}
+    <div class="a-pop" ${d(1.15)} style="position:absolute;left:700px;top:44px;width:220px;height:152px;border:2px solid var(--warn);border-radius:12px;background:var(--bg0);box-shadow:0 0 18px rgba(244,183,64,.2);padding:14px 16px">
+      <div style="font-size:15px;color:var(--warn);font-weight:700">따로 둔 팀원</div><div style="font-size:30px;font-weight:900;margin-top:2px">검사 담당</div><div style="font-size:18px;color:var(--mu);line-height:1.4;margin-top:4px">다른 AI가 원문과<br>맞춰 봄</div></div>
+    <div class="a-pop" ${d(1.4)} style="position:absolute;left:980px;top:44px;width:180px;height:152px;border:2px solid var(--gr);border-radius:12px;background:var(--bg0);padding:14px 16px">
+      <div style="font-size:15px;color:var(--gr);font-weight:700">결과물</div><div style="font-size:30px;font-weight:900;margin-top:2px">결과</div><div style="font-size:18px;color:var(--mu);line-height:1.4;margin-top:4px">마지막 확인은<br>사람이</div></div>
+  </div>
+  <div class="pn a-rise" ${d(1.5)} style="left:60px;top:414px;width:560px;height:178px;padding:16px 22px">
+    <div class="lab">비유하면 — 센터 행사 준비</div>
+    <div style="font-size:21px;line-height:1.55;margin-top:8px">팀장이 일을 나누면 <b class="cy">접수 · 현수막 · 다과</b>를 직원 셋이 <b class="cy">동시에</b> 준비합니다. 끝나면 다른 직원이 점검표로 한 번 더 봅니다.</div></div>
+  <div class="pn a-rise" ${d(1.65)} style="left:640px;right:60px;top:414px;height:178px;padding:16px 22px">
+    <div class="lab">시간이 이렇게 줄어듭니다</div>
+    <div style="display:grid;grid-template-columns:96px 1fr;gap:8px 12px;align-items:center;margin-top:10px;font-size:18px">
+      <span class="mu">차례로</span><div style="display:flex;gap:3px">${["팀원 1", "팀원 2", "팀원 3"].map((t) => `<div class="a-grow" ${d(1.8)} style="width:96px;height:22px;border-radius:4px;background:#4a5d7c;font-size:13px;line-height:22px;padding-left:6px;color:#dfe8f4">${t}</div>`).join("")}<span class="mu2" style="margin-left:8px;font-size:16px;white-space:nowrap">셋을 더한 시간</span></div>
+      <span class="cy">동시에</span><div style="display:flex;align-items:center;gap:8px"><div style="display:flex;flex-direction:column;gap:3px">${[96, 80, 90].map((w) => `<div class="a-grow" ${d(2)} style="width:${w}px;height:7px;border-radius:3px;background:var(--cy);box-shadow:0 0 6px var(--cy)"></div>`).join("")}</div><span class="cy" style="font-size:16px">가장 오래 걸린 한 명만큼</span></div></div>
+    <div style="font-size:17px;color:var(--mu);margin-top:10px;line-height:1.45">S4 공고 모으기: 세 팀원이 동시에 <b class="cy">1분 34초</b> · 오늘 이 강의 자료도 뒤에서 여러 AI가 동시에 만들었습니다</div></div>
+  <div class="a-fade" ${d(1.9)} style="position:absolute;left:60px;right:60px;top:612px;font-size:16px;color:var(--mu2)">전문 용어로는 팀장을 '메인 에이전트', 팀원을 '서브에이전트'라고 부릅니다. 오늘 보실 일하는 순서 그림의 <span class="par-b" style="font-size:13px;padding:1px 8px">∥ 동시에</span> 표시가 팀원들이 함께 일하는 부분입니다.</div>
+  </div>`; } });
+
+/* AI 팀 실시간 화면(Agent4D) — 발표자 주소(#key=…&a4d=…)로 열었을 때만 칸 위에 실시간 화면이 겹쳐 뜸. 공개 덱에는 링크가 없음 */
+add({ ch: 2, a4d: [60, 112, 1160, 486], sub: ["지금 강사 PC에서 AI 팀이 일하는 모습을 그대로 보여 드립니다. 가운데가 팀장 AI이고, 일을 맡길 때마다 팀원이 하나씩 생겨납니다.", "선이 오가는 것이 일을 맡기고 결과를 돌려받는 순간입니다."],
+  html: (s) => `<div class="slide">${hd(s, "지금 AI 팀이 일하는 모습 <span class=\"cy\" style=\"font-size:26px\">(실시간)</span>")}
+  <div class="a4slot a-fade" ${d(.1)} style="left:60px;top:112px;width:1160px;height:486px">
+    <div class="ph"><div style="font-size:30px;font-weight:900;color:var(--ink)">AI 팀 실시간 화면은 강사 화면에서 보여 드립니다</div>
+      <div style="font-size:20px;margin-top:10px">팀장 AI가 일을 나누면 팀원이 하나씩 생겨나고, 선을 따라 일을 맡기고 결과를 돌려받습니다</div></div></div>
+  <div class="note a-fade" ${d(.6)} style="top:614px;font-size:19px"><span class="k">보는 법</span><span>가운데 <b class="cy">팀장</b> · 둘레에 생기는 <b class="cy">팀원</b> · 오가는 선 = 일 맡기기와 결과 돌려받기 · 내 화면의 <b class="cy">'AI 작업 화면'</b> 탭에는 같은 일이 글로 올라옵니다</span></div>
   </div>` });
 
 add({ ch: 2, sub: ["오늘은 공주의 일자리 이야기 하나를 따라가며 여덟 가지 일을 에이전트에게 맡깁니다.", "공고를 모으고, 보고서와 발표 자료를 만들고, 지도로 보고, 지원서까지 씁니다. 제가 실행하고, 여러분은 내 화면에서 지켜보며 투표와 채팅으로 함께하시면 됩니다."],
@@ -431,23 +500,23 @@ add({ ch: 2, ref: "시나리오 S4", sub: ["첫 일은 지금 바로 맡겨 두�
       "③ 지도 대시보드로 만든 뒤,",
       "④ <b>다른 AI가 원문과 맞춰 보게</b> 해 주세요.",
       "사이트에 부담 주지 말고, 개인 연락처는 모으지 마세요."],
-    k: "지금 출발", note: "결과는 강의 중반에 공개합니다. 그동안 AI 팀은 혼자 일합니다." }) });
+    k: "지금 출발", note: "출발하면 AI 팀원 3명이 사이트를 나눠 <b class=\"cy\">동시에</b> 봅니다. 결과는 강의 중반에 공개합니다. 그동안 AI 팀은 혼자 일합니다." }) });
 
 add({ ch: 2, ref: "시나리오 S4", sub: ["AI 여섯이 일을 나눕니다. 수집 담당 셋이 동시에 공고를 모으고, 분석 담당이 같은 공고를 묶고 직종과 적합도를 매깁니다.", "같은 공고인지는 AI가 판단하고, 건수와 점수는 프로그램이 셉니다. 마지막에는 검사 담당이 원문 공고를 열어 맞춰 봅니다."],
   html: (s) => `<div class="slide">${hd(s, "AI 팀의 일하는 순서 — 모으고, 묶고, 그리고, 검사합니다")}
-  ${wf({ hIn: 76, hSt: 284, hOut: 76, inputs: ["공고가 올라오는 곳 — 고용24 · 민간 채용 사이트 · 시청 · 대학 · 병원", "어제 모아 둔 공고 286건과 도구", "규칙: 사이트에 부담 주지 않기 · 연락처 모으지 않기"],
-    steps: [{ t: "동시에 모으기", who: "ai", w: 1.45, par: [["고용24 담당", "공공 일자리 공고"], ["민간 사이트 담당", "사람인 · 잡코리아 · 알바몬 등"], ["게시판 담당", "시청 · 대학 · 병원"]] },
+  ${wf({ hIn: 76, hSt: 304, hOut: 76, inputs: ["공고가 올라오는 곳 — 고용24 · 민간 채용 사이트 · 시청 · 대학 · 병원", "어제 모아 둔 공고 286건과 도구", "규칙: 사이트에 부담 주지 않기 · 연락처 모으지 않기"],
+    steps: [{ t: "동시에 모으기", team: true, w: 1.45, par: [["고용24 담당", "공공 일자리 공고"], ["민간 사이트 담당", "사람인 · 잡코리아 · 알바몬 등"], ["게시판 담당", "시청 · 대학 · 병원"]] },
       { t: "묶기 · 나누기", who: "ai", d: "같은 공고인지, 직종이 맞는지 AI가 판단 · 건수와 점수는 프로그램이 셈" },
       { t: "지도 만들기", who: "prog", d: "지도 · 그래프 · 목록을 한 화면에" },
-      { t: "원문과 대조", who: "chk", d: "다른 AI가 원문 공고를 열어 맞춰 보고, 숫자를 다시 셈" }],
+      { t: "원문과 대조", who: "chkai", d: "따로 둔 팀원(다른 AI)이 원문 공고를 열어 맞춰 보고, 숫자를 다시 셈" }],
     outputs: ["<b class=\"gr\">공주 일자리 지도</b>(웹 화면)", "적합 · 조건부 · 부적합 건수", "검사 결과 — 어긋난 곳 목록"] })}
   </div>` });
 
-add({ ch: 2, eb: "공주 일자리 지도 · 함께 보기", ref: "진행 화면 · 리허설 2026. 11. 9.", sub: ["지금 출발시켰습니다. 진행 화면에 수집 담당 세 줄이 차례로 생기는 것을 함께 보시죠.", "광고나 다른 지역 공고는 AI가 판단해서 뺍니다. '여기는 가져가지 마세요'라고 적어 둔 사이트는 건너뜁니다.", "결과는 한 시간쯤 뒤에 공개합니다. 그때 투표로 맞혀 보겠습니다."],
-  html: (s) => `<div class="slide">${hd(s, "지금 출발 — AI 셋이 동시에 공고를 모읍니다")}
-  <div class="a-rise" ${d(.2)} style="position:absolute;left:60px;top:118px;width:690px">
-    <div class="shot" style="background:#0a1424"><img src="assets/s4_progress.jpg" alt="진행 화면: 수집, 분석, 지도, 검수 네 단계와 단계별 걸린 시간"></div>
-    <div class="cap">진행 화면(리허설) — 네 단계가 차례로 '완료'로 바뀝니다. 오늘은 수집 장면만 먼저 봅니다.</div></div>
+add({ ch: 2, eb: "공주 일자리 지도 · 함께 보기", ref: "진행 화면 · 리허설 2026. 11. 9.", a4d: [60, 118, 690, 396], sub: ["지금 출발시켰습니다. 지금 AI 팀원 세 명이 동시에 사이트를 나눠 보고 있습니다. 수집 담당 세 줄이 생기는 것을 함께 보시죠.", "광고나 다른 지역 공고는 AI가 판단해서 뺍니다. '여기는 가져가지 마세요'라고 적어 둔 사이트는 건너뜁니다.", "결과는 한 시간쯤 뒤에 공개합니다. 그때 투표로 맞혀 보겠습니다."],
+  html: (s) => `<div class="slide">${hd(s, "지금 출발 — AI 팀원 셋이 동시에 공고를 모읍니다")}
+  <div class="a4slot shot a-rise" ${d(.2)} style="left:60px;top:118px;width:690px;height:396px;background:#0a1424"><img src="assets/s4_progress.jpg" alt="진행 화면: 수집, 분석, 지도, 검수 네 단계와 단계별 걸린 시간"></div>
+  <div class="cap a-fade" ${d(.4)} style="position:absolute;left:60px;top:520px;width:690px">진행 화면(리허설) — 네 단계가 차례로 '완료'로 바뀝니다. 오늘은 수집 장면만 먼저 봅니다.</div>
+  <div class="keymsg a-wipe" ${d(1)} style="top:590px;font-size:24px">지금 AI 팀원 <span class="cy">3명이 동시에</span> 사이트를 나눠 보고 있습니다.</div>
   <div style="position:absolute;left:780px;right:60px;top:118px;display:flex;flex-direction:column;gap:14px">
     ${side([{ l: "화면에서 눈여겨볼 것", t: "<ul class=\"li\" style=\"gap:8px\"><li style=\"font-size:20px\">담당 세 줄이 <b class=\"cy\">동시에</b> 생기는 순간</li><li style=\"font-size:20px\">광고 · 다른 지역 공고를 <b class=\"cy\">AI가 판단해서</b> 빼는 줄</li><li style=\"font-size:20px\">'가져가지 마세요' 표시(robots.txt)가 있는 사이트는 건너뜀</li></ul>" },
       { l: "내 화면에서도", t: "가상 강의실 <b class=\"cy\">'AI 작업 화면'</b> 탭" },
@@ -478,10 +547,10 @@ add({ ch: 3, ref: "시나리오 S1", sub: ["내년도 사업계획서에 공주�
 add({ ch: 3, ref: "시나리오 S1", sub: ["리서치 책임 에이전트가 일을 나눕니다. 통계 담당은 통계청 KOSIS에서, 웹 자료 담당은 정부·공공기관 자료를 동시에 찾습니다.", "초안을 쓴 뒤 사실 확인 담당이 숫자를 모두 대조하고, 마지막으로 한글 파일을 만듭니다."],
   html: (s) => `<div class="slide">${hd(s, "에이전트의 일하는 순서 — 한 사람에게 다 시키지 않습니다")}
   ${wf({ inputs: ["투표로 고른 <b class=\"warn\">&nbsp;주제&nbsp;</b>", "통계 조회 메모(통계청 명령 목록)", "센터 규칙: 출처 · 개인정보"],
-    steps: [{ t: "일 나누기", who: "ai", d: "리서치 책임 에이전트가 담당을 정함" },
-      { t: "동시에 조사", w: 1.5, par: [["통계 담당", "통계청 KOSIS 지표 4～6개"], ["웹 자료 담당", "정부 · 공공기관 자료 4～6건"]] },
+    steps: [{ t: "일 나누기", who: "ai", d: "팀장(리서치 책임 에이전트)이 담당을 정함" },
+      { t: "동시에 조사", team: true, w: 1.5, par: [["통계 담당", "통계청 KOSIS 지표 4～6개"], ["웹 자료 담당", "정부 · 공공기관 자료 4～6건"]] },
       { t: "초안 쓰기", who: "ai", d: "개조식 보고서 A4 2쪽 · 숫자마다 출처" },
-      { t: "사실 확인", who: "chk", d: "숫자를 모두 대조 · 핵심 통계 다시 조회" },
+      { t: "사실 확인", who: "chkai", d: "따로 둔 팀원이 숫자를 모두 대조 · 핵심 통계 다시 조회" },
       { t: "한글 파일", who: "prog", d: "HWPX 만들기 · 미리보기 그림" }],
     outputs: ["<b class=\"gr\">보고서.hwpx</b>&nbsp;(한글 문서)", "사실 확인표(일치 · 불일치)", "강의실 요약 4줄"] })}
   </div>` });
@@ -641,7 +710,7 @@ add({ ch: 6, chap: true, dur: 5, sub: ["5분 쉬겠습니다. 쉬는 동안 화�
   </div>` });
 
 /* ── 맞춤 지원서 (S8) ── */
-add({ ch: 7, ref: "시나리오 S8 · 가상 인물", sub: ["지도에서 '적합'으로 나온 공주 실제 공고 세 개입니다. 가상 인물 김○○ 씨가 지원해 볼 공고를 투표로 골라 주세요.", "김○○ 씨는 회계사무를 8년 하고 육아로 10년을 쉬었습니다. 컴퓨터활용능력 2급을 작년에 독학으로 땄습니다."],
+add({ ch: 7, ref: "시나리오 S8 · 가상 인물", cr: { poll: "s8-job" }, sub: ["지도에서 '적합'으로 나온 공주 실제 공고 세 개입니다. 가상 인물 김○○ 씨가 지원해 볼 공고를 투표로 골라 주세요.", "김○○ 씨는 회계사무를 8년 하고 육아로 10년을 쉬었습니다. 컴퓨터활용능력 2급을 작년에 독학으로 땄습니다."],
   html: (s) => `<div class="slide">${hd(s, "투표 — 김○○ 씨가 지원해 볼 공고는?")}
   <div class="pn a-rise" ${d(.15)} style="left:60px;top:122px;width:380px;height:450px;padding:22px 24px;border-color:rgba(244,183,64,.7)">
     <span class="chip" style="color:var(--warn);font-size:16px">가상 인물</span>
@@ -735,7 +804,7 @@ add({ ch: 8, ref: "리허설 결과 · 2026. 11. 8.", cut: CUT1, sub: ["센터�
   </div>` });
 
 /* ── 여러분의 목소리 (S5) ── */
-add({ ch: 9, sub: ["오늘 마지막 실습은 여러분이 재료입니다. 채팅창에 한 줄씩 적어 주세요.", "AI에게 맡기고 싶은 일, 가장 번거로운 일입니다. 일, 구직, 집안일 무엇이든 좋습니다. 이름은 빼고 글만 AI에게 넘깁니다."],
+add({ ch: 9, cr: { screen: { kind: "slide", kicker: "S5 · 여러분의 목소리", title: "AI에게 맡기고 싶은 일, 가장 번거로운 일을 한 줄로 적어 주세요", lines: ["일 · 구직 · 집안일 무엇이든 좋습니다", "가상 강의실 채팅창에 한 줄", "이름 · 아바타는 빼고 글만 AI에게 넘깁니다"] } }, sub: ["오늘 마지막 실습은 여러분이 재료입니다. 채팅창에 한 줄씩 적어 주세요.", "AI에게 맡기고 싶은 일, 가장 번거로운 일입니다. 일, 구직, 집안일 무엇이든 좋습니다. 이름은 빼고 글만 AI에게 넘깁니다."],
   html: (s) => `<div class="slide">${hd(s, "채팅창에 한 줄 적어 주세요")}
   <div class="pn a-rise" ${d(.15)} style="left:60px;right:60px;top:126px;height:260px;padding:30px 36px;border-color:var(--warn);background:rgba(40,30,8,.55);box-shadow:0 0 30px rgba(244,183,64,.15)">
     <div class="lab" style="color:var(--warn);font-size:19px">여러분께 묻습니다</div>
@@ -813,8 +882,8 @@ add({ ch: 10, sub: ["재취업을 준비하실 때도, 지금 하시는 업무�
 
 add({ ch: 10, sub: ["오늘 바로 무언가를 하실 필요는 없습니다. 집이나 일터에서 생각날 때 하나씩 해 보시면 됩니다.", "가장 쉬운 시작은 무료 AI 챗봇에 한 줄 부탁해 보는 것입니다."],
   html: (s) => `<div class="slide">${hd(s, "나중에 집이나 일터에서 쉽게 해 볼 것")}
-  <div style="position:absolute;left:60px;top:122px;width:640px;display:flex;flex-direction:column;gap:12px">
-    ${[["무료 AI 챗봇에 한 줄 부탁해 보기", "ChatGPT · Gemini · Claude 무료 요금제, 휴대폰 앱도 됩니다"], ["매주 하는 작은 일 하나 맡겨 보기", "회의록 정리, 안내 문자, 실적 표 정리"], ["부탁할 때 네 가지 적기", "목적 · 자료 · 결과물 모양 · 하지 말 것"], ["받은 답의 숫자 · 날짜는 원문과 대조", "AI는 그럴듯하게 틀립니다"], ["잘된 부탁은 메모장에 저장해 다시 쓰기", "모이면 나만의 지시서가 됩니다"]].map((r, i) => `<div class="a-rise" ${d(.2 + i * .12)} style="display:grid;grid-template-columns:48px 1fr;gap:14px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)">
+  <div style="position:absolute;left:60px;top:122px;width:640px;display:flex;flex-direction:column;gap:6px">
+    ${[["무료 AI 챗봇에 한 줄 부탁해 보기", "ChatGPT · Gemini · Claude 무료 요금제, 휴대폰 앱도 됩니다"], ["매주 하는 작은 일 하나 맡겨 보기", "회의록 정리, 안내 문자, 실적 표 정리"], ["부탁할 때 네 가지 적기", "목적 · 자료 · 결과물 모양 · 하지 말 것"], ["받은 답의 숫자 · 날짜는 원문과 대조", "AI는 그럴듯하게 틀립니다"], ["잘된 부탁은 메모장에 저장해 다시 쓰기", "모이면 나만의 지시서가 됩니다"], ["AI에게 일을 맡길 때도 '나눠서 동시에'가 핵심", "큰 일은 작게 나눠 부탁하고, 서로 상관없는 일은 창을 여러 개 열어 동시에"]].map((r, i) => `<div class="a-rise" ${d(.2 + i * .12)} style="display:grid;grid-template-columns:48px 1fr;gap:14px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)">
       <span class="mono" style="width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--cy);color:var(--cy);font-size:20px;font-weight:700">${i + 1}</span>
       <div><div style="font-size:24px;font-weight:900">${r[0]}</div><div style="font-size:19px;color:var(--mu)">${r[1]}</div></div></div>`).join("")}
   </div>
@@ -851,20 +920,21 @@ add({ ch: 10, sub: ["오늘 강의 자료와 AI가 만든 결과물을 한 페�
   <div class="note a-fade" ${d(1)} style="top:612px;font-size:19px"><span class="k">선택</span><span>남기지 않으셔도 괜찮습니다. 결과물은 강의실 채팅창에서도 볼 수 있습니다.</span></div>
   </div>` });
 
-add({ ch: 10, eb: "END", sub: ["감사합니다. 궁금한 점을 받겠습니다. 채팅창에 질문으로 남긴 글을 공감 많은 순서로 보겠습니다."], html: () => `<div class="slide ch">
+add({ ch: 10, eb: "END", cr: { poll: "wish" }, sub: ["감사합니다. 궁금한 점을 받겠습니다. 채팅창에 질문으로 남긴 글을 공감 많은 순서로 보겠습니다."], html: () => `<div class="slide ch">
   <div class="a-pop" ${d(.1)} style="position:absolute;left:150px;top:170px;width:330px;height:330px;border-radius:14px;overflow:hidden;background:#fff;border:1px solid var(--line);box-shadow:0 0 40px rgba(79,209,232,.2)"><img src="assets/avatar.png" alt="조상규 박사의 복셀 아바타" style="width:100%;height:100%;object-fit:cover"></div>
   <div class="a-wipe" ${d(.25)} style="position:absolute;left:540px;top:178px;font-size:76px;font-weight:900;letter-spacing:-.02em">감사합니다</div>
   <div class="a-grow" ${d(.7)} style="position:absolute;left:544px;top:290px;width:220px;height:4px;background:var(--cy);box-shadow:0 0 12px var(--cy)"></div>
   <div class="a-rise" ${d(.9)} style="position:absolute;left:544px;top:318px;font-size:32px;font-weight:700">질문 받겠습니다</div>
   <div class="a-rise" ${d(1)} style="position:absolute;left:544px;top:370px;font-size:22px;color:var(--mu);line-height:1.55">채팅창에서 <b class="cy">'질문'</b>으로 남긴 글을 공감 많은 순서로 봅니다.<br>오늘 만든 결과물은 강의실 채팅창에 그대로 남아 있습니다.</div>
   <div class="a-rise" ${d(1.1)} style="position:absolute;left:544px;top:470px;font-size:21px;color:var(--mu2)">조상규 · 건축공간연구원 선임연구위원 · <span class="mono cy">burn001.github.io</span></div>
+  <div class="a-rise" ${d(1.3)} style="position:absolute;left:544px;top:530px;font-size:22px;padding:8px 16px;border:1px solid rgba(244,183,64,.7);border-radius:8px;background:rgba(40,30,8,.55)"><b class="warn">마지막 투표</b> — 내일 바로 맡겨 보고 싶은 일은? <span class="mu2" style="font-size:18px">가상 강의실 채팅창에서</span></div>
   </div>` });
 
 /* ════════════ 발표자 시간표(T 키) ════════════ */
-const TT = [["0:00", "입장 · 아바타, 첫 투표 \"AI를 어디에 써 보셨나요?\"", 10, 0], ["0:10", "강사 소개, ALRIS", 12, 1], ["0:22", "챗봇 vs 에이전트 + <b>S4 출발</b>(수집 장면 함께 보기)", 10, 2], ["0:32", "S1 리서치 → S7 발표 슬라이드 <b>②</b>", 15, 3, 1], ["0:47", "S4 분석 · 지도 공개(투표: 가장 많은 일자리? 몇 %?)", 12, 4], ["0:59", "S9 일하는 엄마 지도 <b>③</b>", 7, 5, 1], ["1:06", "쉬는 시간(S6 홍보영상 틀어 두기)", 5, 6], ["1:11", "S8 공고 투표 → 맞춤 지원서", 10, 7], ["1:21", "S2 · S3 설문 · CEO 대시보드 <b>①</b>", 12, 8, 1], ["1:33", "S5 여러분의 목소리(채팅 → 분석)", 10, 9], ["1:43", "마무리 레슨, 자료 받기(이메일), 질문", 15, 10]];
+const TT = [["0:00", "입장 · 아바타(주소창 · QR, 채팅 인사)", 10, 0], ["0:10", "강사 소개, ALRIS", 10, 1], ["0:20", "설문 \"AI를 어디에 써 보셨나요?\" → 챗봇 vs 에이전트 → 팀으로 일하는 AI(실시간 화면) + <b>S4 출발</b>", 12, 2], ["0:32", "S1 리서치 → S7 발표 슬라이드 <b>②</b>", 15, 3, 1], ["0:47", "S4 분석 · 지도 공개(투표: 가장 많은 일자리? 몇 %?)", 12, 4], ["0:59", "S9 일하는 엄마 지도 <b>③</b>", 7, 5, 1], ["1:06", "쉬는 시간(S6 홍보영상 틀어 두기)", 5, 6], ["1:11", "S8 공고 투표 → 맞춤 지원서", 10, 7], ["1:21", "S2 · S3 설문 · CEO 대시보드 <b>①</b>", 12, 8, 1], ["1:33", "S5 여러분의 목소리(채팅 → 분석)", 10, 9], ["1:43", "마무리 레슨, 자료 받기(이메일), 질문", 15, 10]];
 function buildTT() {
   const st = CH.map((_, c) => S.findIndex((x) => x.ch === c)), n = CH.map((_, c) => S.filter((x) => x.ch === c).length);
-  return `<div style="position:absolute;left:44px;top:26px;font-size:15px;font-weight:700;color:var(--cy);letter-spacing:.06em">발표자 전용 · T 닫기 · P 줄임 표시(⏱) 켜기/끄기</div>
+  return `<div style="position:absolute;left:44px;top:26px;font-size:15px;font-weight:700;color:var(--cy);letter-spacing:.06em">발표자 전용 · T 닫기 · P 줄임 표시(⏱) 켜기/끄기 · G AI 팀 실시간 화면</div>
   <div style="position:absolute;left:44px;top:48px;font-size:30px;font-weight:900">시간표 — 공주 일자리 이야기 (2시간)</div>
   <div style="position:absolute;left:44px;top:100px;width:720px"><table><tr><th>시각</th><th>꼭지</th><th>분</th><th>장</th></tr>
     ${TT.map((r) => `<tr class="${r[4] ? "cut" : ""}"><td class="t">${r[0]}</td><td>${r[1]}</td><td class="m">${r[2]}</td><td class="n">${st[r[3]] + 1}～${st[r[3]] + n[r[3]]}</td></tr>`).join("")}</table></div>
@@ -872,7 +942,7 @@ function buildTT() {
     <div class="pn rel" style="padding:12px 16px;border-color:var(--warn)"><div class="lab" style="color:var(--warn);font-size:15px">늦으면 줄이는 순서</div>
       <div style="font-size:16.5px;line-height:1.55;margin-top:4px">① S2 · S3 → 녹화본 3분 또는 건너뛰기<br>② S7 → 결과 화면만<br>③ S9 → S4 지도 공개에 합침</div></div>
     <div class="pn rel" style="padding:12px 16px"><div class="lab" style="font-size:15px">강의 전 · 진행 팁</div>
-      <ul class="li" style="gap:5px;margin-top:6px">${["러너 켜기 → 점검 화면 localhost:8790 확인, AI 작업 화면 세션 연결", "크롬 '로컬 네트워크 접근' 허용(강의 사이트 [실행] 버튼)", "09시 전 S8 공고 마감 확인: scenarios/s8/check_open.py → [마감?]이면 투표에서 빼기", "S4 진행 화면: ← → 단계 · R 결과 · M 지도 · 막히면 D(어제 기록) · 러너 꺼지면 ?demo", "강의 직전 실행 기록(runs) 비우지 않기 — S3 · S7이 앞 결과를 씀"].map((x) => `<li style="font-size:15.5px;line-height:1.4">${x}</li>`).join("")}</ul></div>
+      <ul class="li" style="gap:5px;margin-top:6px">${["러너 켜기 → 점검 화면 localhost:8790 확인, AI 작업 화면 세션 연결", "크롬 '로컬 네트워크 접근' 허용(강의 사이트 [실행] 버튼)", "09시 전 S8 공고 마감 확인: scenarios/s8/check_open.py → [마감?]이면 투표에서 빼기", "S4 진행 화면: ← → 단계 · R 결과 · M 지도 · 막히면 D(어제 기록) · 러너 꺼지면 ?demo", "강의 직전 실행 기록(runs) 비우지 않기 — S3 · S7이 앞 결과를 씀", "발표자 주소 …/slides/#key=…&a4d=…(키 · Agent4D 링크는 시크릿 파일, a4d는 URL 인코딩) → 설문 · S8 공고 · 마지막 투표 자동 열기, S5 질문은 극장 스크린, 오른쪽 위 연동 표시"].map((x) => `<li style="font-size:15.5px;line-height:1.4">${x}</li>`).join("")}</ul></div>
   </div>`;
 }
 
@@ -910,6 +980,7 @@ function go(i) {
   layer.appendChild(sl); prep(sl);
   if (!RM.matches) sl.classList.add("enter");
   play(sl);
+  a4Place(); crEnter(sc);
   document.getElementById("ftc").textContent = CH[sc.ch];
   document.getElementById("ftn").textContent = String(i + 1).padStart(2, "0") + " / " + S.length;
   document.getElementById("pos").textContent = (i + 1) + " / " + S.length;
@@ -949,6 +1020,8 @@ document.addEventListener("keydown", (e) => {
   const k = e.key;
   if (k === "t" || k === "T") { toggleTT(); return; }
   if (k === "p" || k === "P") { togglePres(); return; }
+  if ((k === "g" || k === "G") && a4f) { a4Toggle(); return; }
+  if (k === "Escape" && a4Over) { a4Toggle(false); return; }
   if (ttEl.classList.contains("on") && k === "Escape") { toggleTT(false); return; }
   if (k === "ArrowRight" || k === "PageDown" || k === "Enter") { e.preventDefault(); stopAuto(); go(cur + 1); }
   else if (k === "ArrowLeft" || k === "PageUp" || k === "Backspace") { e.preventDefault(); stopAuto(); go(cur - 1); }
@@ -961,6 +1034,113 @@ document.addEventListener("keydown", (e) => {
 document.addEventListener("visibilitychange", () => { if (document.hidden) { const sl = layer.querySelector(".slide"); if (sl) sl.classList.remove("play"); } });
 function fromHash() { const m = /^#s(\d+)$/.exec(location.hash); return m ? +m[1] - 1 : 0; }
 addEventListener("hashchange", () => { const i = fromHash(); if (i !== cur) go(i); });
+/* ════════════ 강의실 연동(발표자 키) · AI 팀 실시간 화면 ════════════
+   발표자 주소 …/slides/#key=<발표자 키>&a4d=<URL 인코딩한 Agent4D 공유 주소> 로 한 번 열면 이 브라우저에 저장하고 주소창에서 지움.
+   키가 있으면: 설문 장 → 강의실 투표 'warmup', S8 투표 장 → 's8-job', 마지막 장 → 'wish'(강의 사이트와 같은 정의)를
+   그 장에 1.2초 머물면 자동으로 엶. 이미 열린 같은 투표는 그대로, 이 창에서 전에 연 투표(응답이 있을 수 있음)는 자동으로 다시 열지 않음.
+   닫기는 사이트처럼 손으로(오른쪽 위 표시의 [마감]). S5 장은 질문을 극장 스크린(/api/screen)에 띄움. 키 · 링크는 화면에 찍지 않음.
+   지우기: #key=off · #a4d=off */
+const CR_API = "https://ai-agent-gongju.pages.dev/api";
+function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+function lsSet(k, v) { try { if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
+(function takeHash() {
+  const h = location.hash.replace(/^#/, ""); if (!/(^|&)(key|a4d)=/.test(h)) return;
+  const keep = [];
+  h.split("&").forEach((kv) => {
+    const i = kv.indexOf("="), k = i < 0 ? kv : kv.slice(0, i), v = i < 0 ? "" : kv.slice(i + 1);
+    let dv = v; try { dv = decodeURIComponent(v); } catch (e) {}
+    if (k === "key") lsSet("gongjuDeck.pkey", dv && dv !== "off" ? dv : null);
+    else if (k === "a4d") lsSet("gongjuDeck.a4d", /^https?:\/\//i.test(dv) ? dv : null);
+    else if (kv) keep.push(kv);
+  });
+  try { history.replaceState(null, "", location.pathname + location.search + (keep.length ? "#" + keep.join("&") : "")); } catch (e) { location.hash = keep.join("&"); }
+})();
+const crKey = lsGet("gongjuDeck.pkey"), a4dUrl = crKey ? lsGet("gongjuDeck.a4d") : null;
+const CR_POLLS = {
+  warmup: { id: "warmup", name: "설문", question: "AI를 어디에 써 보셨나요?", options: ["검색·질문", "문서 작성", "번역", "아직 안 써 봤어요"], multi: true },
+  "s8-job": { id: "s8-job", name: "공고 투표", question: "김○○ 씨(가상 인물)가 지원해 볼 공고, 어느 것이 좋을까요?", options: ["세무회계사무원 (사무)", "어린이집 보육도우미 (돌봄)", "마트 즉석반찬코너 사원 (음식·판매)"], multi: false },
+  wish: { id: "wish", name: "마지막 투표", question: "내일 바로 맡겨 보고 싶은 일은?", options: ["자료 조사", "문서 작성", "설문 만들기", "리포트·대시보드"], multi: false } };
+let crOK = false, crPending = null, crNote = "", crEnterT = null;
+const chip = crKey ? document.createElement("div") : null;
+if (chip) { chip.id = "crChip"; stage.appendChild(chip); }
+function chipSet(cls, txt, btns) {
+  if (!chip) return;
+  chip.className = cls; chip.textContent = ""; chip.appendChild(document.createElement("i"));
+  const sp = document.createElement("span"); sp.textContent = txt; chip.appendChild(sp);
+  (btns || []).forEach((b) => { const el = document.createElement("button"); el.type = "button"; el.textContent = b[0]; el.onclick = (e) => { e.stopPropagation(); el.blur(); b[1](); }; chip.appendChild(el); });
+}
+chipSet("busy", "강의실 연동 확인 중…");
+function crApi(path, body) {
+  const h = {}; if (body !== undefined) h["Content-Type"] = "application/json";
+  if (body !== undefined || path === "/presenter") h["X-Presenter-Key"] = crKey;
+  return fetch(CR_API + path, { method: body !== undefined ? "POST" : "GET", headers: h, body: body !== undefined ? JSON.stringify(body) : undefined, cache: "no-store" })
+    .then((r) => r.json().catch(() => ({})).then((j) => { if (!r.ok) throw new Error(j.error || "HTTP " + r.status); return j; }));
+}
+function crFail(e) { chipSet("bad", "강의실 연동 ✕ " + ((e && e.message) || "")); }
+function opened(id, add) {
+  let a = []; try { a = JSON.parse(sessionStorage.getItem("gongjuDeck.opened") || "[]"); } catch (e) {}
+  if (add && a.indexOf(id) < 0) { a.push(id); try { sessionStorage.setItem("gongjuDeck.opened", JSON.stringify(a)); } catch (e) {} }
+  return a.indexOf(id) >= 0;
+}
+function showPoll(p) {
+  const btns = [], cur = p && p.poll;
+  let txt = "강의실 연동 ✓";
+  if (cur) {
+    const nm = (Object.keys(CR_POLLS).map((k) => CR_POLLS[k]).find((x) => x.id === cur.id) || {}).name || "투표";
+    txt += ` · ${nm} ${cur.closed ? "마감" : "열림"} · ${p.total}명`;
+    if (!cur.closed) btns.push(["마감", () => crApi("/poll/close", {}).then(refreshPoll, crFail)]);
+  }
+  if (crPending) { const def = crPending; txt += ` · ${def.name}: 전에 연 투표`; btns.push(["다시 열기", () => { if (confirm(`${def.name}를 다시 열면 그 투표의 응답이 지워집니다. 다시 열까요?`)) openPoll(def); }]); }
+  if (crNote) txt += " · " + crNote;
+  chipSet("ok", txt, btns);
+}
+function refreshPoll() { if (!crOK) return Promise.resolve(); return crApi("/poll").then(showPoll, crFail); }
+function openPoll(def) {
+  crPending = null; chipSet("busy", `${def.name} 여는 중…`);
+  return crApi("/poll", { id: def.id, question: def.question, options: def.options, multi: def.multi }).then(() => { opened(def.id, true); return refreshPoll(); }, crFail);
+}
+function crDo(c) {
+  if (c.screen) crApi("/screen", c.screen).then(() => { crNote = "극장 스크린에 질문"; return refreshPoll(); }, crFail);
+  if (c.poll) {
+    const def = CR_POLLS[c.poll];
+    crApi("/poll").then((p) => {
+      const cur = p && p.poll, same = !!cur && cur.id === def.id;
+      if (same && !cur.closed) return showPoll(p);                      // 이미 열려 있음 — 그대로
+      if (!cur || (same && !p.total) || (!same && !opened(def.id))) return openPoll(def);
+      crPending = def; showPoll(p);                                       // 응답이 있을 수 있는 옛 투표 — 손으로만
+    }, crFail);
+  }
+}
+function crEnter(sc) {
+  clearTimeout(crEnterT); crPending = null; crNote = "";
+  if (!crOK) return;
+  if (!sc.cr) { refreshPoll(); return; }
+  crEnterT = setTimeout(() => crDo(sc.cr), 1200);
+}
+if (crKey) {
+  crApi("/presenter").then(() => {
+    crOK = true; crEnter(S[cur]);
+    setInterval(() => { if (!document.hidden) refreshPoll(); }, 15000);
+  }, (e) => chipSet("bad", e && /presenter/.test(e.message) ? "강의실 연동 ✕ 발표자 키가 맞지 않습니다" : "강의실 연동 ✕ 연결 안 됨"));
+}
+/* AI 팀 실시간 화면: iframe 하나를 계속 살려 두고, 칸이 있는 장에서만 그 자리로 옮겨 보임 */
+const a4f = a4dUrl ? document.createElement("iframe") : null, a4x = document.createElement("button");
+let a4Over = false;
+if (a4f) {
+  a4f.id = "a4d"; a4f.title = "AI 팀 실시간 화면"; a4f.setAttribute("referrerpolicy", "no-referrer"); a4f.setAttribute("allow", "fullscreen; autoplay"); a4f.hidden = true; canvas.appendChild(a4f);
+  a4x.id = "a4x"; a4x.type = "button"; a4x.textContent = "✕ 슬라이드로 (G)"; a4x.onclick = () => a4Toggle(false); canvas.appendChild(a4x);
+}
+function a4Place() {
+  if (!a4f) return;
+  const r = a4Over ? [0, 0, 1280, 720] : (S[cur] && S[cur].a4d);
+  a4x.classList.toggle("on", a4Over);
+  if (!r) { a4f.hidden = true; return; }
+  if (!a4f.getAttribute("src")) a4f.src = a4dUrl;
+  a4f.style.left = r[0] + "px"; a4f.style.top = r[1] + "px"; a4f.style.width = r[2] + "px"; a4f.style.height = r[3] + "px";
+  a4f.classList.toggle("over", a4Over); a4f.hidden = false;
+}
+function a4Toggle(on) { a4Over = on === undefined ? !a4Over : on; a4Place(); if (!a4Over) { try { a4f.blur(); window.focus(); } catch (e) {} } }
+
 fit(); go(fromHash());
 </script>
 </body>
