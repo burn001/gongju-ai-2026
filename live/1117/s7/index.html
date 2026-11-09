@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>발표 슬라이드 · 11. 17. 실습 결과(준비 중)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root{color-scheme:dark;--void:#05090f;--bg0:#0a1424;--bg1:#17305a;--ink:#eef4fb;--mu:#b4c5de;--mu2:#93a7c6;--dim:#6f83a3;--line:#2a4268;--panel:rgba(17,31,54,.86);--cy:#4fd1e8;--warn:#f4b740;--bad:#ff7a66;--gr:#5fe0a0;
+--f-ui:"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",sans-serif;--f-mono:"JetBrains Mono",Consolas,monospace}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--void) radial-gradient(ellipse at 72% -8%,var(--bg1) 0%,var(--bg0) 58%,var(--void) 100%) no-repeat fixed;color:var(--ink);font-family:var(--f-ui);word-break:keep-all;overflow-wrap:anywhere;line-height:1.55;-webkit-text-size-adjust:100%}
+a{color:var(--cy)}
+.wrap{max-width:1180px;margin:0 auto;padding:22px 16px 40px}
+.hd{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
+.hd .dot{width:12px;height:12px;border-radius:50%;background:var(--cy);box-shadow:0 0 12px var(--cy);flex:none;margin-top:9px;animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+.hd .tt{flex:1 1 auto;min-width:0}
+.eb{font-weight:700;font-size:14px;color:var(--cy);letter-spacing:.06em}
+h1{font-size:clamp(26px,4.2vw,40px);font-weight:900;margin:2px 0 0;letter-spacing:-.015em;line-height:1.25}
+.back{flex:none;font-weight:700;font-size:14px;text-decoration:none;color:var(--cy);border:1px solid rgba(79,209,232,.5);border-radius:8px;padding:6px 12px;background:rgba(79,209,232,.08)}
+.back:hover{background:rgba(79,209,232,.2)}
+.what{font-size:clamp(16px,2.1vw,19px);font-weight:500;line-height:1.55;border-left:4px solid var(--cy);padding:8px 0 8px 16px;margin:16px 0 8px;background:linear-gradient(90deg,rgba(79,209,232,.14),transparent 80%)}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;color:var(--mu2);font-size:14px;margin:0 0 14px}
+.meta b{color:var(--mu);font-weight:700}
+.pn{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 18px}
+.lab{font-weight:700;font-size:15px;color:var(--cy);letter-spacing:.04em}
+.sum ul{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.sum li{position:relative;padding-left:18px;font-size:16px;color:#dfe8f4}
+.sum li::before{content:"";position:absolute;left:0;top:.62em;width:8px;height:8px;border-radius:2px;background:var(--cy);box-shadow:0 0 6px var(--cy)}
+.art{margin-top:16px}
+.art .bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.art .bar .sp{flex:1}
+.btn{display:inline-block;font:700 14px var(--f-ui);padding:7px 14px;border-radius:8px;border:1px solid var(--cy);background:rgba(79,209,232,.12);color:var(--cy);text-decoration:none;white-space:nowrap}
+.btn:hover{background:rgba(79,209,232,.25)}
+.btn.sub{border-color:#2b3f60;background:#111c2e;color:var(--ink)}
+.frame{display:block;width:100%;height:78vh;min-height:520px;border:1px solid var(--line);border-radius:10px;background:#0a1424}
+.pdfv{border:1px solid var(--line);border-radius:10px;background:#1b2536;padding:12px;min-height:240px;max-height:88vh;overflow:auto}
+.pdfv .pg{display:block;width:100%;height:auto;margin:0 auto 12px;background:#fff;border-radius:3px;box-shadow:0 6px 18px rgba(0,0,0,.45)}
+.pdfv .ld{color:var(--mu);padding:30px 10px;text-align:center}
+.pdfv iframe{display:block;width:100%;height:80vh;border:0;background:#fff}
+.note{font-size:13.5px;color:var(--mu2);margin-top:8px}
+.more{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.warnband{border:1px solid rgba(244,183,64,.7);background:rgba(40,30,8,.55);border-radius:10px;padding:10px 14px;color:#f6e3b8;font-size:14.5px;margin-top:12px}
+footer{margin-top:22px;border-top:1px dashed #335789;padding-top:12px;font-size:13.5px;color:var(--mu2);line-height:1.6}
+footer .k{font-weight:700;color:var(--cy);margin-right:8px}
+.mono{font-family:var(--f-mono)}
+.md{font-size:16px;line-height:1.7;color:#e3ebf6}
+.md h1,.md h2,.md h3,.md h4{line-height:1.35;margin:1.2em 0 .5em}.md h1{font-size:28px}.md h2{font-size:22px;color:var(--cy)}.md h3{font-size:19px}.md h4{font-size:17px}
+.md table{border-collapse:collapse;width:100%;margin:.8em 0;font-size:15px;display:block;overflow-x:auto}
+.md th,.md td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}.md th{background:rgba(79,209,232,.1);color:var(--cy)}
+.md code{font-family:var(--f-mono);font-size:.92em;background:rgba(79,209,232,.1);padding:1px 5px;border-radius:4px}
+.md pre{background:#081424;border:1px solid var(--line);border-radius:8px;padding:12px;overflow:auto}.md pre code{background:none;padding:0}
+.md blockquote{margin:.8em 0;padding:4px 14px;border-left:4px solid var(--warn);color:var(--mu)}
+.md hr{border:0;border-top:1px dashed #335789;margin:1.4em 0}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-top:16px}
+.card{display:block;text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;min-height:132px}
+.card:hover{border-color:var(--cy)}
+.card.on{border-color:rgba(95,224,160,.75);box-shadow:0 0 18px rgba(95,224,160,.12)}
+.card .tag{display:inline-block;font:700 13px var(--f-mono);padding:2px 9px;border-radius:5px;background:rgba(79,209,232,.14);color:var(--cy);border:1px solid rgba(79,209,232,.5)}
+.card .no{font:700 22px var(--f-mono);color:var(--cy);margin-right:8px}
+.card .t{font-size:20px;font-weight:900;margin-top:8px}
+.card .st{font-size:14px;margin-top:6px;color:var(--mu2)}
+.card.on .st{color:var(--gr);font-weight:700}
+.wait{max-width:760px;margin:6vh auto 0;text-align:center}
+.wait .big{font-size:clamp(22px,4vw,34px);font-weight:900;line-height:1.4;margin:22px 0 10px}
+.wait .orb{width:72px;height:72px;margin:0 auto;border-radius:50%;border:3px solid rgba(79,209,232,.35);border-top-color:var(--cy);animation:spin 1.6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.hd .dot,.wait .orb{animation:none}}
+@media (max-width:600px){.frame{height:70vh;min-height:420px}.wrap{padding:16px 14px 32px}}
+</style><meta name="gongju-live" content="placeholder"></head>
+<body data-live="gongju-live:placeholder:1117:s7"><div class="wrap">
+<header class="hd"><span class="dot"></span><div class="tt"><div class="eb">2026. 11. 17.(화) 실습 결과 · S7</div><h1>발표 슬라이드</h1></div><a class="back" href="../">← 오늘의 실습 결과</a></header>
+<div class="wait">
+  <div class="orb" aria-hidden="true"></div>
+  <div class="big">실습이 끝나면 결과가 여기에 올라옵니다</div>
+  <div style="font-size:17px;color:var(--mu);line-height:1.6">강사가 화면에서 [결과 공개]를 누르면 1～2분 뒤 이 화면이 저절로 바뀝니다.<br>이 창을 열어 두세요 — 30초마다 확인합니다.</div>
+  <div class="pn" style="margin:24px auto 0;max-width:560px;text-align:left"><div class="lab">이 실습에서 하는 일</div><div style="font-size:16px;margin-top:6px;color:#dfe8f4">방금 만든 한글 보고서를 센터장 보고용 발표 슬라이드로 바꿨습니다. 장마다 원문 몇 쪽에서 왔는지 적혀 있습니다.</div></div>
+  <div class="note" style="margin-top:16px">마지막 확인 <span class="mono" id="chk">-</span></div>
+</div>
+<footer><span class="k">공주여성새로일하기센터</span>AI 에이전트 활용 강의 · 2026. 11. 17.(화) · <a href="../../../">강의 자료 첫 화면</a></footer>
+</div><script>
+(function(){var M="gongju-live:placeholder:1117:s7",el=document.getElementById("chk");
+function t(){var d=new Date();return ("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2)+":"+("0"+d.getSeconds()).slice(-2);}
+if(el)el.textContent=t();
+setInterval(function(){if(document.hidden)return;fetch(location.pathname+"?v="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():"";}).then(function(x){
+if(el)el.textContent=t();if(x&&x.indexOf(M)<0){location.replace(location.pathname+"?v="+Date.now());}}).catch(function(){});},30000);})();
+</script></body></html>
