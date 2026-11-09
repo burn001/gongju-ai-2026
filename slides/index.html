@@ -293,7 +293,7 @@ body.sb .page { padding-right: calc(max(30vw, 320px) + 12px); }
    발표자 전용: P 줄임 표시(⏱) 켜기·끄기, T 시간표, G AI 팀 실시간 화면, ` 또는 S 오른쪽 사이드바(세션 · 채팅), Shift+N 진행기 단계 고르기. 주소 끝 ?p 로 열면 줄임 표시가 켜진 채 시작.
    발표자 키로 열면 슬라이드 아래 단추 줄: 세션 실행 · 투표 열기/마감 · 질문 띄우기는 단추를 눌러야만 함(장을 넘기는 것만으로는 장 번호 따라가기만).
    11. 10. 순서 조정: 표지 → 입장 → 강사 · ALRIS → 설문(첫 투표) → 챗봇 vs 에이전트 → 팀으로 일하는 AI → 실시간 화면 → 오늘의 흐름 …
-   발표자 주소(#key=…&a4d=…)로 열면 강의실 투표 · 극장 스크린 · AI 팀 실시간 화면과 연동(아래 '강의실 연동' 참고).
+   발표자 주소(#key=…&a4d=…)로 열면 강의실 투표 · AI 팀 실시간 화면과 연동(아래 '강의실 연동' 참고).
    ════════════════════════════════════════════════════════════ */
 const DAY = "2026. 11. 10.·11. 17.(화)";
 const ROOM = "ai-agent-gongju.pages.dev/room";
@@ -342,7 +342,7 @@ function sp(s, o) {
 }
 /* 주소창 모양 */
 function addr(px) { return `<div class="addr"><span class="ic"></span><span class="u" style="font-size:${px}px">${ROOM}</span></div>`; }
-/* 함께 보기 — 강사가 실행, 수강생은 내 화면(PC 또는 휴대폰) 가상 강의실 'AI 작업 화면' 탭에서 지켜보며 채팅 */
+/* 함께 보기 — 강사가 실행, 수강생은 내 화면(PC 또는 휴대폰) 가상 강의실 'AI 작업 화면'에서 지켜보며 채팅 */
 function watch(s, o) {
   return `<div class="slide">${hd(s, o.title)}
   <div class="pn a-rise" ${d(.15)} style="left:60px;top:126px;width:520px;height:440px;padding:22px 26px">
@@ -388,7 +388,7 @@ add({ ch: 0, sub: ["안녕하세요. 오늘은 AI에게 묻는 법을 넘어, AI
     <span class="mu2">주관</span><span>공주여성새로일하기센터</span></div>
   </div>` });
 
-add({ ch: 0, sub: ["먼저 가상 강의실에 들어와 주세요. 인터넷 창을 열고 맨 위 주소창에 화면의 주소를 입력하시면 됩니다.", "휴대폰으로 하실 분은 QR 코드를 찍으셔도 됩니다. 닉네임과 아바타를 정하고 채팅창에 인사 한 줄 남겨 주세요."],
+add({ ch: 0, sub: ["먼저 가상 강의실에 들어와 주세요. 인터넷 창을 열고 맨 위 주소창에 화면의 주소를 입력하시면 됩니다.", "휴대폰으로 하실 분은 QR 코드를 찍으셔도 됩니다. 이름을 입력할 필요 없이 바로 입장되고, 대화명은 자동으로 붙습니다. 채팅창에 인사 한 줄 남겨 주세요."],
   html: (s) => `<div class="slide">${hd(s, "가상 강의실에 들어오세요")}
   <div class="pn a-rise" ${d(.15)} style="left:60px;top:122px;width:880px;height:250px;padding:22px 28px;border-color:var(--cy);box-shadow:0 0 30px rgba(79,209,232,.18)">
     <div class="lab" style="font-size:22px">주소창에 이렇게 입력하세요</div>
@@ -400,11 +400,11 @@ add({ ch: 0, sub: ["먼저 가상 강의실에 들어와 주세요. 인터넷 �
     <div style="margin:10px auto 0;width:172px;height:172px;background:#fff;border-radius:8px;padding:8px"><img src="assets/qr_room.png" alt="가상 강의실 주소 QR 코드" style="width:100%;height:100%;image-rendering:pixelated"></div>
   </div>
   <div style="position:absolute;left:60px;right:60px;top:398px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
-    ${[["인터넷 창 열기", "크롬 또는 엣지"], ["주소 입력 · Enter", "위 주소 그대로"], ["닉네임 · 아바타", "본명이 아니어도 됩니다"], ["채팅창에 인사 한 줄", "\"안녕하세요\"면 충분합니다"]].map((r, i) => `<div class="pn rel a-rise" ${d(.5 + i * .12)} style="padding:18px 20px;height:160px">
+    ${[["주소창에 입력", "위 주소 그대로 · Enter"], ["바로 입장", "대화명은 자동으로 붙습니다 (예: '부지런한 초록 다람쥐')"], ["화면 구성", "왼쪽 슬라이드 · 오른쪽 위 AI 작업 화면 · 오른쪽 아래 채팅"], ["설문은 카드로", "투표 · 설문이 화면에 카드로 뜹니다"]].map((r, i) => `<div class="pn rel a-rise" ${d(.5 + i * .12)} style="padding:18px 20px;height:160px">
       <span class="mono" style="display:inline-flex;width:42px;height:42px;border-radius:50%;align-items:center;justify-content:center;background:var(--cy);color:#04121e;font-size:21px;font-weight:700">${i + 1}</span>
       <div style="font-size:24px;font-weight:900;margin-top:12px">${r[0]}</div><div style="font-size:19px;color:var(--mu);margin-top:4px">${r[1]}</div></div>`).join("")}
   </div>
-  <div class="note a-fade" ${d(1.1)} style="top:590px;font-size:20px"><span class="k">강의실에서</span><span>투표 · 채팅 · 질문, <b class="cy">'AI 작업 화면'</b> 탭에서 에이전트가 일하는 모습 보기, 끝나고 <b class="cy">'자료 받기'</b>까지 여기서 합니다.</span></div>
+  <div class="note a-fade" ${d(1.1)} style="top:590px;font-size:20px"><span class="k">강의실에서</span><span>슬라이드는 강사를 따라 넘어가고, 오른쪽 위 <b class="cy">'AI 작업 화면'</b>에서 에이전트가 일하는 모습을 보며, 채팅에 글을 남기고, 끝나고 위쪽 <b class="cy">'📩 자료 받기'</b> 아이콘까지 여기서 합니다.</span></div>
   </div>` });
 
 /* ── 강사 소개 · ALRIS ── */
@@ -567,7 +567,7 @@ add({ ch: 2, sub: ["오늘은 공주의 일자리 이야기 하나를 따라가�
   ${row(N.slice(0, 4), 120, 0)}
   <div class="a-fade" ${d(.9)} style="position:absolute;right:76px;top:322px;color:var(--cy);font-size:22px;font-weight:900">▼</div>
   ${row(N.slice(4), 352, 4)}
-  <div class="note a-fade" ${d(1.3)} style="top:572px;font-size:20px"><span class="k">함께 보는 법</span><span>강사가 실행하고, 여러분은 내 화면(PC 또는 휴대폰)의 가상 강의실 <b class="cy">'AI 작업 화면'</b> 탭에서 지켜보며 투표 · 채팅으로 함께합니다.</span></div>
+  <div class="note a-fade" ${d(1.3)} style="top:572px;font-size:20px"><span class="k">함께 보는 법</span><span>강사가 실행하고, 여러분은 내 화면(PC 또는 휴대폰)의 가상 강의실 <b class="cy">'AI 작업 화면'</b>(오른쪽 위)에서 지켜보며 투표 · 채팅으로 함께합니다.</span></div>
   </div>`; } });
 
 add({ ch: 2, ref: "시나리오 S4", sub: ["첫 일은 지금 바로 맡겨 두겠습니다. 센터 상담사는 매주 여러 사이트를 돌며 공주 채용공고를 모읍니다. 사람이 하면 반나절입니다.", "이 일을 AI 팀에게 화면의 지시 그대로 맡깁니다. 세 명이 나눠서 동시에 모으고, 다른 AI가 원문과 맞춰 보게 합니다."],
@@ -856,7 +856,7 @@ add({ ch: 8, ref: "시나리오 S2 · S2b · S3", cut: CUT1, sub: ["AI가 문항
       { t: "숫자 계산", who: "prog", d: "진행률 · 집행률 · 누적 건수를 계산해 확인" },
       { t: "리포트", who: "ai", d: "결론 · 핵심 숫자 · 결정할 일 · 대시보드" }],
     outputs: ["설문 7문항", "<b class=\"gr\">응답 차트 · 세 줄 해석</b>", "<b class=\"gr\">센터장 리포트 · 사업 대시보드</b>"] })}
-  <div class="note a-fade" ${d(1.6)} style="top:606px;font-size:18px"><span class="k">함께</span><span>설문이 내 화면에 뜨면 응답해 주세요. 1분이면 끝납니다. 응답에는 닉네임을 저장하지 않습니다.</span></div>
+  <div class="note a-fade" ${d(1.6)} style="top:606px;font-size:18px"><span class="k">함께</span><span>설문이 내 화면에 뜨면 응답해 주세요. 1분이면 끝납니다. 응답에는 대화명을 저장하지 않습니다.</span></div>
   </div>` });
 
 add({ ch: 8, ref: "리허설 결과 · 연습용 응답 12명", cut: CUT1, sub: ["리허설 때 만든 설문과 분석 결과입니다. 응답은 연습용 12명입니다.", "오늘 교육 만족도는 평균 4.58점이고, 12명 모두 4점 이상이었습니다. 대부분이라고 쓰지 않고 몇 명인지 붙이게 했습니다."],
@@ -883,7 +883,7 @@ add({ ch: 8, ref: "리허설 결과 · 2026. 11. 8.", cut: CUT1, sub: ["센터�
   </div>` });
 
 /* ── 여러분의 목소리 (S5) ── */
-add({ ch: 9, cr: { screen: { kind: "slide", kicker: "S5 · 여러분의 목소리", title: "AI에게 맡기고 싶은 일, 가장 번거로운 일을 한 줄로 적어 주세요", lines: ["일 · 구직 · 집안일 무엇이든 좋습니다", "가상 강의실 채팅창에 한 줄", "이름 · 아바타는 빼고 글만 AI에게 넘깁니다"] } }, sub: ["오늘 마지막 실습은 여러분이 재료입니다. 채팅창에 한 줄씩 적어 주세요.", "AI에게 맡기고 싶은 일, 가장 번거로운 일입니다. 일, 구직, 집안일 무엇이든 좋습니다. 이름은 빼고 글만 AI에게 넘깁니다."],
+add({ ch: 9, cr: { screen: { kind: "slide", kicker: "S5 · 여러분의 목소리", title: "AI에게 맡기고 싶은 일, 가장 번거로운 일을 한 줄로 적어 주세요", lines: ["일 · 구직 · 집안일 무엇이든 좋습니다", "가상 강의실 채팅창에 한 줄", "대화명은 빼고 글만 AI에게 넘깁니다"] } }, sub: ["오늘 마지막 실습은 여러분이 재료입니다. 채팅창에 한 줄씩 적어 주세요.", "AI에게 맡기고 싶은 일, 가장 번거로운 일입니다. 일, 구직, 집안일 무엇이든 좋습니다. 대화명은 빼고 글만 AI에게 넘깁니다."],
   html: (s) => `<div class="slide">${hd(s, "채팅창에 한 줄 적어 주세요")}
   <div class="pn a-rise" ${d(.15)} style="left:60px;right:60px;top:126px;height:260px;padding:30px 36px;border-color:var(--warn);background:rgba(40,30,8,.55);box-shadow:0 0 30px rgba(244,183,64,.15)">
     <div class="lab" style="color:var(--warn);font-size:19px">여러분께 묻습니다</div>
@@ -892,7 +892,7 @@ add({ ch: 9, cr: { screen: { kind: "slide", kicker: "S5 · 여러분의 목소�
   <div class="a-rise" ${d(.45)} style="position:absolute;left:60px;right:60px;top:414px">
     <div style="font-size:18px;color:var(--mu2);font-weight:700">예를 들면</div>
     <div style="display:flex;gap:14px;margin-top:10px;flex-wrap:wrap">${["매달 실적 보고서 문장 쓰기", "회의 녹음 정리", "이력서 경력 공백 쓰기"].map((x) => `<span class="chip" style="font-size:22px;padding:8px 20px;color:var(--ink);border-color:var(--line);background:var(--panel)">${x}</span>`).join("")}</div></div>
-  <div class="note a-fade" ${d(.9)} style="top:572px;font-size:20px"><span class="k">약속</span><span>이름 · 아바타는 빼고 <b class="cy">글만</b> AI에게 넘깁니다. 1～2분 뒤 AI가 모아서 정리해 여러분 화면으로 돌려 드립니다.</span></div>
+  <div class="note a-fade" ${d(.9)} style="top:572px;font-size:20px"><span class="k">약속</span><span>대화명은 빼고 <b class="cy">글만</b> AI에게 넘깁니다. 1～2분 뒤 AI가 모아서 정리해 여러분 화면으로 돌려 드립니다.</span></div>
   </div>` });
 
 add({ ch: 9, ref: "시나리오 S5", sub: ["모인 글을 이 지시 그대로 맡깁니다. 비슷한 의견끼리 묶고, 많이 나온 말을 뽑고, 세 칸으로 나눕니다.", "칸마다 무료 도구와 따라 칠 첫 한 줄을 적게 했습니다. 글이 너무 적으면 예시 의견으로 하되 예시라고 꼭 밝히게 했습니다."],
@@ -905,10 +905,10 @@ add({ ch: 9, ref: "시나리오 S5", sub: ["모인 글을 이 지시 그대로 �
       "&nbsp;&nbsp;&nbsp;칸마다 무료 도구와 따라 칠 <b>첫 한 줄</b>을 적어 주세요.",
       "결과는 한 장짜리 화면으로, 3분 안에. 글이 너무 적으면 예시 의견으로 하되 <b>예시라고 꼭 밝혀</b> 주세요."] }) });
 
-add({ ch: 9, ref: "시나리오 S5", sub: ["채팅을 가져오면서 이름과 아바타는 프로그램이 뺍니다. 묶고 고르는 판단은 AI가 하고, 건수는 프로그램이 원문에서 직접 셉니다.", "판단은 AI가, 세기와 양식은 프로그램이. 반복 업무를 맡길 때 쓰는 요령입니다."],
+add({ ch: 9, ref: "시나리오 S5", sub: ["채팅을 가져오면서 대화명은 프로그램이 뺍니다. 묶고 고르는 판단은 AI가 하고, 건수는 프로그램이 원문에서 직접 셉니다.", "판단은 AI가, 세기와 양식은 프로그램이. 반복 업무를 맡길 때 쓰는 요령입니다."],
   html: (s) => `<div class="slide">${hd(s, "일하는 순서 — 판단은 AI, 세기와 양식은 프로그램")}
   ${wf({ inputs: ["여러분이 채팅에 쓴 한 줄(검수를 통과한 글만)", "추천 도구 목록 · 결과를 적는 틀(미리 만들어 둠)"],
-    steps: [{ t: "가져오기", who: "prog", d: "채팅을 받아 이름 · 아바타를 빼고 번호만 붙임" },
+    steps: [{ t: "가져오기", who: "prog", d: "채팅을 받아 대화명을 빼고 번호만 붙임" },
       { t: "묶기 · 고르기", who: "ai", w: 1.3, d: "비슷한 의견 묶기 · 많이 나온 말 · 세 칸 나누기 · 첫 한 줄 쓰기" },
       { t: "세기 · 그리기", who: "prog", d: "묶음별 건수를 원문에서 직접 셈 → 그림 · 한 장 화면" },
       { t: "강의실로", who: "run", d: "결과 카드가 여러분 화면에" }],
@@ -983,12 +983,12 @@ add({ ch: 10, sub: ["마지막으로 꼭 지킬 네 가지입니다. AI는 숫�
   <div class="note a-fade" ${d(.9)} style="top:594px;font-size:19px"><span class="k">요금</span><span>무료 요금제로 충분히 시작할 수 있습니다. 요금과 무료 한도는 자주 바뀌니 가입 전에 각 서비스 안내를 확인하세요.</span></div>
   </div>` });
 
-add({ ch: 10, sub: ["오늘 강의 자료와 AI가 만든 결과물을 한 페이지로 묶어 보내 드리겠습니다.", "원하시는 분만 가상 강의실의 자료 받기에 이메일 주소를 남겨 주세요. 자료를 보내는 데만 쓰고, 보낸 뒤에는 지웁니다."],
+add({ ch: 10, sub: ["오늘 강의 자료와 AI가 만든 결과물을 한 페이지로 묶어 보내 드리겠습니다.", "원하시는 분만 가상 강의실 위쪽의 '📩 자료 받기' 아이콘에 이메일 주소를 남겨 주세요. 자료를 보내는 데만 쓰고, 보낸 뒤에는 지웁니다."],
   html: (s) => `<div class="slide">${hd(s, "자료 받아 가기")}
   <div class="pn a-rise" ${d(.15)} style="left:60px;top:122px;width:650px;height:170px;padding:18px 24px;border-color:var(--cy)">
     <div style="display:flex;align-items:center;gap:12px"><span class="mono" style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--cy);color:#04121e;font-size:20px;font-weight:700">1</span><span style="font-size:24px;font-weight:900">가상 강의실 주소를 주소창에</span></div>
     <div style="margin-top:16px">${addr(30)}</div></div>
-  ${[["2", "<span class=\"cy\">'자료 받기'</span> 탭에 이메일 주소를 남깁니다", "원하시는 분만 · 남기지 않으셔도 됩니다"], ["3", "강의 뒤 메일로 보내 드립니다", "강의 자료 + 오늘 AI가 만든 결과물을 <b>한 페이지</b>로 묶어서"]].map((r, i) => `<div class="pn a-rise" ${d(.3 + i * .15)} style="left:60px;top:${306 + i * 126}px;width:650px;height:112px;display:grid;grid-template-columns:52px 1fr;gap:14px;align-items:center;padding:14px 24px">
+  ${[["2", "위쪽 <span class=\"cy\">'📩 자료 받기'</span> 아이콘에 이메일 주소를 남깁니다", "원하시는 분만 · 남기지 않으셔도 됩니다"], ["3", "강의 뒤 메일로 보내 드립니다", "강의 자료 + 오늘 AI가 만든 결과물을 <b>한 페이지</b>로 묶어서"]].map((r, i) => `<div class="pn a-rise" ${d(.3 + i * .15)} style="left:60px;top:${306 + i * 126}px;width:650px;height:112px;display:grid;grid-template-columns:52px 1fr;gap:14px;align-items:center;padding:14px 24px">
       <span class="mono" style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--cy);color:#04121e;font-size:20px;font-weight:700">${r[0]}</span>
       <div><div style="font-size:24px;font-weight:900">${r[1]}</div><div style="font-size:19px;color:var(--mu);margin-top:4px">${r[2]}</div></div></div>`).join("")}
   <div class="pn a-rise" ${d(.6)} style="left:740px;right:60px;top:122px;height:330px;padding:18px 24px;border-color:rgba(95,224,160,.7)"><div class="lab" style="color:var(--gr)">받으시는 것</div>
@@ -1010,7 +1010,7 @@ add({ ch: 10, eb: "END", cr: { poll: "wish" }, sub: ["감사합니다. 궁금한
   </div>` });
 
 /* ════════════ 발표자 시간표(T 키) ════════════ */
-const TT = [["0:00", "입장 · 아바타(주소창 · QR, 채팅 인사)", 10, 0], ["0:10", "강사 소개, ALRIS", 10, 1], ["0:20", "설문 \"AI를 어디에 써 보셨나요?\" → 챗봇 vs 에이전트 → 팀으로 일하는 AI(실시간 화면) + <b>S4 출발</b>", 12, 2], ["0:32", "S1 리서치 → S7 발표 슬라이드 <b>②</b>", 15, 3, 1], ["0:47", "S4 분석 · 지도 공개(투표: 가장 많은 일자리? 몇 %?)", 12, 4], ["0:59", "S9 일하는 엄마 지도 <b>③</b>", 7, 5, 1], ["1:06", "쉬는 시간(S6 홍보영상 틀어 두기)", 5, 6], ["1:11", "S8 공고 투표 → 맞춤 지원서", 10, 7], ["1:21", "S2 · S3 설문 · CEO 대시보드 <b>①</b>", 12, 8, 1], ["1:33", "S5 여러분의 목소리(채팅 → 분석)", 10, 9], ["1:43", "마무리 레슨, 자료 받기(이메일), 질문", 15, 10]];
+const TT = [["0:00", "입장(주소창 · QR, 채팅 인사)", 10, 0], ["0:10", "강사 소개, ALRIS", 10, 1], ["0:20", "설문 \"AI를 어디에 써 보셨나요?\" → 챗봇 vs 에이전트 → 팀으로 일하는 AI(실시간 화면) + <b>S4 출발</b>", 12, 2], ["0:32", "S1 리서치 → S7 발표 슬라이드 <b>②</b>", 15, 3, 1], ["0:47", "S4 분석 · 지도 공개(투표: 가장 많은 일자리? 몇 %?)", 12, 4], ["0:59", "S9 일하는 엄마 지도 <b>③</b>", 7, 5, 1], ["1:06", "쉬는 시간(S6 홍보영상 틀어 두기)", 5, 6], ["1:11", "S8 공고 투표 → 맞춤 지원서", 10, 7], ["1:21", "S2 · S3 설문 · CEO 대시보드 <b>①</b>", 12, 8, 1], ["1:33", "S5 여러분의 목소리(채팅 → 분석)", 10, 9], ["1:43", "마무리 레슨, 자료 받기(이메일), 질문", 15, 10]];
 function buildTT() {
   const st = CH.map((_, c) => S.findIndex((x) => x.ch === c)), n = CH.map((_, c) => S.filter((x) => x.ch === c).length);
   return `<div style="position:absolute;left:44px;top:26px;font-size:15px;font-weight:700;color:var(--cy);letter-spacing:.06em">발표자 전용 · T 닫기 · P 줄임 표시(⏱) 켜기/끄기 · G AI 팀 실시간 화면</div>
@@ -1021,7 +1021,7 @@ function buildTT() {
     <div class="pn rel" style="padding:12px 16px;border-color:var(--warn)"><div class="lab" style="color:var(--warn);font-size:15px">늦으면 줄이는 순서</div>
       <div style="font-size:16.5px;line-height:1.55;margin-top:4px">① S2 · S3 → 녹화본 3분 또는 건너뛰기<br>② S7 → 결과 화면만<br>③ S9 → S4 지도 공개에 합침</div></div>
     <div class="pn rel" style="padding:12px 16px"><div class="lab" style="font-size:15px">강의 전 · 진행 팁</div>
-      <ul class="li" style="gap:5px;margin-top:6px">${["러너 켜기 → 점검 화면 localhost:8790 확인, AI 작업 화면 세션 연결", "크롬 '로컬 네트워크 접근' 허용(강의 사이트 [실행] 버튼)", "09시 전 S8 공고 마감 확인: scenarios/s8/check_open.py → [마감?]이면 투표에서 빼기", "S4 진행 화면: ← → 단계 · R 결과 · M 지도 · 막히면 D(어제 기록) · 러너 꺼지면 ?demo", "강의 직전 실행 기록(runs) 비우지 않기 — S3 · S7이 앞 결과를 씀", "발표자 주소 …/slides/#key=…&a4d=…(키 · Agent4D 링크는 시크릿 파일, a4d는 URL 인코딩) → 설문 · S8 공고 · 마지막 투표 자동 열기, S5 질문은 극장 스크린, 오른쪽 위 연동 표시"].map((x) => `<li style="font-size:15.5px;line-height:1.4">${x}</li>`).join("")}</ul></div>
+      <ul class="li" style="gap:5px;margin-top:6px">${["러너 켜기 → 점검 화면 localhost:8790 확인, AI 작업 화면 세션 연결", "크롬 '로컬 네트워크 접근' 허용(강의 사이트 [실행] 버튼)", "09시 전 S8 공고 마감 확인: scenarios/s8/check_open.py → [마감?]이면 투표에서 빼기", "S4 진행 화면: ← → 단계 · R 결과 · M 지도 · 막히면 D(어제 기록) · 러너 꺼지면 ?demo", "강의 직전 실행 기록(runs) 비우지 않기 — S3 · S7이 앞 결과를 씀", "발표자 주소 …/slides/#key=…&a4d=…(키 · Agent4D 링크는 시크릿 파일, a4d는 URL 인코딩) → 설문 · S8 공고 · 마지막 투표 자동 열기, S5 질문은 강의실 채팅 위 띠로, 오른쪽 위 연동 표시"].map((x) => `<li style="font-size:15.5px;line-height:1.4">${x}</li>`).join("")}</ul></div>
   </div>`;
 }
 
