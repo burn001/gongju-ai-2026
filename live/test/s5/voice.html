@@ -1,0 +1,200 @@
+<!doctype html><html lang='ko'><head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width,initial-scale=1'>
+<meta name='robots' content='noindex,nofollow'>
+<title>수강생 의견 분석</title>
+<link rel='preconnect' href='https://fonts.googleapis.com'><link rel='stylesheet' href='https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700&display=swap'>
+<style>
+
+:root{color-scheme:dark;
+--void:#05090f;--bg0:#0a1424;--bg1:#17305a;--ink:#eef4fb;--mu:#b4c5de;--mu2:#93a7c6;--dim:#6f83a3;
+--line:#2a4268;--panel:rgba(17,31,54,.86);--cy:#4fd1e8;--warn:#f4b740;--bad:#ff7a66;--gr:#5fe0a0;
+--now:var(--cy);--learn:var(--gr);--hard:var(--warn);
+--f-ui:"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",sans-serif;--f-mono:"JetBrains Mono",Consolas,monospace}
+*{box-sizing:border-box}
+html{background:var(--void)}
+body{margin:0;min-height:100vh;color:var(--ink);font-family:var(--f-ui);font-size:17px;line-height:1.55;word-break:keep-all;overflow-wrap:anywhere;
+-webkit-text-size-adjust:100%;background:radial-gradient(ellipse 110% 70% at 72% -8%,var(--bg1) 0%,var(--bg0) 58%,var(--void) 100%) no-repeat,var(--void)}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;
+background-image:linear-gradient(rgba(79,209,232,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(79,209,232,.045) 1px,transparent 1px);background-size:40px 40px;
+-webkit-mask-image:radial-gradient(ellipse at 50% 30%,#000 30%,transparent 85%);mask-image:radial-gradient(ellipse at 50% 30%,#000 30%,transparent 85%)}
+.wrap{position:relative;max-width:1280px;margin:0 auto;padding:22px 16px 36px}
+@media(min-width:900px){.wrap{padding:30px 44px 44px}}
+.mono{font-family:var(--f-mono)}
+.cy{color:var(--cy)}
+/* 제목 줄: 빛나는 점 + 장 이름 + 큰 제목 (덱 .hd) */
+.hd{display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap}
+.hd .dot{width:12px;height:12px;border-radius:50%;background:var(--cy);box-shadow:0 0 12px var(--cy);flex:none;margin-top:7px;animation:pulse 2.4s ease-in-out infinite}
+.hd .tt{flex:1 1 auto;min-width:0}
+.hd .eb{font-weight:700;font-size:15px;color:var(--cy);letter-spacing:.06em}
+.hd h1{font-size:clamp(28px,4.4vw,44px);font-weight:900;line-height:1.2;margin:2px 0 0;letter-spacing:-.015em}
+.hd .ref{font-weight:700;font-size:14.5px;color:var(--mu2);margin-top:5px;text-align:right}
+@media(max-width:700px){.hd .ref{flex-basis:100%;text-align:left;margin:0 0 0 26px}}
+@keyframes pulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.5)}}
+@media(prefers-reduced-motion:reduce){.hd .dot{animation:none}}
+/* 한 문장 결론 (덱 .keymsg) */
+.keymsg{margin:18px 0 0;font-size:clamp(19px,2.5vw,27px);font-weight:700;line-height:1.45;border-left:5px solid var(--cy);
+padding:8px 0 8px 20px;background:linear-gradient(90deg,rgba(79,209,232,.14),transparent 75%)}
+.pn{background:var(--panel);border:1px solid var(--line);border-radius:10px}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:18px}
+@media(min-width:900px){.stats{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.stat{padding:12px 18px}
+.stat .k{font-size:14.5px;color:var(--mu)}
+.stat .v{font-family:var(--f-mono);font-size:clamp(30px,3.6vw,42px);font-weight:700;line-height:1.15;text-shadow:0 0 16px rgba(79,209,232,.55)}
+.stat .v small{font-family:var(--f-ui);font-size:18px;font-weight:500;color:var(--cy);margin-left:4px;text-shadow:none}
+.stat .s{font-size:clamp(17px,2vw,21px);font-weight:700;line-height:1.3;margin-top:6px}
+.stat.sample{border-color:rgba(255,122,102,.6)}
+.stat.sample .s{color:var(--bad)}
+.banner{margin-top:14px;padding:12px 18px;border-radius:10px;border:1.5px solid rgba(255,122,102,.75);background:rgba(255,122,102,.12);color:#ffd9d2;font-weight:700;font-size:16.5px}
+.banner b{color:var(--bad)}
+/* 패널 이름 (덱 .lab) */
+.lab{font-weight:700;font-size:17px;color:var(--cy);letter-spacing:.04em;margin:0 0 12px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.lab small{font-weight:400;font-size:13.5px;color:var(--mu2);letter-spacing:0}
+.grid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;margin-top:14px}
+@media(min-width:900px){.grid.two{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);align-items:start}}
+.stack{display:grid;gap:14px}
+.card{padding:16px 20px}
+.cloud{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:center;gap:4px 16px;padding:4px 0 6px}
+.cloud span{font-weight:700;line-height:1.2;color:#dfe8f4;white-space:nowrap}
+.cloud span.top{color:var(--cy);text-shadow:0 0 14px rgba(79,209,232,.45)}
+.cloud sup{font-family:var(--f-mono);font-size:12.5px;font-weight:500;color:var(--mu2);margin-left:2px;text-shadow:none}
+/* 오늘 집에서 해 볼 한 가지 (덱 지시 상자 .pbox) */
+.tip{border-radius:12px;border:1px solid rgba(79,209,232,.45);background:rgba(8,22,40,.92);box-shadow:0 0 26px rgba(79,209,232,.12);padding:14px 20px 16px}
+.tip .pl{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;color:var(--cy);margin-bottom:6px}
+.tip .pl i{font-style:normal;width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--cy);color:#04121e;font-size:14px;flex:none}
+.tip .pt{font-size:18px;line-height:1.6}
+.g{padding:9px 0;border-top:1px solid var(--line)}
+.g:first-of-type{border-top:0;padding-top:0}
+.g .row{display:flex;align-items:center;gap:12px}
+.g .name{font-weight:700;font-size:17.5px;flex:0 0 auto;max-width:48%}
+.g .bar{flex:1;height:12px;background:rgba(79,209,232,.12);border-radius:3px;overflow:hidden}
+.g .bar i{display:block;height:100%;background:var(--cy);box-shadow:0 0 8px var(--cy);border-radius:0 3px 3px 0}
+.g .n{font-family:var(--f-mono);font-weight:700;font-size:18px;color:var(--cy);min-width:2.2em;text-align:right}
+.g .n small{font-family:var(--f-ui);font-size:13px;font-weight:500;color:var(--mu2);margin-left:1px}
+.g .sum{color:var(--mu);font-size:15px;margin-top:3px}
+.g .quote{color:var(--mu2);font-size:14px}
+/* 세 칸 표 */
+.cols{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;margin-top:14px}
+@media(min-width:900px){.cols{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.col{padding:14px 18px 8px;border-top:4px solid var(--c);box-shadow:inset 0 14px 22px -16px var(--c)}
+.col .no{font-family:var(--f-mono);font-weight:700;font-size:14px;color:var(--c)}
+.col h3{margin:0;font-size:20px;font-weight:900;color:var(--c);line-height:1.3}
+.col .desc{color:var(--mu2);font-size:14px;margin:2px 0 6px}
+.item{padding:11px 0;border-top:1px dashed #335789}
+.item .task{font-weight:700;font-size:17px}
+.item .tool{display:inline-block;margin:5px 0 6px;padding:2px 11px;border-radius:999px;border:1px solid currentColor;color:var(--c);font-size:13.5px;font-weight:700}
+.item .prompt{background:rgba(8,22,40,.92);border:1px solid rgba(79,209,232,.25);border-left:4px solid var(--c);padding:7px 11px;border-radius:6px;font-size:15px;line-height:1.5}
+.item .prompt::before{content:"▸ 첫 한 줄";display:block;color:var(--c);font-size:12.5px;font-weight:700;letter-spacing:.03em}
+.item .note{color:var(--mu2);font-size:14px;margin-top:5px}
+.empty{color:var(--mu2)}
+footer{margin-top:18px;border-top:1px dashed #335789;padding-top:12px;color:var(--mu2);font-size:13.5px;line-height:1.6}
+footer .k{font-weight:700;color:var(--cy);margin-right:8px;letter-spacing:.04em}
+
+</style></head><body><div class='wrap'>
+<header class='hd'><span class='dot'></span>
+<div class='tt'><div class='eb'>마무리 · 수강생 의견 분석</div><h1>수강생 의견 분석</h1></div>
+<div class='ref'>공주여성새로일하기센터 · AI 에이전트 활용 강의 · 2026. 11. 9.</div></header>
+<p class='keymsg'>문서·메일 쓰기와 엑셀·자료 집계가 각 5건으로 가장 많았습니다</p>
+<div class='stats'>
+<div class='pn stat'><div class='k'>분석한 의견</div><div class='v'>23<small>건</small></div></div>
+<div class='pn stat'><div class='k'>비슷한 의견 묶음</div><div class='v'>6<small>개</small></div></div>
+<div class='pn stat'><div class='k'>뺀 글(인사·점검 등)</div><div class='v'>2<small>건</small></div></div>
+<div class='pn stat sample'><div class='k'>자료</div><div class='s'>예시 의견(가상)</div></div>
+</div>
+<div class='banner'><b>예시 자료</b> — 강의실 채팅이 4건뿐이라(5건 미만) 예시 의견 25건(가상)으로 분석했습니다. 실제 수강생 의견이 아닙니다.</div>
+<div class='grid two'><div class='stack'>
+<section class='pn card'><h2 class='lab'>많이 나온 말<small>숫자 = 그 말이 나온 글 수</small></h2><div class='cloud'>
+<span class='top' style='font-size:46px' title='3건'>엑셀<sup>3</sup></span>
+<span class='top' style='font-size:34px' title='2건'>상담<sup>2</sup></span>
+<span class='top' style='font-size:34px' title='2건'>메일<sup>2</sup></span>
+<span class='' style='font-size:34px' title='2건'>홍보<sup>2</sup></span>
+<span class='' style='font-size:18px' title='1건'>보고서<sup>1</sup></span>
+<span class='' style='font-size:18px' title='1건'>회의록<sup>1</sup></span>
+<span class='' style='font-size:18px' title='1건'>공문<sup>1</sup></span>
+<span class='' style='font-size:18px' title='1건'>이력서<sup>1</sup></span>
+<span class='' style='font-size:18px' title='1건'>면접<sup>1</sup></span>
+<span class='' style='font-size:18px' title='1건'>채용공고<sup>1</sup></span>
+<span class='' style='font-size:18px' title='1건'>설문<sup>1</sup></span>
+<span class='' style='font-size:18px' title='1건'>서류<sup>1</sup></span>
+<span class='' style='font-size:18px' title='1건'>번역<sup>1</sup></span>
+<span class='' style='font-size:18px' title='1건'>사업계획서<sup>1</sup></span>
+<span class='' style='font-size:18px' title='1건'>출석부<sup>1</sup></span>
+</div></section>
+<div class='tip'><div class='pl'><i>▸</i>오늘 집에서 해 볼 한 가지</div><div class='pt'>오늘 집에서 ChatGPT에 지난달 숫자를 넣고 보고서 첫 문단을 부탁해 보세요</div></div>
+</div>
+<section class='pn card'><h2 class='lab'>비슷한 의견끼리<small>막대 = 의견 수</small></h2>
+<div class='g'><div class='row'><span class='name'>문서·메일 쓰기</span><span class='bar'><i style='width:100%'></i></span><span class='n'>5<small>건</small></span></div>
+<div class='sum'>보고서·공문·사업계획서·메일 문장을 매번 새로 쓰느라 힘들어하십니다</div>
+</div>
+<div class='g'><div class='row'><span class='name'>엑셀·자료 집계</span><span class='bar'><i style='width:100%'></i></span><span class='n'>5<small>건</small></span></div>
+<div class='sum'>출석·설문·예산·서류를 손으로 세고 대조하는 일이 번거롭습니다</div>
+</div>
+<div class='g'><div class='row'><span class='name'>상담·회의 기록</span><span class='bar'><i style='width:80%'></i></span><span class='n'>4<small>건</small></span></div>
+<div class='sum'>상담 메모·회의 녹음·자주 묻는 질문을 정리하고 싶어 하십니다</div>
+</div>
+<div class='g'><div class='row'><span class='name'>구직 준비 돕기</span><span class='bar'><i style='width:80%'></i></span><span class='n'>4<small>건</small></span></div>
+<div class='sum'>이력서·면접 연습·공고 찾기·공부 질문에 도움이 필요합니다</div>
+</div>
+<div class='g'><div class='row'><span class='name'>조사·생활 도움</span><span class='bar'><i style='width:60%'></i></span><span class='n'>3<small>건</small></span></div>
+<div class='sum'>우수사례 조사와 가정통신문·장보기 같은 생활 일도 맡기고 싶어 하십니다</div>
+</div>
+<div class='g'><div class='row'><span class='name'>홍보물 만들기</span><span class='bar'><i style='width:40%'></i></span><span class='n'>2<small>건</small></span></div>
+<div class='sum'>포스터·카드뉴스·SNS 홍보 글 만들기가 막막합니다</div>
+</div>
+</section></div>
+<section><div class='cols'>
+<div class='pn col' style='--c:var(--now)'><div class='no'>01</div><h3>지금 바로 AI로 되는 일</h3><div class='desc'>무료 AI 채팅에 붙여 넣고 한 줄 부탁</div>
+<div class='item'><div class='task'>실적 보고서 문장 초안</div>
+<span class='tool'>ChatGPT</span>
+<div class='prompt'>아래 숫자로 월간 실적 보고서 첫 문단을 3문장으로 써 주세요</div>
+</div>
+<div class='item'><div class='task'>기업 메일 문장 다듬기</div>
+<span class='tool'>Claude</span>
+<div class='prompt'>아래 메일을 기업 담당자에게 보낼 예의 바른 문장으로 다듬어 주세요</div>
+</div>
+<div class='item'><div class='task'>면접 연습 상대</div>
+<span class='tool'>ChatGPT</span>
+<div class='prompt'>사무보조 면접관이 되어 질문을 하나씩 해 주고 제 답을 평가해 주세요</div>
+</div>
+<div class='item'><div class='task'>영어 메일 번역</div>
+<span class='tool'>ChatGPT + 파파고</span>
+<div class='prompt'>아래 영어 메일을 쉬운 한국어로 번역하고 답장 초안도 써 주세요</div>
+</div>
+</div>
+<div class='pn col' style='--c:var(--learn)'><div class='no'>02</div><h3>도구를 조금 배우면 되는 일</h3><div class='desc'>사용법 10～30분이면 시작</div>
+<div class='item'><div class='task'>회의 녹음 정리</div>
+<span class='tool'>ChatGPT + 클로바노트</span>
+<div class='prompt'>아래 회의 받아쓰기로 결정사항과 할 일을 표로 정리해 주세요</div>
+</div>
+<div class='item'><div class='task'>출석·수료 계산</div>
+<span class='tool'>Copilot + 구글 스프레드시트</span>
+<div class='prompt'>출석률 80% 이상이면 &#x27;수료&#x27;라고 표시하는 엑셀 함수를 알려 주세요</div>
+</div>
+<div class='item'><div class='task'>홍보 카드뉴스</div>
+<span class='tool'>ChatGPT + 미리캔버스</span>
+<div class='prompt'>취업교육 모집 카드뉴스 5장에 들어갈 제목과 문구를 써 주세요</div>
+</div>
+<div class='item'><div class='task'>자주 묻는 질문 정리</div>
+<span class='tool'>NotebookLM</span>
+<div class='prompt'>올린 안내문을 바탕으로 자주 묻는 질문 10개와 답을 만들어 주세요</div>
+</div>
+</div>
+<div class='pn col' style='--c:var(--hard)'><div class='no'>03</div><h3>아직 어려운 일</h3><div class='desc'>사람 판단이 중요 — AI는 일부만 거들기</div>
+<div class='item'><div class='task'>마음 힘든 구직자 상담</div>
+<span class='tool'>Claude</span>
+<div class='prompt'>아래 이력을 상담 전에 읽을 수 있게 5줄로 요약해 주세요</div>
+<div class='note'>공감과 판단은 상담사가 해야 하고 개인정보는 지우고 넣어야 합니다</div>
+</div>
+<div class='item'><div class='task'>예산·영수증 대조</div>
+<span class='tool'>ChatGPT</span>
+<div class='prompt'>영수증과 집행 내역을 대조할 때 쓸 점검표를 만들어 주세요</div>
+<div class='note'>금액 확인과 최종 책임은 사람이 져야 합니다</div>
+</div>
+<div class='item'><div class='task'>신청서류 누락 확인</div>
+<span class='tool'>ChatGPT</span>
+<div class='prompt'>직업훈련 신청서류 확인용 체크리스트를 표로 만들어 주세요</div>
+<div class='note'>개인정보가 많은 서류라 AI에 그대로 올리기 어렵습니다</div>
+</div>
+</div>
+</div></section>
+<footer><span class='k'>만든 방법</span>이름·아바타는 빼고 글만 분석했습니다. 강사가 숨긴 글과 검수에 걸린 글은 들어가지 않았습니다. 묶기·요약·추천은 AI 에이전트(Claude Code)가 하고, 건수는 프로그램이 셌습니다. 무료 도구도 사용량 한도가 있을 수 있습니다. 개인정보가 든 문서는 AI에 그대로 붙여 넣지 마세요. · 만든 시각 <span class='mono'>2026-11-09 17:11</span></footer>
+</div></body></html>
