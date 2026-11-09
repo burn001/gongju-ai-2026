@@ -1,0 +1,1129 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CEO 브리핑 11.10.</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@600&display=swap">
+<style>
+/* Layout: 결재 보고서 — 좁은 왼쪽 레일에 구획 이름, 오른쪽 본문. 요약 → 핵심 → 숫자 → 분야 → 판단 → 일정 → 근거 순 */
+:root {
+  --bg: #f2f4f6;
+  --surface: #ffffff;
+  --surface-2: #eaeef1;
+  --ink: #131a21;
+  --ink-2: #444f5c;
+  --muted: #6b7582;
+  --line: #d6dce2;
+  --line-soft: #e6eaee;
+  --accent: #0d6870;
+  --accent-ink: #0a575e;
+  --accent-soft: #e0eff0;
+  --up: #c2352b;
+  --down: #1e5cba;
+  --single-bg: #fbefd2;
+  --single-ink: #6f4b00;
+  --rej-bg: #f7e1df;
+  --rej-ink: #8a2a22;
+  --past-bg: #e7ebef;
+  --past-ink: #47515d;
+  --g1: #0d6870;
+  --g2: #79b9bc;
+  --g3: #b1b8c1;
+  --grid: #e3e7eb;
+  --axis: #b8bfc8;
+  --area: rgba(13, 104, 112, 0.10);
+  --shadow: 0 1px 2px rgba(19, 26, 33, 0.06);
+
+  --f-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --f-display: "Noto Serif KR", "AppleMyungjo", "Batang", serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  --t-xs: 0.78rem;
+  --t-sm: 0.86rem;
+  --t-md: 0.97rem;
+  --t-lg: 1.12rem;
+  --t-xl: 1.42rem;
+  --t-2xl: 1.9rem;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1215; --surface: #161c21; --surface-2: #1d252b; --ink: #e6ebef; --ink-2: #b2bcc6; --muted: #8893a0;
+    --line: #2a333b; --line-soft: #222a31; --accent: #4fb9c0; --accent-ink: #82d2d7; --accent-soft: #15302f;
+    --up: #f17b70; --down: #74a9f3; --single-bg: #3a2d0f; --single-ink: #f1c869; --rej-bg: #3b1d1a; --rej-ink: #f2a39b;
+    --past-bg: #252d35; --past-ink: #b2bcc6; --g1: #4fb9c0; --g2: #2a6d72; --g3: #4b545e; --grid: #242c33; --axis: #3b444e;
+    --area: rgba(79, 185, 192, 0.14); --shadow: none; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1215; --surface: #161c21; --surface-2: #1d252b; --ink: #e6ebef; --ink-2: #b2bcc6; --muted: #8893a0;
+  --line: #2a333b; --line-soft: #222a31; --accent: #4fb9c0; --accent-ink: #82d2d7; --accent-soft: #15302f;
+  --up: #f17b70; --down: #74a9f3; --single-bg: #3a2d0f; --single-ink: #f1c869; --rej-bg: #3b1d1a; --rej-ink: #f2a39b;
+  --past-bg: #252d35; --past-ink: #b2bcc6; --g1: #4fb9c0; --g2: #2a6d72; --g3: #4b545e; --grid: #242c33; --axis: #3b444e;
+  --area: rgba(79, 185, 192, 0.14); --shadow: none; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 64px); }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--f-body); font-size: 15.5px; line-height: 1.7;
+  word-break: keep-all; overflow-wrap: anywhere;
+  -webkit-font-smoothing: antialiased;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+a { color: var(--accent-ink); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--accent) 35%, transparent); text-underline-offset: 2px; }
+a:hover { text-decoration-color: var(--accent); }
+a:focus-visible, .chip:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+h1, h2, h3, h4 { margin: 0; text-wrap: balance; line-height: 1.35; }
+p { margin: 0; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+.muted { color: var(--muted); }
+
+.wrap {
+  max-width: 1120px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* masthead */
+.masthead { background: var(--surface); border-bottom: 1px solid var(--line); }
+.masthead .wrap { padding-block: 22px 18px; display: grid; gap: 6px; }
+.eyebrow { font-size: var(--t-xs); letter-spacing: 0.12em; font-weight: 600; color: var(--accent-ink); }
+.masthead h1 { font-size: var(--t-2xl); font-weight: 700; letter-spacing: -0.01em; }
+.masthead h1 .dow { color: var(--muted); font-weight: 500; }
+.mast-meta { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: var(--t-sm); color: var(--ink-2); }
+.mast-meta b { font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+/* chip nav */
+.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 9; background: color-mix(in srgb, var(--surface) 94%, transparent); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); }
+.nav .wrap { display: flex; gap: 6px; overflow-x: auto; padding-block: 9px; scrollbar-width: none; }
+.nav .wrap::-webkit-scrollbar { display: none; }
+.chip { flex: none; font-size: var(--t-sm); font-weight: 500; color: var(--ink-2); text-decoration: none; padding: 3px 11px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); white-space: nowrap; }
+.chip:hover { color: var(--accent-ink); border-color: var(--accent); background: var(--accent-soft); }
+
+/* report blocks */
+main { display: grid; gap: 0; }
+.block { border-bottom: 1px solid var(--line); }
+.block > .wrap { padding-block: 34px; display: grid; grid-template-columns: 148px minmax(0, 1fr); gap: 28px; }
+.rail { font-size: var(--t-sm); font-weight: 600; color: var(--muted); letter-spacing: 0.04em; padding-top: 3px; }
+.rail .rail-sub { display: block; font-weight: 400; letter-spacing: 0; font-size: var(--t-xs); margin-top: 4px; line-height: 1.5; }
+.content { min-width: 0; display: grid; gap: 22px; }
+@media (max-width: 760px) {
+  .block > .wrap { grid-template-columns: minmax(0, 1fr); gap: 14px; padding-block: 26px; }
+}
+
+/* summary */
+.topline { font-family: var(--f-display); font-weight: 600; font-size: var(--t-xl); line-height: 1.62; max-width: 46em; color: var(--ink); letter-spacing: -0.005em; }
+.legend-row { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: var(--t-sm); color: var(--ink-2); align-items: center; }
+
+/* badges */
+.badge { display: inline-block; font-family: var(--f-body); font-size: 0.74rem; font-weight: 600; line-height: 1.5; padding: 0 7px; border-radius: 4px; margin-inline: 4px 2px; vertical-align: 0.08em; white-space: nowrap; letter-spacing: 0.01em; }
+.b-single { background: var(--single-bg); color: var(--single-ink); }
+.b-single::before { content: "◐ "; }
+.b-past { background: var(--past-bg); color: var(--past-ink); }
+.b-rej { background: var(--rej-bg); color: var(--rej-ink); }
+.b-rej::before { content: "✕ "; }
+.b-note { background: var(--past-bg); color: var(--past-ink); font-weight: 500; }
+.b-ok { background: var(--accent-soft); color: var(--accent-ink); }
+.b-ok::before { content: "● "; }
+.tag-note { color: var(--muted); font-size: 0.92em; }
+
+/* core 3 */
+.core-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 1020px) { .core-grid { grid-template-columns: minmax(0, 1fr); } }
+.core { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 18px 18px 16px; display: grid; gap: 12px; align-content: start; box-shadow: var(--shadow); min-width: 0; }
+.core-top { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.core-n { font-family: var(--f-mono); font-weight: 500; font-size: var(--t-sm); color: var(--surface); background: var(--accent); width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; }
+.core-tag { font-size: var(--t-xs); font-weight: 600; color: var(--accent-ink); letter-spacing: 0.04em; }
+.core-title { font-size: var(--t-lg); font-weight: 700; line-height: 1.45; }
+.core-dl { margin: 0; display: grid; gap: 6px; font-size: var(--t-md); }
+.core-dl dt { font-size: var(--t-xs); font-weight: 600; color: var(--muted); letter-spacing: 0.06em; }
+.core-dl dd { margin: 0 0 6px; color: var(--ink-2); }
+.core-dl dd.why { color: var(--ink); font-weight: 500; }
+.srcline { font-size: var(--t-sm); color: var(--muted); line-height: 1.6; }
+.src-label { font-size: var(--t-xs); font-weight: 600; letter-spacing: 0.06em; margin-right: 4px; }
+.sep { margin: 0 6px; color: var(--axis); }
+
+/* indicators */
+.kfeature { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 18px; display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 20px; box-shadow: var(--shadow); }
+@media (max-width: 760px) { .kfeature { grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 16px; } }
+.kf-num { display: grid; gap: 4px; align-content: start; }
+.kf-label { font-size: var(--t-sm); font-weight: 600; color: var(--ink-2); }
+.kf-value { font-family: var(--f-mono); font-size: 2rem; font-weight: 500; letter-spacing: -0.02em; line-height: 1.2; }
+.kf-sub { font-size: var(--t-sm); color: var(--muted); }
+.kf-intra { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line-soft); display: grid; gap: 2px; }
+.kf-intra .v { font-family: var(--f-mono); font-size: 1.3rem; font-weight: 500; color: var(--down); }
+.kf-chart { min-width: 0; position: relative; }
+.kf-chart svg { display: block; width: 100%; overflow: visible; }
+.kf-cap { font-size: var(--t-xs); color: var(--muted); margin-top: 6px; }
+.kf-table summary { cursor: pointer; font-size: var(--t-xs); color: var(--accent-ink); margin-top: 6px; width: fit-content; }
+.kf-table table { margin-top: 8px; border-collapse: collapse; font-size: var(--t-sm); font-variant-numeric: tabular-nums; }
+.kf-table td { padding: 2px 14px 2px 0; border-bottom: 1px solid var(--line-soft); }
+.kf-table td:last-child { text-align: right; font-family: var(--f-mono); }
+.c-grid { stroke: var(--grid); stroke-width: 1; }
+.c-axis { stroke: var(--axis); stroke-width: 1; }
+.c-tick { fill: var(--muted); font-family: var(--f-mono); font-size: 11px; }
+.c-line { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.c-area { fill: var(--area); stroke: none; }
+.c-dot { fill: var(--accent); stroke: var(--surface); stroke-width: 2; }
+.c-intra-line { fill: none; stroke: var(--down); stroke-width: 2; stroke-dasharray: 4 4; }
+.c-intra-dot { fill: var(--surface); stroke: var(--down); stroke-width: 2; }
+.c-lab { fill: var(--ink-2); font-size: 11.5px; font-family: var(--f-body); }
+.c-lab-v { fill: var(--ink); font-size: 12px; font-family: var(--f-mono); font-weight: 500; }
+.c-lab-d { fill: var(--down); font-size: 12px; font-family: var(--f-mono); font-weight: 500; }
+.c-cross { stroke: var(--axis); stroke-width: 1; }
+.c-hit { fill: transparent; }
+.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--surface); font-size: var(--t-xs); padding: 4px 8px; border-radius: 4px; white-space: nowrap; transform: translate(-50%, -120%); font-family: var(--f-mono); }
+.tip[hidden] { display: none; }
+
+.kgroup { display: grid; gap: 10px; }
+.kgroup-t { font-size: var(--t-sm); font-weight: 600; color: var(--muted); letter-spacing: 0.04em; }
+.kgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(208px, 1fr)); gap: 10px; }
+@media (max-width: 460px) { .kgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; } }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 13px 10px; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.kpi-head { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 4px; min-height: 1.5em; }
+.kpi-head .badge { margin-inline: 0; }
+.kpi-label { font-size: var(--t-sm); font-weight: 500; color: var(--ink-2); margin-right: 2px; }
+.kpi-value { font-family: var(--f-mono); font-weight: 500; font-size: 1.36rem; letter-spacing: -0.02em; line-height: 1.3; }
+.kpi-value .unit { font-family: var(--f-body); font-size: var(--t-xs); font-weight: 500; color: var(--muted); margin-left: 3px; letter-spacing: 0; }
+.kpi-change { font-size: var(--t-xs); line-height: 1.5; color: var(--ink-2); }
+.kpi-change .arr { margin-right: 3px; font-size: 0.85em; }
+.d-down .arr, .d-down { color: var(--down); }
+.d-up .arr, .d-up { color: var(--up); }
+.kpi-intra { font-size: var(--t-xs); color: var(--ink-2); }
+.kpi-intra .intra-v { font-family: var(--f-mono); }
+.kpi-intra .intra-k { color: var(--muted); }
+.kpi > .kpi-meta { margin-block-start: auto; }
+.kpi > :nth-last-child(2) { margin-bottom: 6px; }
+.kpi-trend { display: flex; align-items: center; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+.trend-cap { font-size: 0.72rem; color: var(--muted); }
+.spark { flex: none; display: block; overflow: visible; }
+.sp-line { fill: none; stroke: var(--accent); stroke-width: 1.6; stroke-linejoin: round; }
+.sp-area { fill: var(--area); }
+.sp-end { fill: var(--accent); }
+.sp-hit { fill: transparent; }
+.sp-hit:hover { fill: color-mix(in srgb, var(--accent) 22%, transparent); }
+.kpi-meta { display: flex; flex-wrap: wrap; gap: 0 8px; font-size: 0.72rem; color: var(--muted); margin-top: auto; padding-top: 6px; border-top: 1px solid var(--line-soft); }
+.kpi-meta a { color: var(--muted); }
+@media (max-width: 460px) {
+  .kpi { padding: 10px 10px 8px; }
+  .kpi-value { font-size: 1.14rem; }
+  .spark { width: 96px; }
+}
+
+/* field sections */
+.fields { display: grid; gap: 30px; }
+.field { display: grid; gap: 10px; scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 64px); }
+.field-h { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; padding-bottom: 8px; border-bottom: 2px solid var(--ink); }
+.field-h h3 { font-size: var(--t-xl); font-weight: 700; }
+.field-count { font-size: var(--t-xs); color: var(--muted); font-variant-numeric: tabular-nums; }
+.flist { display: grid; gap: 0; }
+.fitem { padding: 13px 0 14px; border-bottom: 1px solid var(--line); display: grid; gap: 5px; max-width: 72ch; }
+.fitem:last-child { border-bottom: 0; }
+.fitem-t { font-size: var(--t-lg); font-weight: 600; line-height: 1.5; }
+.fitem-b { color: var(--ink-2); font-size: var(--t-md); }
+
+/* implications */
+.impl-grid { display: grid; gap: 14px; }
+.impl { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; max-width: 80ch; }
+.impl-k { font-size: var(--t-xs); font-weight: 600; letter-spacing: 0.06em; color: var(--accent-ink); }
+.impl-t { font-size: var(--t-lg); font-weight: 700; }
+.impl p { color: var(--ink-2); }
+.impl .todo { color: var(--ink); background: var(--accent-soft); border-radius: 6px; padding: 8px 12px; font-size: var(--t-md); }
+.todo-k { font-weight: 700; color: var(--accent-ink); margin-right: 8px; font-size: var(--t-sm); }
+
+/* schedule */
+.evlist { display: grid; border-top: 1px solid var(--line); }
+.ev { display: grid; grid-template-columns: 9.5em 4.2em minmax(0, 1fr) minmax(0, 15em); gap: 4px 14px; align-items: baseline; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: var(--t-md); }
+.ev-d { font-family: var(--f-mono); font-size: var(--t-sm); color: var(--ink); font-variant-numeric: tabular-nums; }
+.ev-dd { font-family: var(--f-mono); font-size: var(--t-xs); color: var(--muted); text-align: center; border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
+.ev.soon .ev-dd { border-color: var(--accent); color: var(--accent-ink); }
+.ev.today .ev-dd { background: var(--accent); border-color: var(--accent); color: var(--surface); font-weight: 600; }
+.ev.today .ev-e { font-weight: 600; }
+.ev-e { color: var(--ink); }
+.ev-s { font-size: var(--t-xs); color: var(--muted); display: flex; flex-wrap: wrap; gap: 2px 8px; }
+.ev-sec { font-weight: 600; color: var(--ink-2); }
+@media (max-width: 760px) {
+  .ev { grid-template-columns: auto auto minmax(0, 1fr); }
+  .ev-d { grid-column: 1; }
+  .ev-dd { grid-column: 2; justify-self: start; }
+  .ev-e { grid-column: 1 / -1; }
+  .ev-s { grid-column: 1 / -1; }
+}
+
+/* fact notes + grade chart */
+.gchart { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; display: grid; gap: 12px; max-width: 760px; }
+.gchart-h { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; align-items: baseline; }
+.gchart-h h3 { font-size: var(--t-md); font-weight: 600; }
+.glegend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: var(--t-xs); color: var(--ink-2); }
+.glegend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+.gc-rows { display: grid; gap: 7px; }
+.gc-row { display: grid; grid-template-columns: 5.5em minmax(0, 1fr) 6.5em; gap: 10px; align-items: center; font-size: var(--t-sm); }
+.gc-l { color: var(--ink-2); }
+.gc-track { display: block; }
+.gc-bar { display: flex; gap: 2px; height: 14px; }
+.seg { display: block; height: 100%; flex-basis: 0; min-width: 3px; }
+.seg:first-child { border-radius: 3px 0 0 3px; }
+.seg:last-child { border-radius: 0 3px 3px 0; }
+.seg:only-child { border-radius: 3px; }
+.seg.g1, i.g1 { background: var(--g1); }
+.seg.g2, i.g2 { background: var(--g2); }
+.seg.g3, i.g3 { background: var(--g3); }
+.seg.g4, i.g4 { background: var(--rej-ink); }
+.gc-v { font-family: var(--f-mono); font-size: var(--t-xs); color: var(--ink); font-variant-numeric: tabular-nums; }
+.gc-v .muted { margin-left: 2px; font-family: var(--f-body); }
+.gnote { font-size: var(--t-xs); color: var(--muted); }
+.ngroups { display: grid; gap: 22px; }
+.ngroup { display: grid; gap: 8px; max-width: 80ch; }
+.ngroup h3 { font-size: var(--t-md); font-weight: 700; }
+.ngroup ul { display: grid; gap: 8px; }
+.ngroup li { padding-left: 14px; position: relative; color: var(--ink-2); font-size: var(--t-md); display: grid; gap: 2px; }
+.ngroup li::before { content: ""; position: absolute; left: 0; top: 0.75em; width: 5px; height: 5px; background: var(--axis); border-radius: 50%; }
+
+/* sources */
+.sgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 28px; }
+@media (max-width: 900px) { .sgrid { grid-template-columns: minmax(0, 1fr); } }
+.sgroup { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.sgroup h3 { font-size: var(--t-md); font-weight: 700; padding-bottom: 4px; border-bottom: 1px solid var(--line); }
+.sgroup > ul { display: grid; gap: 10px; }
+.sitem-h { font-size: var(--t-sm); font-weight: 500; color: var(--ink); line-height: 1.55; }
+.place { font-family: var(--f-body); font-size: 0.7rem; color: var(--muted); border: 1px solid var(--line); border-radius: 3px; padding: 0 4px; margin-right: 6px; vertical-align: 0.1em; white-space: nowrap; }
+.slinks { display: flex; flex-wrap: wrap; gap: 2px 12px; font-size: var(--t-xs); margin-top: 3px; padding-left: 2px; }
+.slinks .muted { display: none; }
+
+footer .wrap { padding-block: 22px 40px; font-size: var(--t-xs); color: var(--muted); display: grid; gap: 4px; }
+</style>
+<style>
+.ex-banner { background: var(--surface-2); color: var(--ink-2); border-bottom: 1px solid var(--line); font-family: var(--f-body); font-size: 0.78rem; line-height: 1.5; text-align: center; padding: 5px 16px; }
+</style>
+</head>
+<body>
+<div class="ex-banner" role="note">AI 에이전트가 만든 일일 브리핑 예시 · 2026-11-10</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <p class="eyebrow">일일 CEO 브리핑</p>
+    <h1>2026년 11월 10일 <span class="dow">화요일</span></h1>
+    <p class="mast-meta">
+      <span>다루는 범위 <b>11.09.(월)～11.10.(화)</b> 보도·발표</span>
+      <span>6개 분야 · 본문 <b>24</b>건</span>
+      <span>사실 확인 <b>41</b>건(분야 간 중복 포함) 중 확인 <b>35</b> · 단일 출처 <b>6</b> · 기각 <b>0</b></span>
+    </p>
+  </div>
+</header>
+
+<nav class="nav" aria-label="구획 이동">
+  <div class="wrap"><a class="chip" href="#summary">요약</a><a class="chip" href="#core">핵심 3</a><a class="chip" href="#indicators">지표판</a><a class="chip" href="#policy">정부 정책</a><a class="chip" href="#architecture">건축</a><a class="chip" href="#construction">건설</a><a class="chip" href="#realestate">부동산</a><a class="chip" href="#ai">AI</a><a class="chip" href="#economy">경제</a><a class="chip" href="#implications">시사점</a><a class="chip" href="#schedule">일정</a><a class="chip" href="#notes">확인 노트</a><a class="chip" href="#sources">출처</a></div>
+</nav>
+
+<main>
+  <section class="block" id="summary">
+    <div class="wrap">
+      <h2 class="rail">한 줄 요약</h2>
+      <div class="content">
+        <p class="topline">내일(11.11.) 국토위 소위의 행정수도특별법 축조심사가 연내 제정 여부를 가르는 가운데 공공건축 설계공모 공고·결과를 2027년 1월부터 건축HUB로 모으는 개정이 나왔고 Anthropic은 API 가격을 20% 낮춘 Fable 5.2를 공개했으며, 코스피는 외국인 7거래일 연속 순매도로 5,018.85까지 밀렸으나 밤사이 뉴욕 반도체주가 급반등해 오늘 밤 미 10월 CPI가 다음 고비임.</p>
+        <p class="legend-row">
+          <span><span class="badge b-ok" style="margin-left:0">확인</span> 서로 다른 출처 2곳 이상(표시 생략)</span>
+          <span><span class="badge b-single" style="margin-left:0">단일 출처</span> 한 곳에서만 확인</span>
+          <span><span class="badge b-past" style="margin-left:0">지난 발표</span> 기준일 이전 발표</span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="core">
+    <div class="wrap">
+      <h2 class="rail">오늘의 핵심 3<span class="rail-sub">전 분야에서 영향이 큰 순</span></h2>
+      <div class="content">
+        <div class="core-grid">
+<article class="core">
+  <div class="core-top"><span class="core-n">1</span><span class="core-tag">정부 정책</span></div>
+  <h3 class="core-title">행정수도특별법, 11.11. 국토위 소위 축조심사…연내 제정 분수령</h3>
+  <dl class="core-dl">
+    <dt>무슨 일</dt><dd>국회 국토교통위 국토법안심사소위가 11.11. 10시부터 행정수도특별법을 조문별로 축조심사함. 10.28. 첫 심사는 헌법적 쟁점에 대한 의견 교환과 국토부 자료 보완 요구에 그쳤으며, 여당은 신속 처리를, 야당은 추가 논의를 주장하고 있어 당일 의결 여부는 불투명하다는 보도가 많음.</dd>
+    <dt>왜 중요한가</dt><dd class="why">정기국회가 12.09.에 끝나고 11.16.부터 예결위 조정소위가 가동돼 상임위 일정이 빠듯해지므로, 이번 소위 결과가 연내 제정 가능성과 행복청 사업의 법적 전제를 가름.</dd>
+  </dl>
+  <p class="srcline"><span class="src-label">출처</span> <a href="https://open.assembly.go.kr" target="_blank" rel="noopener">열린국회정보(국회 일정 API)</a><span class="sep">·</span><a href="https://www.daejonilbo.com/news/articleView.html?idxno=2311853" target="_blank" rel="noopener">대전일보</a><span class="sep">·</span><a href="https://www.cctoday.co.kr/news/articleView.html?idxno=2239188" target="_blank" rel="noopener">충청투데이</a><span class="sep">·</span><a href="https://www.news1.kr/politics/assembly/6335047" target="_blank" rel="noopener">뉴스1</a></p>
+</article>
+<article class="core">
+  <div class="core-top"><span class="core-n">2</span><span class="core-tag">건축</span></div>
+  <h3 class="core-title">공공건축 설계공모 공고·결과, 2027년 1월부터 건축HUB로 일원화</h3>
+  <dl class="core-dl">
+    <dt>무슨 일</dt><dd>한국부동산원이 11.06. 발주기관 실무자 설명회를 열고 11.09. 발표한 개정 사항으로, 2027년 1월부터 공공건축 설계공모 공고·결과 등록을 건축HUB로 일원화하고 설계공모 운영 때 건축HUB 활용 권고, 심사위원 후보군 활용, 심사 이력 관리 강화를 시행함. 부동산원은 표준 설계공모지침서와 운영 업무가이드를 배포하고 발주기관 지원을 이어 갈 계획임.</dd>
+    <dt>왜 중요한가</dt><dd class="why">심사위원 사전접촉·반복 당선 논란(공공건축 시민행동 분석, 2020～2025년 공모 4,463건 중 반복 조합 282쌍, 09.10. 지난 보도)에 대한 제도 대응이 실행 단계에 들어간 것으로, 공공건축 설계공모 지원·연구에 쓸 공모 자료가 한 시스템에 쌓이게 됨.</dd>
+  </dl>
+  <p class="srcline"><span class="src-label">출처</span> <a href="https://www.fnnews.com/news/202611090958152864" target="_blank" rel="noopener">파이낸셜뉴스</a><span class="sep">·</span><a href="https://www.ancnews.kr/news/articleView.html?idxno=21374" target="_blank" rel="noopener">건축사신문</a><span class="sep">·</span><a href="https://korean-vibe.com/news/newsview.php?ncode=179532459666002" target="_blank" rel="noopener">연합뉴스(K-VIBE 재게재, 지난 보도)</a></p>
+</article>
+<article class="core">
+  <div class="core-top"><span class="core-n">3</span><span class="core-tag">AI</span></div>
+  <h3 class="core-title">Anthropic, Claude Fable 5.2·Mythos 5.2 공개…API 가격 5.1보다 20% 낮춤</h3>
+  <dl class="core-dl">
+    <dt>무슨 일</dt><dd>Anthropic이 11.09. 같은 기반 모델의 두 버전을 공개했으며, 일반용 Fable 5.2는 고위험 사이버보안·연구용 생물학 작업을 분류기로 막고 Mythos 5.2는 검증 프로그램을 거친 보안·생명과학 기관에만 제공함. 출력 속도는 5.1보다 최대 30% 빠르고 API 가격은 100만 토큰당 입력 8달러·출력 40달러로 5.1(10달러·50달러)보다 20% 낮으며, 11.16. 주간 상장 목표<span class="tag-note">(보도 기준)</span>를 앞둔 발표임.</dd>
+    <dt>왜 중요한가</dt><dd class="why">연구팀이 쓰는 업무용 AI 도구의 성능·비용 기준이 바뀌어, AI 활용 연구의 실험 설계와 운영비 산정에 바로 반영할 사항임.</dd>
+  </dl>
+  <p class="srcline"><span class="src-label">출처</span> <a href="https://www.anthropic.com/claude-fable-and-mythos-5-2" target="_blank" rel="noopener">Anthropic</a><span class="sep">·</span><a href="https://finance.yahoo.com/technology/ai/articles/anthropic-launches-powerful-models-ahead-191625170.html" target="_blank" rel="noopener">Bloomberg(Yahoo Finance 게재)</a></p>
+</article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="indicators">
+    <div class="wrap">
+      <h2 class="rail">지표판<span class="rail-sub">확인된 값 26개. 값마다 기준 시각과 출처</span></h2>
+      <div class="content">
+        <article class="kfeature" aria-labelledby="feat-h">
+          <div class="kf-num">
+            <h3 class="kf-label" id="feat-h">코스피</h3>
+            <div class="kf-value">5,018.85</div>
+            <div class="kf-sub d-down"><span class="arr" aria-hidden="true">▼</span> -40.84p(-0.81%)</div>
+            <div class="kf-sub">11.09. 종가 · <a href="https://www.businesskorea.co.kr/news/articleView.html?idxno=280833" target="_blank" rel="noopener">BusinessKorea</a></div>
+          </div>
+          <div class="kf-chart">
+            <div id="feat-chart" role="img" aria-label="코스피 종가 10.30.～11.09. 7영업일"></div>
+            <div class="tip" id="feat-tip" hidden></div>
+            <p class="kf-cap">종가 7영업일, 보도 기준(11.02.은 11.03. 종가와 하락폭으로 계산)(<a href="https://www.issueon.co.kr/news/articleView.html?idxno=14333" target="_blank" rel="noopener">이슈온·Investing.com</a>)</p>
+            <details class="kf-table"><summary>표로 보기</summary>
+              <table><tbody><tr><td>10.30.</td><td>종가</td><td>5,730.74</td></tr><tr><td>11.02.</td><td>종가</td><td>5,859.08</td></tr><tr><td>11.03.</td><td>종가</td><td>5,648.79</td></tr><tr><td>11.04.</td><td>종가</td><td>5,683.80</td></tr><tr><td>11.05.</td><td>종가</td><td>5,383.80</td></tr><tr><td>11.06.</td><td>종가</td><td>5,059.69</td></tr><tr><td>11.09.</td><td>종가</td><td>5,018.85</td></tr></tbody></table>
+            </details>
+          </div>
+        </article>
+<div class="kgroup"><h3 class="kgroup-t">금융시장</h3><div class="kgrid"><article class="kpi">
+  <div class="kpi-head"><h4 class="kpi-label">코스닥</h4></div>
+  <div class="kpi-value">638.97</div>
+  <div class="kpi-change d-down"><span class="arr" aria-hidden="true">▼</span>-5.30p(-0.82%)</div>
+  <div class="kpi-trend"><svg class="spark" viewBox="0 0 120 34" width="120" height="34" role="img" aria-label="코스닥 추이"><path class="sp-area" d="M4.0,33 L4.0,4.0 L88.0,27.9 L116.0,30.0 L116.0,33 Z"/><polyline class="sp-line" points="4.0,4.0 88.0,27.9 116.0,30.0"/><circle class="sp-end" cx="116.0" cy="30.0" r="2.8"/><circle class="sp-hit" cx="4.0" cy="4.0" r="7"><title>11.03. 704.39</title></circle><circle class="sp-hit" cx="88.0" cy="27.9" r="7"><title>11.06. 644.27</title></circle><circle class="sp-hit" cx="116.0" cy="30.0" r="7"><title>11.09. 638.97</title></circle></svg><span class="trend-cap">11.03.～11.09. · 3개 시점</span></div>
+  <div class="kpi-meta"><span>11.09. 종가</span><a href="https://www.businesskorea.co.kr/news/articleView.html?idxno=280833" target="_blank" rel="noopener">BusinessKorea</a></div>
+</article>
+<article class="kpi">
+  <div class="kpi-head"><h4 class="kpi-label">원·달러 환율</h4></div>
+  <div class="kpi-value">1,347.1<span class="unit">원</span></div>
+  <div class="kpi-change d-down"><span class="arr" aria-hidden="true">▼</span>-9.5원</div>
+  <div class="kpi-trend"><svg class="spark" viewBox="0 0 120 34" width="120" height="34" role="img" aria-label="원·달러 환율 추이"><path class="sp-area" d="M4.0,33 L4.0,30.0 L104.8,4.0 L116.0,11.4 L116.0,33 Z"/><polyline class="sp-line" points="4.0,30.0 104.8,4.0 116.0,11.4"/><circle class="sp-end" cx="116.0" cy="11.4" r="2.8"/><circle class="sp-hit" cx="4.0" cy="30.0" r="7"><title>10.26. 1323.1</title></circle><circle class="sp-hit" cx="104.8" cy="4.0" r="7"><title>11.06. 1356.6</title></circle><circle class="sp-hit" cx="116.0" cy="11.4" r="7"><title>11.09. 1347.1</title></circle></svg><span class="trend-cap">10.26.～11.09. · 3개 시점</span></div>
+  <div class="kpi-meta"><span>11.09. 주간 종가</span><a href="https://www.segye.com/newsView/20261109513513" target="_blank" rel="noopener">세계일보</a></div>
+</article>
+<article class="kpi">
+  <div class="kpi-head"><h4 class="kpi-label">나스닥 종합</h4></div>
+  <div class="kpi-value">25,253.14</div>
+  <div class="kpi-change d-up"><span class="arr" aria-hidden="true">▲</span>+673.71p(+2.74%)</div>
+  
+  <div class="kpi-meta"><span>11.09. 종가(현지)</span><a href="https://www.newdaily.co.kr/site/data/html/2026/11/10/2026111000032.html" target="_blank" rel="noopener">뉴데일리</a></div>
+</article>
+<article class="kpi">
+  <div class="kpi-head"><h4 class="kpi-label">필라델피아 반도체지수</h4></div>
+  <div class="kpi-value">10,033.93</div>
+  <div class="kpi-change d-up"><span class="arr" aria-hidden="true">▲</span>+6.86%</div>
+  
+  <div class="kpi-meta"><span>11.09. 종가(현지)</span><a href="https://www.seoul.co.kr/news/economy/2026/11/10/20261110500004" target="_blank" rel="noopener">서울신문</a></div>
+</article>
+<article class="kpi">
+  <div class="kpi-head"><h4 class="kpi-label">WTI(12월물 정산가)</h4></div>
+  <div class="kpi-value">86.85<span class="unit">달러/배럴</span></div>
+  <div class="kpi-change d-down"><span class="arr" aria-hidden="true">▼</span>-4.38%</div>
+  
+  <div class="kpi-meta"><span>11.09.(현지)</span><a href="https://www.newdaily.co.kr/site/data/html/2026/11/10/2026111000032.html" target="_blank" rel="noopener">뉴데일리</a></div>
+</article></div></div>
+<div class="kgroup"><h3 class="kgroup-t">금리·재정</h3><div class="kgrid"><article class="kpi">
+  <div class="kpi-head"><h4 class="kpi-label">한국은행 기준금리</h4><span class="badge b-past">지난 발표</span></div>
+  <div class="kpi-value">3.00<span class="unit">%</span></div>
+  <div class="kpi-change d-flat">동결, 다음 결정 11.26.</div>
+  
+  <div class="kpi-meta"><span>10.22. 결정</span><a href="https://www.fntimes.com/html/view.php?ud=202610220949143753179ad43907_18" target="_blank" rel="noopener">한국금융신문</a></div>
+</article>
+<article class="kpi">
+  <div class="kpi-head"><h4 class="kpi-label">미 연준 정책금리</h4><span class="badge b-past">지난 발표</span></div>
+  <div class="kpi-value">3.75～4.00<span class="unit">%</span></div>
+  <div class="kpi-change d-flat">동결(10월 FOMC)</div>
+  
+  <div class="kpi-meta"><span>10.28. FOMC</span><a href="https://www.newspim.com/news/view/20261106001315" target="_blank" rel="noopener">뉴스핌</a></div>
+</article>
+<article class="kpi">
+  <div class="kpi-head"><h4 class="kpi-label">12월 FOMC 인상 확률(CME 페드워치)</h4><span class="badge b-note">보도 기준</span></div>
+  <div class="kpi-value">약 82～84<span class="unit">%</span></div>
+  <div class="kpi-change d-up"><span class="arr" aria-hidden="true">▲</span>+6～7%p(11.06. 76.8%)</div>
+  
+  <div class="kpi-meta"><span>11.09.(현지)</span><a href="https://www.newspim.com/news/view/20261110000034" target="_blank" rel="noopener">뉴스핌</a></div>
+</article>
+<article class="kpi">
+  <div class="kpi-head"><h4 class="kpi-label">2027년 예산안 총지출</h4><span class="badge b-note">보도 기준</span></div>
+  <div class="kpi-value">820.9<span class="unit">조원</span></div>
+  <div class="kpi-change d-up"><span class="arr" aria-hidden="true">▲</span>+12.8%(전년 대비)</div>
+  
+  <div class="kpi-meta"><span>11.10. 국회 심사 중</span><a href="https://www.segye.com/newsView/20261109502069" target="_blank" rel="noopener">세계일보</a></div>
+</article>
+<article class="kpi">
+  <div class="kpi-head"><h4 class="kpi-label">미래대응기금(2027 예산안)</h4><span class="badge b-note">보도 기준</span></div>
+  <div class="kpi-value">162.3<span class="unit">조원</span></div>
+  <div class="kpi-change d-flat">최대 쟁점</div>
+  
+  <div class="kpi-meta"><span>11.10.</span><a href="https://www.news1.kr/politics/assembly/6348080" target="_blank" rel="noopener">뉴스1</a></div>
+</article></div></div>
+<div class="kgroup"><h3 class="kgroup-t">실물</h3><div class="kgrid"><article class="kpi">
+  <div class="kpi-head"><h4 class="kpi-label">소비자물가 상승률</h4><span class="badge b-past">지난 발표</span></div>
+  <div class="kpi-value">2.8<span class="unit">%</span></div>
+  <div class="kpi-change d-down"><span class="arr" aria-hidden="true">▼</span>-0.1%p(9월 2.9%)</div>
+  
+  <div class="kpi-meta"><span>2026.10.(11.03. 발표)</span><a href="https://www.korea.kr/briefing/policyBriefingView.do?newsId=156787698" target="_blank" rel="noopener">정책브리핑(국가데이터처)</a></div>
+</article>
+<article class="kpi">
+  <div class="kpi-head"><h4 class="kpi-label">수출</h4><span class="badge b-past">지난 발표</span></div>
+  <div class="kpi-value">1,152.8<span class="unit">억달러</span></div>
+  <div class="kpi-change d-up"><span class="arr" aria-hidden="true">▲</span>+93.7%(전년 동월 대비)</div>
+  
+  <div class="kpi-meta"><span>2026.10.(11.01. 발표)</span><a href="https://www.motir.go.kr/kor/article/ATCL3f49a5a8c/172360/view" target="_blank" rel="noopener">산업통상부</a></div>
+</article>
+<article class="kpi">
+  <div class="kpi-head"><h4 class="kpi-label">미 비농업 고용</h4><span class="badge b-past">지난 발표</span></div>
+  <div class="kpi-value">+16.5만<span class="unit">명</span></div>
+  <div class="kpi-change d-up"><span class="arr" aria-hidden="true">▲</span>+16.5만명, 실업률 4.1%</div>
+  
+  <div class="kpi-meta"><span>2026.10.(11.06. 발표)</span><a href="https://www.newspim.com/news/view/20261106001315" target="_blank" rel="noopener">뉴스핌</a></div>
+</article></div></div>
+<div class="kgroup"><h3 class="kgroup-t">부동산</h3><div class="kgrid"><article class="kpi">
+  <div class="kpi-head"><h4 class="kpi-label">서울 아파트 매매 주간 변동률</h4><span class="badge b-past">지난 발표</span></div>
+  <div class="kpi-value">+0.07<span class="unit">%</span></div>
+  <div class="kpi-change d-flat">전주 +0.09%에서 둔화, 91주 연속 상승</div>
+  <div class="kpi-trend"><svg class="spark" viewBox="0 0 120 34" width="120" height="34" role="img" aria-label="서울 아파트 매매 주간 변동률 추이"><path class="sp-area" d="M4.0,33 L4.0,4.0 L41.3,12.7 L78.7,24.2 L116.0,30.0 L116.0,33 Z"/><polyline class="sp-line" points="4.0,4.0 41.3,12.7 78.7,24.2 116.0,30.0"/><circle class="sp-end" cx="116.0" cy="30.0" r="2.8"/><circle class="sp-hit" cx="4.0" cy="4.0" r="7"><title>10.12. 0.16</title></circle><circle class="sp-hit" cx="41.3" cy="12.7" r="7"><title>10.19. 0.13</title></circle><circle class="sp-hit" cx="78.7" cy="24.2" r="7"><title>10.26. 0.09</title></circle><circle class="sp-hit" cx="116.0" cy="30.0" r="7"><title>11.02. 0.07</title></circle></svg><span class="trend-cap">10.12.～11.02. · 4개 시점</span></div>
+  <div class="kpi-meta"><span>11.02. 기준(11.05. 발표)</span><a href="https://news.jkn.co.kr/post/1072662" target="_blank" rel="noopener">재경일보</a></div>
+</article>
+<article class="kpi">
+  <div class="kpi-head"><h4 class="kpi-label">경기 아파트 매매 주간 변동률</h4><span class="badge b-past">지난 발표</span></div>
+  <div class="kpi-value">+0.20<span class="unit">%</span></div>
+  <div class="kpi-change d-flat">8주 연속 서울 상회</div>
+  
+  <div class="kpi-meta"><span>11.02. 기준</span><a href="https://www.hankookilbo.com/news/article/amp/A2026110813500003000" target="_blank" rel="noopener">한국일보</a></div>
+</article>
+<article class="kpi">
+  <div class="kpi-head"><h4 class="kpi-label">서울 아파트 전세 주간 변동률</h4><span class="badge b-past">지난 발표</span></div>
+  <div class="kpi-value">+0.17<span class="unit">%</span></div>
+  <div class="kpi-change d-flat">전국 +0.10%</div>
+  
+  <div class="kpi-meta"><span>11.02. 기준</span><a href="https://www.kukinews.com/article/view/kuk202611090212" target="_blank" rel="noopener">쿠키뉴스</a></div>
+</article>
+<article class="kpi">
+  <div class="kpi-head"><h4 class="kpi-label">세종 아파트 매매 주간 변동률</h4><span class="badge b-past">지난 발표</span></div>
+  <div class="kpi-value">-0.01<span class="unit">%</span></div>
+  <div class="kpi-change d-down"><span class="arr" aria-hidden="true">▼</span>-0.01%</div>
+  
+  <div class="kpi-meta"><span>11.02. 기준</span><a href="https://www.kukinews.com/article/view/kuk202611090212" target="_blank" rel="noopener">쿠키뉴스</a></div>
+</article>
+<article class="kpi">
+  <div class="kpi-head"><h4 class="kpi-label">세종 분양전망지수</h4></div>
+  <div class="kpi-value">115.4</div>
+  <div class="kpi-change d-up"><span class="arr" aria-hidden="true">▲</span>+22.1(전월 93.3), 전국 유일 100 초과</div>
+  
+  <div class="kpi-meta"><span>2026.11. 전망</span><a href="https://www.etoday.co.kr/news/view/2645098" target="_blank" rel="noopener">이투데이</a></div>
+</article>
+<article class="kpi">
+  <div class="kpi-head"><h4 class="kpi-label">서울 아파트 매매 매물(아실)</h4><span class="badge b-note">보도 기준</span></div>
+  <div class="kpi-value">80,528<span class="unit">건</span></div>
+  <div class="kpi-change d-up"><span class="arr" aria-hidden="true">▲</span>+33.3%(08.03. 대비)</div>
+  <div class="kpi-trend"><svg class="spark" viewBox="0 0 120 34" width="120" height="34" role="img" aria-label="서울 아파트 매매 매물(아실) 추이"><path class="sp-area" d="M4.0,33 L4.0,30.0 L116.0,4.0 L116.0,33 Z"/><polyline class="sp-line" points="4.0,30.0 116.0,4.0"/><circle class="sp-end" cx="116.0" cy="4.0" r="2.8"/><circle class="sp-hit" cx="4.0" cy="30.0" r="7"><title>08.03. 60409</title></circle><circle class="sp-hit" cx="116.0" cy="4.0" r="7"><title>11.08. 80528</title></circle></svg><span class="trend-cap">직전 60,409 (08.03.)</span></div>
+  <div class="kpi-meta"><span>11.08.</span><a href="https://seoul.co.kr/news/editOpinion/column/politics-story/2026/11/10/20261110025001" target="_blank" rel="noopener">서울신문</a></div>
+</article></div></div>
+<div class="kgroup"><h3 class="kgroup-t">건설·건축</h3><div class="kgrid"><article class="kpi">
+  <div class="kpi-head"><h4 class="kpi-label">건설수주(월)</h4><span class="badge b-past">지난 발표</span></div>
+  <div class="kpi-value">23.3<span class="unit">조원</span></div>
+  <div class="kpi-change d-up"><span class="arr" aria-hidden="true">▲</span>+49.8%(전년 동월 대비)</div>
+  <div class="kpi-trend"><svg class="spark" viewBox="0 0 120 34" width="120" height="34" role="img" aria-label="건설수주(월) 추이"><path class="sp-area" d="M4.0,33 L4.0,30.0 L116.0,4.0 L116.0,33 Z"/><polyline class="sp-line" points="4.0,30.0 116.0,4.0"/><circle class="sp-end" cx="116.0" cy="4.0" r="2.8"/><circle class="sp-hit" cx="4.0" cy="30.0" r="7"><title>8월 15.7</title></circle><circle class="sp-hit" cx="116.0" cy="4.0" r="7"><title>9월 23.3</title></circle></svg><span class="trend-cap">직전 15.7 (8월)</span></div>
+  <div class="kpi-meta"><span>2026.09.(10.30. 발표)</span><a href="https://www.newsfreezone.co.kr/news/articleView.html?idxno=716767" target="_blank" rel="noopener">뉴스프리존</a></div>
+</article>
+<article class="kpi">
+  <div class="kpi-head"><h4 class="kpi-label">건설경기실사지수(CBSI 종합실적)</h4><span class="badge b-past">지난 발표</span></div>
+  <div class="kpi-value">73.2</div>
+  <div class="kpi-change d-up"><span class="arr" aria-hidden="true">▲</span>+0.5p(전월 대비)</div>
+  
+  <div class="kpi-meta"><span>2026.09.</span><a href="https://cerik.re.kr/material/prospect/3136" target="_blank" rel="noopener">한국건설산업연구원</a></div>
+</article>
+<article class="kpi">
+  <div class="kpi-head"><h4 class="kpi-label">해외건설 수주 누계(1～9월)</h4><span class="badge b-past">지난 발표</span></div>
+  <div class="kpi-value">206.6<span class="unit">억달러</span></div>
+  <div class="kpi-change d-down"><span class="arr" aria-hidden="true">▼</span>-50%(전년 동기 대비)</div>
+  
+  <div class="kpi-meta"><span>09.30. 기준</span><a href="https://www.newspim.com/news/view/20261105000556" target="_blank" rel="noopener">뉴스핌</a></div>
+</article>
+<article class="kpi">
+  <div class="kpi-head"><h4 class="kpi-label">건축사 자격시험 제2회 합격예정자</h4><span class="badge b-past">지난 발표</span></div>
+  <div class="kpi-value">604<span class="unit">명</span></div>
+  <div class="kpi-change d-down"><span class="arr" aria-hidden="true">▼</span>-91명(제1회 695명), 합격률 8.9%</div>
+  
+  <div class="kpi-meta"><span>11.06. 공고</span><a href="https://www.ancnews.kr/news/articleView.html?idxno=21371" target="_blank" rel="noopener">건축사신문</a></div>
+</article></div></div>
+<div class="kgroup"><h3 class="kgroup-t">AI</h3><div class="kgrid"><article class="kpi">
+  <div class="kpi-head"><h4 class="kpi-label">Anthropic 분기 매출(S-1/A)</h4><span class="badge b-past">지난 발표</span></div>
+  <div class="kpi-value">169.6<span class="unit">억 달러</span></div>
+  <div class="kpi-change d-up"><span class="arr" aria-hidden="true">▲</span>+46.7%(전분기 대비)</div>
+  <div class="kpi-trend"><svg class="spark" viewBox="0 0 120 34" width="120" height="34" role="img" aria-label="Anthropic 분기 매출(S-1/A) 추이"><path class="sp-area" d="M4.0,33 L4.0,30.0 L41.3,25.3 L78.7,13.4 L116.0,4.0 L116.0,33 Z"/><polyline class="sp-line" points="4.0,30.0 41.3,25.3 78.7,13.4 116.0,4.0"/><circle class="sp-end" cx="116.0" cy="4.0" r="2.8"/><circle class="sp-hit" cx="4.0" cy="30.0" r="7"><title>25.4분기 20.4</title></circle><circle class="sp-hit" cx="41.3" cy="25.3" r="7"><title>26.1분기 47.31</title></circle><circle class="sp-hit" cx="78.7" cy="13.4" r="7"><title>26.2분기 115.55</title></circle><circle class="sp-hit" cx="116.0" cy="4.0" r="7"><title>26.3분기 169.56</title></circle></svg><span class="trend-cap">25.4분기～26.3분기 · 4개 시점</span></div>
+  <div class="kpi-meta"><span>09.30. 분기(11.02. 제출)</span><a href="https://www.sec.gov/Archives/edgar/data/2130357/000162828026068676/anthropicpbc-sx1ax1.htm" target="_blank" rel="noopener">SEC EDGAR</a></div>
+</article>
+<article class="kpi">
+  <div class="kpi-head"><h4 class="kpi-label">Claude Fable 5.2 API 가격(100만 토큰당 입력·출력)</h4></div>
+  <div class="kpi-value">8 / 40<span class="unit">달러</span></div>
+  <div class="kpi-change d-down"><span class="arr" aria-hidden="true">▼</span>-20%(5.1 대비)</div>
+  
+  <div class="kpi-meta"><span>11.09. 발표</span><a href="https://www.anthropic.com/claude-fable-and-mythos-5-2" target="_blank" rel="noopener">Anthropic</a></div>
+</article></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="fields-block">
+    <div class="wrap">
+      <h2 class="rail">분야별 브리핑<span class="rail-sub">분야당 4건. 핵심 3과 겹치는 건은 덧붙인 사실만</span></h2>
+      <div class="content fields">
+<section class="field" id="policy" aria-labelledby="h-policy">
+  <header class="field-h">
+    <h3 id="h-policy">정부 정책</h3>
+    <p class="field-count">수집 6건(확인 6) · 본문 5건</p>
+  </header>
+  <ol class="flist"><li class="fitem">
+  <h4 class="fitem-t">행정수도특별법 11.11. 축조심사</h4>
+  <p class="fitem-b">핵심 3의 1번 참조. 국회 일정 API에 제439회 국회(정기회) 제2차 국토법안심사소위가 11.11. 10:00로 올라 있고, 행복도시법 개정안은 다음 소위에서 논의할 대상임(충청투데이).</p>
+  <p class="srcline"><span class="src-label">출처</span> <a href="https://open.assembly.go.kr" target="_blank" rel="noopener">열린국회정보(국회 일정 API)</a><span class="sep">·</span><a href="https://www.cctoday.co.kr/news/articleView.html?idxno=2239188" target="_blank" rel="noopener">충청투데이</a></p>
+</li><li class="fitem">
+  <h4 class="fitem-t">예결위 2027년 예산안 부별 심사, 162조원 미래대응기금 공방</h4>
+  <p class="fitem-b">예결위가 11.09.～10. 경제부처, 11.11.～12. 비경제부처를 심사하고 11.16. 예산안조정소위, 11.30. 전체회의 의결(계획)로 이어 가며 법정 처리 시한은 12.02.임. 총지출 820.9조원(전년 대비 12.8% 증가) 가운데 초과세수로 만드는 미래대응기금(162.3조원)이 최대 쟁점으로, 국민의힘은 100대 문제 사업 중심 삭감(「최소 30조원」과 「27조원 이상」으로 보도마다 다름)과 기금 여유자금 104.4조원의 국채 상환 투입을, 민주당은 미래 투자 재원으로 원안 유지를 주장함<span class="tag-note">(보도 기준)</span>. 국토부·행복청(세종집무실·세종의사당)과 AI 연구 예산 규모가 이번 심사에서 정해짐.</p>
+  <p class="srcline"><span class="src-label">출처</span> <a href="https://www.news1.kr/politics/assembly/6348080" target="_blank" rel="noopener">뉴스1</a><span class="sep">·</span><a href="https://supple.kr/news/cmw9ptf75leckal9phjr9anub" target="_blank" rel="noopener">서플(연합뉴스)</a><span class="sep">·</span><a href="https://www.segye.com/newsView/20261109502069" target="_blank" rel="noopener">세계일보</a><span class="sep">·</span><a href="https://www.kukinews.com/article/view/kuk202611090015" target="_blank" rel="noopener">쿠키뉴스</a></p>
+</li><li class="fitem">
+  <h4 class="fitem-t">전세사기피해자 최소보장제 11.13. 시행, 오늘부터 온라인 사전 신청</h4>
+  <p class="fitem-b">국토부(11.09. 발표)는 피해회복금이 임차보증금의 3분의 1에 못 미치는 피해자에게 그 차액을 최소지원금으로 지급하며, 신청은 11.10. LH 청약플러스 온라인, 11.13. LH 지역본부 현장 접수로 받음. 신탁사기 등 무권계약 피해자는 경·공매나 LH 매입이 끝나기 전에 선지급받고 나중에 정산할 수 있으며, LH는 신청일로부터 90일(보완 시 30일 연장) 안에 지급 여부를 정함.</p>
+  <p class="srcline"><span class="src-label">출처</span> <a href="https://www.korea.kr/briefing/pressReleaseView.do?newsId=156788424" target="_blank" rel="noopener">국토교통부(정책브리핑)</a><span class="sep">·</span><a href="https://www.jungbunews.com/news/articleView.html?idxno=2794290" target="_blank" rel="noopener">중부뉴스통신</a><span class="sep">·</span><a href="https://gosiweek.com/article/1065565700368580" target="_blank" rel="noopener">고시위크</a></p>
+</li><li class="fitem">
+  <h4 class="fitem-t">과기정통부 전 직급 AI 대화형 코딩 실습, 행안부 「온AI」 보고서 작성 기능 시험</h4>
+  <p class="fitem-b">과기정통부가 11.09. 실·국장급 대상 AI 대화형 코딩(바이브코딩) 실습을 열었고 이달 중 과장급 이하로 넓혀 모두 3차례 운영하며, 실습에는 국산 독자 AI 파운데이션 모델을 썼음. 행안부는 공무원 업무 플랫폼 「온AI」에 10월 AI 웹검색을 넣었고 12월에는 업무자료·서식으로 한글(HWPX) 보고서 초안 작성과 공동 편집을 돕는 「온AI 협업」을 시험 운영하며, 「공공 AI 대전환 챌린지」 접수는 11.11.에 마감함(지난 발표, 11.01. 보도, 단일 출처).</p>
+  <p class="srcline"><span class="src-label">출처</span> <a href="https://www.korea.kr/briefing/pressReleaseView.do?newsId=156788451" target="_blank" rel="noopener">과학기술정보통신부(정책브리핑)</a><span class="sep">·</span><a href="https://zdnet.co.kr/view/?no=20261109105952" target="_blank" rel="noopener">ZDNet Korea</a><span class="sep">·</span><a href="https://www.news1.kr/it-science/cc-newmedia/6347275" target="_blank" rel="noopener">뉴스1</a><span class="sep">·</span><a href="https://zdnet.co.kr/view/?no=20261101130513" target="_blank" rel="noopener">ZDNet Korea(지난 보도)</a></p>
+</li></ol>
+</section>
+<section class="field" id="architecture" aria-labelledby="h-architecture">
+  <header class="field-h">
+    <h3 id="h-architecture">건축</h3>
+    <p class="field-count">수집 7건(확인 5 · 단일 출처 2) · 본문 5건</p>
+  </header>
+  <ol class="flist"><li class="fitem">
+  <h4 class="fitem-t">공공건축 설계공모 건축HUB 일원화와 서울시 공공건축심의 사후관리</h4>
+  <p class="fitem-b">핵심 3의 2번 참조. 서울시의회 오중석 의원은 11.06. 행정사무감사에서 2020～2023년 공공건축심의 사업 20건 가운데 4건(청계하수역사체험관·통일문화센터·디지털금융지원센터·서울숲 승마훈련원 부지 관리시설)이 설계 뒤 멈춰 설계비 21억1,200만원(뉴스핌 보도 기준)이 들어갔다고 지적하고, 심의 이후 점검 절차와 중단 사업 설계비 공개를 요구함. 심의를 통과한 사업의 이행을 따라가는 장치가 없다는 지적이어서 공공건축 지원 제도의 개선 과제로 이어짐.</p>
+  <p class="srcline"><span class="src-label">출처</span> <a href="https://newspim.com/news/view/20261109000562" target="_blank" rel="noopener">뉴스핌</a><span class="sep">·</span><a href="https://www.webeconomy.co.kr/news/articleView.html?idxno=2367239" target="_blank" rel="noopener">웹이코노미</a><span class="sep">·</span><a href="https://go.seoul.co.kr/news/newsView.php?id=20261110500025" target="_blank" rel="noopener">서울신문</a></p>
+</li><li class="fitem">
+  <h4 class="fitem-t"><span class="badge b-past">지난 발표</span> 다세대·다가구 면적 660→1,000㎡, 11.12. 시행(11.03. 국무회의 의결)</h4>
+  <p class="fitem-b">다세대·다가구 면적 상한이 660㎡에서 1,000㎡로, 다가구 층수가 3개 층에서 4개 층 이하로 바뀌고, 다세대 주민공동시설은 건축위원회를 거쳐 용적률을 완화받음. 정북방향 일조 기준은 높이 10m 초과～17m 이하 구간에 5m 고정 이격(기존 높이의 1/2)을 같은 날부터 적용하며, 8.13. 「주택 신속공급 방안」의 후속 조치로 30년 넘게 유지된 소규모 주택 규모 규제가 이틀 뒤 바뀜.</p>
+  <p class="srcline"><span class="src-label">출처</span> <a href="https://www.korea.kr/news/policyNewsView.do?newsId=148974876" target="_blank" rel="noopener">대한민국 정책브리핑(국토교통부)</a><span class="sep">·</span><a href="https://www.ancnews.kr/news/articleView.html?idxno=21359" target="_blank" rel="noopener">건축사신문</a><span class="sep">·</span><a href="https://www.kbcs.kr/news/article.html?no=456944" target="_blank" rel="noopener">한국소통투데이</a></p>
+</li><li class="fitem">
+  <h4 class="fitem-t">감리비 예치제 건축법 개정안, 건축사협회 「사용승인 연동 지급」 삭제 요구</h4>
+  <p class="fitem-b">김종양 의원 등 10인이 07.16. 발의한 건축법 개정안(의안 2220008, 국토위 09.08. 상정)은 착공신고 때 감리비를 허가권자에게 예치하고 사용승인 신청 때 허가권자가 지급하도록 함. 대한건축사협회는 공사가 늦어지거나 멈추면 감리대가가 묶인다며 사용승인 신청과 관계없이 계약에 따라 지급하도록 고칠 것을 요구했으며<span class="badge b-single">단일 출처</span>, 05.26. 서소문 고가 철거현장 붕괴(사망 3명) 이후 이어진 감리 독립성 강화 논의의 연장선임.</p>
+  <p class="srcline"><span class="src-label">출처</span> <a href="https://www.ancnews.kr/news/articleView.html?idxno=21373" target="_blank" rel="noopener">건축사신문</a><span class="sep">·</span><a href="https://likms.assembly.go.kr/bill/billDetail.do?billId=PRC_X2W6D0C6K1L9J1I1G3H9Q0O2N8M9U9" target="_blank" rel="noopener">국회 의안정보시스템</a></p>
+</li><li class="fitem">
+  <h4 class="fitem-t">민주당, 서울 정비사업 인허가권 일부 구청장 이양 추진</h4>
+  <p class="fitem-b">서울신문 단독 보도(11.10. 지면)로, 민주당이 서울 정비사업 인허가 권한 일부를 자치구로 넘기는 법안을 준비하며 이양 기준을 500가구 이하(193곳)에서 정비구역 면적 2만㎡ 미만(231곳)으로 바꾸는 안을 정부와 협의하고 있음<span class="badge b-single">단일 출처</span>. 서울시와 국민의힘은 난개발을 우려해 반대해 왔으며, 광역·기초 사이 정비사업 인허가와 심의 권한 배분이 바뀌는 사안임.</p>
+  <p class="srcline"><span class="src-label">출처</span> <a href="https://www.seoul.co.kr/news/politics/2026/11/10/20261110004002" target="_blank" rel="noopener">서울신문</a></p>
+</li></ol>
+</section>
+<section class="field" id="construction" aria-labelledby="h-construction">
+  <header class="field-h">
+    <h3 id="h-construction">건설</h3>
+    <p class="field-count">수집 7건(확인 6 · 단일 출처 1) · 본문 6건</p>
+  </header>
+  <ol class="flist"><li class="fitem">
+  <h4 class="fitem-t">현대엔지니어링 양산 아파트 현장 신호수 사망, 노동부 작업중지</h4>
+  <p class="fitem-b">11.06. 13시 28분께 경남 양산 물금읍 힐스테이트 물금센트럴 현장에서 후진하던 레미콘 차량에 하청 소속 50대 신호수가 치여 11.09. 숨졌고, 현대건설은 같은 날 종속회사 중대재해(사망 1명)를 공시함. 고용노동부 양산지청은 차량계 건설기계 작업 일체 중지를 명령하고 산업안전보건법·중대재해처벌법 위반 여부를 조사·수사할 방침임.</p>
+  <p class="srcline"><span class="src-label">출처</span> <a href="https://www.seoultimes.news/news/article.html?no=2000101970" target="_blank" rel="noopener">서울타임즈뉴스</a><span class="sep">·</span><a href="https://www.geconomy.co.kr/news/article.html?no=325432" target="_blank" rel="noopener">지이코노미</a><span class="sep">·</span><a href="https://www.ajunews.com/view/20261109161150083" target="_blank" rel="noopener">아주경제</a></p>
+</li><li class="fitem">
+  <h4 class="fitem-t">가덕도신공항 부지조성공사 실시설계 착수, 공사비 반영 특별법 개정 연내 추진</h4>
+  <p class="fitem-b">국토부·가덕도신공항건설공단이 대우건설 컨소시엄과 협의해 11.09. 실시설계(180일)에 들어갔으며, 중동전쟁발 공사비 문제로 9월 기본설계 적격 판정 뒤 멈췄던 후속 절차 가운데 설계를 먼저 진행함. 정부는 물가 상승분을 반영하는 가덕도신공항법 개정과 우선시공분 계약을 연내 마치고 2027년 상반기 본공사 착공, 2035년 개항을 목표로 하며, 증액 규모는 아직 정해지지 않음.</p>
+  <p class="srcline"><span class="src-label">출처</span> <a href="https://www.seoul.co.kr/news/society/2026/11/09/20261109500177" target="_blank" rel="noopener">서울신문</a><span class="sep">·</span><a href="https://view.asiae.co.kr/article/2026110910100370013" target="_blank" rel="noopener">아시아경제</a><span class="sep">·</span><a href="https://www.fnnews.com/news/202611091825541718" target="_blank" rel="noopener">파이낸셜뉴스</a><span class="sep">·</span><a href="https://www.segye.com/newsView/20261109515452" target="_blank" rel="noopener">세계일보</a></p>
+</li><li class="fitem">
+  <h4 class="fitem-t">삼성물산 목동13단지 2조3,763억원·GS건설 기흥역세권2지구 9,271억원 수주</h4>
+  <p class="fitem-b">목동13단지 재건축은 11.07. 토지등소유자 전체회의에서 삼성물산 선정이 가결(참석 1,884명 중 1,803명 찬성, 95.7%)됐고, 두 차례 단독 응찰 뒤 수의계약으로 2,280가구를 지하 4층～지상 최고 49층 21개 동 3,757가구로 다시 지으며 예정 공사비는 2조3,763억원(본계약 전)임. GS건설은 11.09. 용인기흥역세권2PFV와 공동주택 8개 동 2,005세대·업무·판매시설 도급계약(9,271억원, 최근 매출액 대비 7.45%)을 공시함.</p>
+  <p class="srcline"><span class="src-label">출처</span> <a href="https://www.segye.com/newsView/20261109503149" target="_blank" rel="noopener">세계일보</a><span class="sep">·</span><a href="https://www.sentv.co.kr/article/view/sentv202611090238" target="_blank" rel="noopener">서울경제TV</a><span class="sep">·</span><a href="https://www.dpnews.co.kr/news/articleView.html?idxno=2722" target="_blank" rel="noopener">디벨로퍼뉴스</a><span class="sep">·</span><a href="https://www.digitaltoday.co.kr/disclosure/articleView.html?idxno=713894" target="_blank" rel="noopener">디지털투데이</a><span class="sep">·</span><a href="https://m.news.nate.com/view/20261109n24722" target="_blank" rel="noopener">네이트 뉴스</a></p>
+</li><li class="fitem">
+  <h4 class="fitem-t"><span class="badge b-past">지난 발표</span> 9월 건설수주 23.3조원으로 49.8% 증가, 내년 회복 전망은 반도체·3기 신도시·SOC(10.30. 발표)</h4>
+  <p class="fitem-b">국가데이터처 9월 산업활동동향 기준 건설수주는 건축 41.4%, 토목 84.5% 늘어 전년 동월 대비 49.8% 증가했고, 건설기성은 전월 대비 5.8% 늘었음. 11.10. 데일리안 보도에서 익명의 업계 관계자는 반도체 생산시설·3기 신도시·SOC 투자 확대로 내년 회복을 예상하면서도 지방·중소사는 미분양·공사비 부담이 이어진다고 봤으며<span class="badge b-single">단일 출처</span>, 2027년 정부 예산안의 SOC는 28.9조원(국토부 SOC는 21.1조원으로 동결)임.</p>
+  <p class="srcline"><span class="src-label">출처</span> <a href="https://www.newsfreezone.co.kr/news/articleView.html?idxno=716767" target="_blank" rel="noopener">뉴스프리존</a><span class="sep">·</span><a href="https://www.kyongbuk.co.kr/news/articleView.html?idxno=4089373" target="_blank" rel="noopener">경북일보</a><span class="sep">·</span><a href="https://www.dailian.co.kr/news/view/1712580/" target="_blank" rel="noopener">데일리안</a><span class="sep">·</span><a href="https://biz.heraldcorp.com/article/10858711" target="_blank" rel="noopener">헤럴드경제</a></p>
+</li></ol>
+</section>
+<section class="field" id="realestate" aria-labelledby="h-realestate">
+  <header class="field-h">
+    <h3 id="h-realestate">부동산</h3>
+    <p class="field-count">수집 8건(확인 7 · 단일 출처 1) · 본문 5건</p>
+  </header>
+  <ol class="flist"><li class="fitem">
+  <h4 class="fitem-t">서울 아파트 매물 8만528건, 8·3 세제개편안 발표 뒤 33% 증가</h4>
+  <p class="fitem-b">아실 집계 서울 아파트 매매 매물은 8만528건으로 8.3.(6만409건)보다 33.3% 늘었고(서울신문, 11.08. 기준), 서울경제는 같은 수치를 11.07. 기준으로 보고 3개월 전보다 29.6% 늘었으며 강동 43.7%·성동 40.9%·동작 38.6% 순으로 늘었다고 전함<span class="tag-note">(보도 기준)</span>. 부동산원 11월 1주 서울 매매는 +0.07%로 3주 연속 오름폭이 줄었고 강남 -0.39%·서초 -0.37%·송파 -0.17%가 내린 반면, 경기는 +0.20%로 8주째 서울을 웃돌았음(11.05. 발표, 지난 발표).</p>
+  <p class="srcline"><span class="src-label">출처</span> <a href="https://seoul.co.kr/news/editOpinion/column/politics-story/2026/11/10/20261110025001" target="_blank" rel="noopener">서울신문</a><span class="sep">·</span><a href="https://m.sedaily.com/article/20111915" target="_blank" rel="noopener">서울경제</a><span class="sep">·</span><a href="https://news.jkn.co.kr/post/1072662" target="_blank" rel="noopener">재경일보</a><span class="sep">·</span><a href="https://www.hankookilbo.com/news/article/amp/A2026110813500003000" target="_blank" rel="noopener">한국일보</a></p>
+</li><li class="fitem">
+  <h4 class="fitem-t">종부세·양도세 개편안 이달 조세소위 심사, 여당 안에서 추가 수정론</h4>
+  <p class="fitem-b">정부는 9.1. 국무회의에서 비거주 1주택자 종부세 기본공제를 9억원으로 줄이는 안을 철회하고 12억원 유지(실거주 14억원) 수정안을 확정했으나, 서울 지역 여당 의원들은 비거주자도 14억원으로 올리자고 요구하고 정부는 난색을 보임. 양도세 장기보유특별공제는 「장기거주소득공제」로 바꿔 2029년부터 거주기간에만 연 8%·한도 10억원을 적용하는 안이며(머니투데이 보도 기준), 최종안이 매물 증가세가 이어질지를 가름.</p>
+  <p class="srcline"><span class="src-label">출처</span> <a href="https://www.mt.co.kr/amp/economy/2026/11/09/2026110819462134702" target="_blank" rel="noopener">머니투데이</a><span class="sep">·</span><a href="https://biz.sbs.co.kr/amp/article/20000332033" target="_blank" rel="noopener">SBS Biz</a><span class="sep">·</span><a href="https://biz.heraldcorp.com/article/10922692" target="_blank" rel="noopener">헤럴드경제</a></p>
+</li><li class="fitem">
+  <h4 class="fitem-t">서울 전세 0.17% 상승, 전세 매물은 1년 새 15.7% 감소</h4>
+  <p class="fitem-b">부동산원 11월 1주 서울 아파트 전세는 0.17%, 전국은 0.10% 올랐고 성북 0.41%·노원 0.37% 등 강북이 강했음. 아실 기준 11.06. 서울 아파트 전세 매물은 2만1,783건으로 1년 전보다 15.7% 줄었고(데일리안), 3분기 말까지 서울 아파트 월세 누적 상승률은 7.68%로 지난해 연간(3.94%)의 약 두 배였음(쿠키뉴스 보도 기준).</p>
+  <p class="srcline"><span class="src-label">출처</span> <a href="https://www.kukinews.com/article/view/kuk202611090212" target="_blank" rel="noopener">쿠키뉴스</a><span class="sep">·</span><a href="https://www.dailian.co.kr/news/view/1711787/%EC%84%9C%EC%9A%B8-%EC%A7%91%EA%B0%92-%EC%83%81%EC%8A%B9%ED%8F%AD-%EC%A4%84%EC%96%B4%EB%8F%84-%EC%A0%84%EC%85%8B%EA%B0%92-%E2%80%98%EA%BB%91-2026" target="_blank" rel="noopener">데일리안</a><span class="sep">·</span><a href="https://news.jkn.co.kr/post/1072662" target="_blank" rel="noopener">재경일보</a></p>
+</li><li class="fitem">
+  <h4 class="fitem-t">세종 11월 분양전망지수 115.4, 전국에서 유일하게 100 넘어</h4>
+  <p class="fitem-b">주택산업연구원 11월 세종 분양전망지수는 115.4로 전월(93.3)보다 22.1p 올라 전국에서 유일하게 100을 넘었고, 최근 「세종 우미 린 센터파크」 평균 경쟁률은 17.71대 1이었음. 행안부의 2027～2031년 수도권 중앙행정기관 등 44곳(공무원 9,929명) 단계 이전 계획이 기대 요인이며, 부동산원 11월 1주 세종 매매는 -0.01%였음<span class="badge b-past">지난 발표</span>.</p>
+  <p class="srcline"><span class="src-label">출처</span> <a href="https://www.etoday.co.kr/news/view/2645098" target="_blank" rel="noopener">이투데이</a><span class="sep">·</span><a href="https://www.thedailyeconomy.kr/news/articleView.html?idxno=6664" target="_blank" rel="noopener">The Daily Economy</a><span class="sep">·</span><a href="https://news.jkn.co.kr/post/1072662" target="_blank" rel="noopener">재경일보</a></p>
+</li></ol>
+</section>
+<section class="field" id="ai" aria-labelledby="h-ai">
+  <header class="field-h">
+    <h3 id="h-ai">AI</h3>
+    <p class="field-count">수집 7건(확인 5 · 단일 출처 2) · 본문 6건</p>
+  </header>
+  <ol class="flist"><li class="fitem">
+  <h4 class="fitem-t">Claude Fable 5.2·Mythos 5.2와 AI 기업 자금 조달</h4>
+  <p class="fitem-b">핵심 3의 3번 참조. Anthropic이 11.02. 제출한 수정 증권신고서(S-1/A)에 따르면 3분기 매출은 169억5,600만 달러(2분기 115억5,500만 달러)로 늘었으나 영업손익은 5억6,700만 달러 손실로 돌아섰고(2분기 영업이익 9억7,400만 달러), 11.16. 주간 상장으로 최대 1,000억 달러를 조달하려 하나 기업가치 논란으로 늦어질 수 있다는 보도도 있음<span class="badge b-past">지난 발표</span>. OpenAI는 11.06.까지 기업가치 1.25조 달러로 약 110억 달러를 1차 조달함<span class="tag-note">(보도 기준)</span>.</p>
+  <p class="srcline"><span class="src-label">출처</span> <a href="https://www.sec.gov/Archives/edgar/data/2130357/000162828026068676/anthropicpbc-sx1ax1.htm" target="_blank" rel="noopener">SEC EDGAR</a><span class="sep">·</span><a href="https://finance.yahoo.com/technology/ai/articles/anthropic-launches-powerful-models-ahead-191625170.html" target="_blank" rel="noopener">Bloomberg(Yahoo Finance 게재)</a><span class="sep">·</span><a href="https://www.pymnts.com/news/artificial-intelligence/2026/openai-valuation-hits-1-25-trillion-in-new-funding-round/" target="_blank" rel="noopener">PYMNTS</a><span class="sep">·</span><a href="https://www.thestar.com.my/tech/tech-news/2026/11/07/openai-secures-11-billion-funding-at-125-trillion-valuation-bloomberg-news-reports" target="_blank" rel="noopener">The Star(Reuters)</a></p>
+</li><li class="fitem">
+  <h4 class="fitem-t">프론티어 AI 개발 사업, 독파모 최종팀에 우선 제안</h4>
+  <p class="fitem-b">과기정통부는 2027년 2월 독자 AI 파운데이션 모델(독파모) 3차 평가(SKT·LG AI연구원·업스테이지 중 2개 팀 선정)에 맞춰 프론티어 AI 개발 사업을 추진하고 최종 사업자에게 먼저 제안함(아주경제 보도, 단일 출처). 12월께 공모를 시작해 2027년 2월 마감하며, 2027년 예산안의 지원액은 4조6,250억원(GPU 구매 약 3조8,500억원·학습데이터 7,500억원·AI 인재 250억원)이고 법인 출자 방식임<span class="tag-note">(보도 기준)</span>.</p>
+  <p class="srcline"><span class="src-label">출처</span> <a href="https://www.ajunews.com/view/20261109142854617" target="_blank" rel="noopener">아주경제</a><span class="sep">·</span><a href="https://zdnet.co.kr/view/?no=20261002195243" target="_blank" rel="noopener">ZDNet Korea(지난 보도, 10.02.)</a></p>
+</li><li class="fitem">
+  <h4 class="fitem-t"><span class="badge b-past">지난 발표</span> AI 통합인허가 사전진단 서비스, 2027년 1월 5개 지자체 시범(11.04. 보도)</h4>
+  <p class="fitem-b">국토부·과기정통부는 「AI 민생 10대 프로젝트」로 토지개발·건축 인허가 신청 전에 부지에 적용되는 법령·조례를 AI가 분석해 인허가 가능성을 알려 주는 서비스를 개발함. 2027년 1월 인천 계양구·충북 음성군·충남 아산시·경북 경산시·영천시에서 시범운영하고 6월 18개 지방정부로 늘리며, 12월 개발을 마치면서 모바일 서비스와 공무원 행정업무용 서비스를 공개할 계획임.</p>
+  <p class="srcline"><span class="src-label">출처</span> <a href="https://www.hankyung.com/article/2026110462401" target="_blank" rel="noopener">한국경제</a><span class="sep">·</span><a href="https://www.ajunews.com/view/20261104094340247" target="_blank" rel="noopener">아주경제</a><span class="sep">·</span><a href="https://www.asiatoday.co.kr/kn/view.php?key=20261104010001738" target="_blank" rel="noopener">아시아투데이</a></p>
+</li><li class="fitem">
+  <h4 class="fitem-t">엔비디아·SKT·리벨리온·과기정통부 NVLink Fusion 협약, 국산 NPU를 엔비디아 시스템에 연동</h4>
+  <p class="fitem-b">11.09. 코엑스 「엔비디아 AI 데이 서울 2026」에서 맺은 협약으로, 리벨리온 차세대 NPU 「리벨 R200」을 NVLink Fusion으로 엔비디아 GPU와 묶어 MGX 규격 통합 시스템을 만들고 SKT가 2028년 자사 AI 데이터센터에 배치해 A.X K2·「모두의 AI」에 쓰는 방안을 검토함. 과기정통부는 협력을 다른 국산 NPU 기업으로 넓혀 기술 개발·실증·사업화·수출을 지원할 방침이며, 같은 날 AI 스타트업 22개사가 참여한 파트너십 포럼도 열었음.</p>
+  <p class="srcline"><span class="src-label">출처</span> <a href="https://www.korea.kr/briefing/pressReleaseView.do?newsId=156788455" target="_blank" rel="noopener">과학기술정보통신부(정책브리핑)</a><span class="sep">·</span><a href="https://zdnet.co.kr/view/?no=20261109140908" target="_blank" rel="noopener">ZDNet Korea</a><span class="sep">·</span><a href="https://www.fnnews.com/news/202611091824126848" target="_blank" rel="noopener">파이낸셜뉴스</a><span class="sep">·</span><a href="https://www.shinailbo.co.kr/news/articleView.html?idxno=5081357" target="_blank" rel="noopener">신아일보</a></p>
+</li></ol>
+</section>
+<section class="field" id="economy" aria-labelledby="h-economy">
+  <header class="field-h">
+    <h3 id="h-economy">경제</h3>
+    <p class="field-count">수집 6건(확인 6) · 본문 6건</p>
+  </header>
+  <ol class="flist"><li class="fitem">
+  <h4 class="fitem-t">코스피 5,018.85로 0.81% 하락, 외국인 7거래일 연속 순매도</h4>
+  <p class="fitem-b">11.09. 코스피는 장중 5,172.94까지 올랐다가 오후 외국인 매도에 밀려 40.84p(0.81%) 내린 5,018.85, 코스닥은 0.82% 내린 638.97로 마감했고 기관은 7,204억원을 순매수함. 원·달러 환율은 미 고용 호조를 소화하며 1,363.0원에 출발했다가 수출업체 네고 물량에 밀려 9.5원 내린 1,347.1원(주간 종가)으로 마쳤고, 10.26. 연중 저점(1,323.1원)보다는 24.0원 높음(서울신문 보도 기준).</p>
+  <p class="srcline"><span class="src-label">출처</span> <a href="https://www.businesskorea.co.kr/news/articleView.html?idxno=280833" target="_blank" rel="noopener">BusinessKorea</a><span class="sep">·</span><a href="https://www.seoul.co.kr/news/economy/securities/2026/11/09/20261109500283" target="_blank" rel="noopener">서울신문</a><span class="sep">·</span><a href="https://www.infostockdaily.co.kr/news/articleView.html?idxno=218842" target="_blank" rel="noopener">인포스탁데일리</a><span class="sep">·</span><a href="https://www.segye.com/newsView/20261109513513" target="_blank" rel="noopener">세계일보</a><span class="sep">·</span><a href="https://www.news1.kr/finance/market-exr/6348028" target="_blank" rel="noopener">뉴스1</a></p>
+</li><li class="fitem">
+  <h4 class="fitem-t">뉴욕증시 반도체 주도로 급반등, 국제유가는 4～6% 하락</h4>
+  <p class="fitem-b">9일(현지) 다우는 2.15%, S&amp;P500은 2.35%, 나스닥은 2.74%, 필라델피아반도체지수는 6.86% 올랐고 AMD 13.26%·브로드컴 8.78%·마이크론 6.25%가 뛴 반면, 엔비디아는 젠슨 황 CEO 사생활 의혹 보도로 4.27% 내림. 트럼프 대통령의 대이란 추가 공격 자제 발언으로 WTI는 86.85달러(-4.38%), 브렌트는 92.57달러(-5.85%)로 내렸음(정산가 기준).</p>
+  <p class="srcline"><span class="src-label">출처</span> <a href="https://www.newdaily.co.kr/site/data/html/2026/11/10/2026111000032.html" target="_blank" rel="noopener">뉴데일리</a><span class="sep">·</span><a href="https://www.seoul.co.kr/news/economy/2026/11/10/20261110500004" target="_blank" rel="noopener">서울신문</a><span class="sep">·</span><a href="https://topstarnews.net/news/articleView.html?idxno=16272538" target="_blank" rel="noopener">톱스타뉴스</a><span class="sep">·</span><a href="https://www.getnews.co.kr/news/articleView.html?idxno=886582" target="_blank" rel="noopener">겟뉴스</a></p>
+</li><li class="fitem">
+  <h4 class="fitem-t"><span class="badge b-past">지난 발표</span> 미 10월 고용 16.5만명 증가, 오늘 밤 10월 CPI 발표(11.06. 발표)</h4>
+  <p class="fitem-b">미 비농업 고용은 16.5만명 늘어 예상(로이터 6.5만명, 다우존스 5.9만명)을 크게 웃돌았고 실업률은 4.1%(9월 4.2%), 임금은 전년 대비 3.1% 올랐음. CME 페드워치의 12.08.～09. FOMC 0.25%p 인상 확률은 고용 발표 직후 76.8%에서 9일(현지) 약 82～84%로 올랐고<span class="tag-note">(보도 기준)</span>, 10월 CPI는 한국시간 11.10. 22:30에 나오며 로이터 예상은 전월 대비 0.3%·근원 0.2%임.</p>
+  <p class="srcline"><span class="src-label">출처</span> <a href="https://www.newspim.com/news/view/20261106001315" target="_blank" rel="noopener">뉴스핌</a><span class="sep">·</span><a href="https://www.fnnews.com/news/202611062256534209" target="_blank" rel="noopener">파이낸셜뉴스</a><span class="sep">·</span><a href="https://www.newspim.com/news/view/20261110000034" target="_blank" rel="noopener">뉴스핌</a><span class="sep">·</span><a href="https://www.tokenpost.kr/news/economy/434748" target="_blank" rel="noopener">토큰포스트</a></p>
+</li><li class="fitem">
+  <h4 class="fitem-t">한은 11.26. 금통위 0.25%p 인상(3.25%) 전망, 오늘 16시 10월 의사록 공개</h4>
+  <p class="fitem-b">한은은 10.22. 기준금리 연 3.00%를 위원 전원 일치로 동결했고(7·8월 연속 0.25%p 인상 뒤, 지난 발표), 우리금융경영연구소는 11.09. 「11월 금융시장 브리프」에서 반도체 수출 호조, 근원물가 2.8%, 수도권 집값 상승을 근거로 11.26. 3.25%로 인상할 것으로 전망함. 10월 소비자물가는 2.8%(11.03. 발표)였고 10월 수출은 1,152.8억달러로 역대 2위(반도체 564.4억달러)였음<span class="badge b-past">지난 발표</span>.</p>
+  <p class="srcline"><span class="src-label">출처</span> <a href="https://www.getnews.co.kr/news/articleView.html?idxno=886539" target="_blank" rel="noopener">겟뉴스</a><span class="sep">·</span><a href="https://www.fntimes.com/html/view.php?ud=202610220949143753179ad43907_18" target="_blank" rel="noopener">한국금융신문</a><span class="sep">·</span><a href="https://www.korea.kr/briefing/policyBriefingView.do?newsId=156787698" target="_blank" rel="noopener">대한민국 정책브리핑(국가데이터처)</a><span class="sep">·</span><a href="https://www.motir.go.kr/kor/article/ATCL3f49a5a8c/172360/view" target="_blank" rel="noopener">산업통상부</a></p>
+</li></ol>
+</section>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="implications">
+    <div class="wrap">
+      <h2 class="rail">시사점<span class="rail-sub">박사님 업무와 이어지는 것</span></h2>
+      <div class="content impl-grid">
+<article class="impl">
+  <p class="impl-k">행복청 평가</p>
+  <h3 class="impl-t">행정수도특별법 축조심사와 세종 관련 예산 심사</h3>
+  <p>11.11. 축조심사에서 조문 정리가 어디까지 나아가는지와 예결위 비경제부처 심사(11.11.～12.)에서 세종집무실·세종의사당 예산이 어떻게 다뤄지는지가 행복청 성과지표의 전제를 바꿈. 세종 분양전망지수(115.4)가 기관 이전 기대를 먼저 반영하고 있어 이전 일정과 주택시장 지표를 함께 볼 필요가 있음.</p>
+  <p class="todo"><span class="todo-k">할 일</span>11.11. 소위 결과를 국회 의안 심사경과로 확인하고, 행복도시법 개정안이 올라갈 다음 소위 일정을 따라감.</p>
+</article>
+<article class="impl">
+  <p class="impl-k">건축정책 연구</p>
+  <h3 class="impl-t">공공건축 설계공모·심의의 이행 관리</h3>
+  <p>건축HUB 일원화(2027년 1월)로 공모 공고·결과·심사 이력이 한 시스템에 쌓이게 되고, 서울시 공공건축심의 중단 사업(20건 중 4건) 지적은 심의 이후 이행을 따라가는 지표가 없다는 점을 보여 줌. 11.12. 시행되는 다세대·다가구 규모 완화와 감리비 예치제 개정안도 소규모 건축의 규모·감리 제도를 함께 바꿈.</p>
+  <p class="todo"><span class="todo-k">할 일</span>부동산원의 표준 설계공모지침서·운영 업무가이드를 받아 심사위원 후보군·심사 이력 관리 항목을 확인하고, 건축HUB 공모 자료를 연구 자료로 쓸 수 있는 공개 범위를 점검함.</p>
+</article>
+<article class="impl">
+  <p class="impl-k">AI 활용 연구</p>
+  <h3 class="impl-t">도구 비용과 건축 인허가 AI</h3>
+  <p>Fable 5.2의 가격 인하(100만 토큰당 입력 8달러·출력 40달러)로 연구팀의 AI 도구 운영비를 다시 산정할 수 있고, 국토부 AI 통합인허가 사전진단(2027년 1월 5개 지자체 시범)은 부지에 적용되는 법령·조례를 AI가 분석하는 행정 서비스여서 건축법령 AI 연구와 맞대어 볼 대상이 됨.</p>
+  <p class="todo"><span class="todo-k">할 일</span>사전진단 서비스가 다루는 조례 범위와 시범 지자체 자료를 확인해 연구팀 시스템과의 비교·협력 가능성을 검토함.</p>
+</article>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="schedule">
+    <div class="wrap">
+      <h2 class="rail">다가오는 일정<span class="rail-sub">확인된 날짜만. D-day는 11.10. 기준</span></h2>
+      <div class="content">
+        <ol class="evlist">
+<li class="ev today">
+  <span class="ev-d">11.10.(화) 16:00</span>
+  <span class="ev-dd">오늘</span>
+  <span class="ev-e">한국은행 제20차 금통위(10월) 의사록 공개</span>
+  <span class="ev-s"><span class="ev-sec">경제</span><a href="https://www.newspim.com/news/view/20261106001172" target="_blank" rel="noopener">뉴스핌</a></span>
+</li>
+<li class="ev today">
+  <span class="ev-d">11.10.(화) 22:30</span>
+  <span class="ev-dd">오늘</span>
+  <span class="ev-e">미국 10월 소비자물가지수(CPI) 발표(한국시간, 로이터 예상 전월 대비 0.3%·근원 0.2%)</span>
+  <span class="ev-s"><span class="ev-sec">경제</span><a href="https://www.tokenpost.kr/news/economy/434748" target="_blank" rel="noopener">토큰포스트</a></span>
+</li>
+<li class="ev soon">
+  <span class="ev-d">11.11.(수) 10:00</span>
+  <span class="ev-dd">D-1</span>
+  <span class="ev-e">국회 국토위 국토법안심사소위 제2차, 행정수도특별법 축조심사</span>
+  <span class="ev-s"><span class="ev-sec">정부 정책</span><a href="https://www.news1.kr/politics/assembly/6335047" target="_blank" rel="noopener">뉴스1</a></span>
+</li>
+<li class="ev soon">
+  <span class="ev-d">11.11.(수)～12.(목)</span>
+  <span class="ev-dd">D-1</span>
+  <span class="ev-e">국회 예결위 비경제부처 예산안 부별 심사</span>
+  <span class="ev-s"><span class="ev-sec">정부 정책</span><a href="https://www.segye.com/newsView/20261109502069" target="_blank" rel="noopener">세계일보</a></span>
+</li>
+<li class="ev soon">
+  <span class="ev-d">11.11.(수) 12:00</span>
+  <span class="ev-dd">D-1</span>
+  <span class="ev-e">금융위 10월 가계대출 동향(잠정)·한은 10월 금융시장 동향</span>
+  <span class="ev-s"><span class="ev-sec">경제</span><a href="https://www.newspim.com/news/view/20261106001172" target="_blank" rel="noopener">뉴스핌</a></span>
+</li>
+<li class="ev soon">
+  <span class="ev-d">11.11.(수) 14:00</span>
+  <span class="ev-dd">D-1</span>
+  <span class="ev-e">금융위·금감원 건설노동자 등 포용금융 업무협약(18:00 건설노동자·노무제공자 금융 접근성 개선 방안 발표)</span>
+  <span class="ev-s"><span class="ev-sec">경제</span><a href="https://www.newspim.com/news/view/20261106001172" target="_blank" rel="noopener">뉴스핌</a></span>
+</li>
+<li class="ev soon">
+  <span class="ev-d">11.11.(수)</span>
+  <span class="ev-dd">D-1</span>
+  <span class="ev-e">국가데이터처 10월 고용동향 발표</span>
+  <span class="ev-s"><span class="ev-sec">경제</span><a href="https://www.news1.kr/economy/trend/6346670" target="_blank" rel="noopener">뉴스1</a></span>
+</li>
+<li class="ev soon">
+  <span class="ev-d">11.11.(수)</span>
+  <span class="ev-dd">D-1</span>
+  <span class="ev-e">행안부 「공공 AI 대전환 챌린지」 참가작 접수 마감</span>
+  <span class="ev-s"><span class="ev-sec">AI</span><a href="https://www.newspim.com/news/view/20261021000295" target="_blank" rel="noopener">뉴스핌</a></span>
+</li>
+<li class="ev soon">
+  <span class="ev-d">11.12.(목)</span>
+  <span class="ev-dd">D-2</span>
+  <span class="ev-e">건축법 시행령 개정 시행: 다세대·다가구 1,000㎡, 다가구 4개 층, 일조 10～17m 구간 5m 이격<span class="badge b-past">지난 발표</span></span>
+  <span class="ev-s"><span class="ev-sec">건축</span><a href="https://www.korea.kr/news/policyNewsView.do?newsId=148974876" target="_blank" rel="noopener">정책브리핑(국토교통부)</a></span>
+</li>
+<li class="ev soon">
+  <span class="ev-d">11.12.(목)</span>
+  <span class="ev-dd">D-2</span>
+  <span class="ev-e">네이버 3분기 실적 발표(AI 투자 비용 확인)</span>
+  <span class="ev-s"><span class="ev-sec">AI</span><a href="https://zdnet.co.kr/view/?no=20261108125202" target="_blank" rel="noopener">ZDNet Korea</a></span>
+</li>
+<li class="ev soon">
+  <span class="ev-d">11.13.(금)</span>
+  <span class="ev-dd">D-3</span>
+  <span class="ev-e">전세사기피해자 최소보장제 시행, LH 지역본부 현장 신청 개시</span>
+  <span class="ev-s"><span class="ev-sec">정부 정책</span><a href="https://www.korea.kr/briefing/pressReleaseView.do?newsId=156788424" target="_blank" rel="noopener">국토교통부(정책브리핑)</a></span>
+</li>
+<li class="ev soon">
+  <span class="ev-d">11.13.(금) 11:10</span>
+  <span class="ev-dd">D-3</span>
+  <span class="ev-e">금융위 제3차 주택공급 정례브리핑</span>
+  <span class="ev-s"><span class="ev-sec">부동산</span><a href="https://www.newspim.com/news/view/20261106001172" target="_blank" rel="noopener">뉴스핌</a></span>
+</li>
+<li class="ev soon">
+  <span class="ev-d">11.13.(금) 18:00</span>
+  <span class="ev-dd">D-3</span>
+  <span class="ev-e">건축사 자격시험 제2회 합격예정자 서류 제출 마감</span>
+  <span class="ev-s"><span class="ev-sec">건축</span><a href="https://www.guktonews.co.kr/9997" target="_blank" rel="noopener">국토매일</a></span>
+</li>
+<li class="ev soon">
+  <span class="ev-d">11.13.(금) 22:30</span>
+  <span class="ev-dd">D-3</span>
+  <span class="ev-e">미국 10월 생산자물가지수(PPI) 발표(한국시간)</span>
+  <span class="ev-s"><span class="ev-sec">경제</span><a href="https://www.tokenpost.kr/news/economy/434748" target="_blank" rel="noopener">토큰포스트</a></span>
+</li>
+<li class="ev soon">
+  <span class="ev-d">11.16.(월)</span>
+  <span class="ev-dd">D-6</span>
+  <span class="ev-e">국회 예결위 예산안조정소위 가동(세부 사업 증·감액 심사)</span>
+  <span class="ev-s"><span class="ev-sec">정부 정책</span><a href="https://www.segye.com/newsView/20261109502069" target="_blank" rel="noopener">세계일보</a></span>
+</li>
+<li class="ev soon">
+  <span class="ev-d">11.16.(월)</span>
+  <span class="ev-dd">D-6</span>
+  <span class="ev-e">Anthropic 미 증시 상장 목표 주간(보도 기준, 지연 가능성 보도 있음)</span>
+  <span class="ev-s"><span class="ev-sec">AI</span><a href="https://finance.yahoo.com/technology/ai/articles/anthropic-launches-powerful-models-ahead-191625170.html" target="_blank" rel="noopener">Bloomberg(Yahoo Finance 게재)</a></span>
+</li>
+<li class="ev ">
+  <span class="ev-d">11.20.(금)</span>
+  <span class="ev-dd">D-10</span>
+  <span class="ev-e">「건축물 해체계획서의 작성 및 감리업무 등에 관한 기준」 개정고시안 행정예고 마감(국토부 공고 제2026-1348호)</span>
+  <span class="ev-s"><span class="ev-sec">정부 정책</span><a href="https://www.molit.go.kr/mta/USR/law/m_37141/dtl.jsp?r_id=10098" target="_blank" rel="noopener">국토교통부</a></span>
+</li>
+<li class="ev ">
+  <span class="ev-d">11.25.(수)～27.(금)</span>
+  <span class="ev-dd">D-15</span>
+  <span class="ev-e">스마트건설·안전·AI 엑스포 2026(킨텍스 제1전시장, 국토부 주최)</span>
+  <span class="ev-s"><span class="ev-sec">건설</span><a href="https://www.kintex.com/web/ko/event/view.do?seq=26071604" target="_blank" rel="noopener">킨텍스</a></span>
+</li>
+<li class="ev ">
+  <span class="ev-d">11.25.(수)</span>
+  <span class="ev-dd">D-15</span>
+  <span class="ev-e">공공 AI 대전환 챌린지 결선(킨텍스 정부혁신박람회)</span>
+  <span class="ev-s"><span class="ev-sec">AI</span><a href="https://www.newspim.com/news/view/20261021000295" target="_blank" rel="noopener">뉴스핌</a></span>
+</li>
+<li class="ev ">
+  <span class="ev-d">11.26.(목)</span>
+  <span class="ev-dd">D-16</span>
+  <span class="ev-e">층간 바닥충격음 차단구조기준 개정안 행정예고 마감</span>
+  <span class="ev-s"><span class="ev-sec">건축</span><a href="https://www.korea.kr/news/policyNewsView.do?newsId=148975109" target="_blank" rel="noopener">정책브리핑(국토교통부)</a></span>
+</li>
+<li class="ev ">
+  <span class="ev-d">11.26.(목)</span>
+  <span class="ev-dd">D-16</span>
+  <span class="ev-e">한국은행 금통위 기준금리 결정(올해 마지막, 현 연 3.00%)</span>
+  <span class="ev-s"><span class="ev-sec">경제</span><a href="https://www.getnews.co.kr/news/articleView.html?idxno=886539" target="_blank" rel="noopener">겟뉴스</a></span>
+</li>
+<li class="ev ">
+  <span class="ev-d">11.27.(금) 13:00</span>
+  <span class="ev-dd">D-17</span>
+  <span class="ev-e">2026 Smart Construction Day·스마트건설 지수(SCCI 2026) 발표(킨텍스 제1전시장)</span>
+  <span class="ev-s"><span class="ev-sec">건설</span><a href="https://www.dnews.co.kr/uhtml/view.jsp?idxno=202611051649087470876" target="_blank" rel="noopener">대한경제</a></span>
+</li>
+<li class="ev ">
+  <span class="ev-d">11.30.(월)</span>
+  <span class="ev-dd">D-20</span>
+  <span class="ev-e">국회 예결위 전체회의 예산안 의결(계획, 보도 기준)</span>
+  <span class="ev-s"><span class="ev-sec">정부 정책</span><a href="https://www.kukinews.com/article/view/kuk202611090015" target="_blank" rel="noopener">쿠키뉴스</a></span>
+</li>
+<li class="ev far">
+  <span class="ev-d">11월 중</span>
+  <span class="ev-dd">11월</span>
+  <span class="ev-e">국회 조세소위 종부세·양도세 개편안 병합 심사(날짜 미정, 보도 기준)</span>
+  <span class="ev-s"><span class="ev-sec">부동산</span><a href="https://www.mt.co.kr/amp/economy/2026/11/09/2026110819462134702" target="_blank" rel="noopener">머니투데이</a></span>
+</li>
+<li class="ev ">
+  <span class="ev-d">12.02.(수)</span>
+  <span class="ev-dd">D-22</span>
+  <span class="ev-e">2027년 예산안 국회 본회의 법정 처리 시한</span>
+  <span class="ev-s"><span class="ev-sec">정부 정책</span><a href="https://www.kukinews.com/article/view/kuk202611090015" target="_blank" rel="noopener">쿠키뉴스</a></span>
+</li>
+<li class="ev ">
+  <span class="ev-d">12.08.(화)～09.(수)</span>
+  <span class="ev-dd">D-28</span>
+  <span class="ev-e">미 FOMC(현지)</span>
+  <span class="ev-s"><span class="ev-sec">경제</span><a href="https://www.newspim.com/news/view/20261106001315" target="_blank" rel="noopener">뉴스핌</a></span>
+</li>
+<li class="ev ">
+  <span class="ev-d">12.09.(수)</span>
+  <span class="ev-dd">D-29</span>
+  <span class="ev-e">제439회 정기국회 종료(행정수도특별법 연내 처리 시한)</span>
+  <span class="ev-s"><span class="ev-sec">정부 정책</span><a href="https://www.daejonilbo.com/news/articleView.html?idxno=2311853" target="_blank" rel="noopener">대전일보</a></span>
+</li>
+<li class="ev ">
+  <span class="ev-d">12.11.(금)</span>
+  <span class="ev-dd">D-31</span>
+  <span class="ev-e">「건축법 시행령」 일부개정령안 입법예고 의견 마감(국토부 공고 제2026-1346호)</span>
+  <span class="ev-s"><span class="ev-sec">정부 정책</span><a href="https://www.molit.go.kr/mta/USR/law/m_37141/dtl.jsp?r_id=10053" target="_blank" rel="noopener">국토교통부</a></span>
+</li>
+<li class="ev ">
+  <span class="ev-d">12.29.(화)</span>
+  <span class="ev-dd">D-49</span>
+  <span class="ev-e">건축사 자격시험 제2회 최종합격자 발표</span>
+  <span class="ev-s"><span class="ev-sec">건축</span><a href="https://www.guktonews.co.kr/9997" target="_blank" rel="noopener">국토매일</a></span>
+</li>
+<li class="ev far">
+  <span class="ev-d">12월 중</span>
+  <span class="ev-dd">12월</span>
+  <span class="ev-e">프론티어 AI 개발 사업자 공모 시작(12월께, 2027년 2월 마감, 보도 기준)</span>
+  <span class="ev-s"><span class="ev-sec">AI</span><a href="https://www.ajunews.com/view/20261109142854617" target="_blank" rel="noopener">아주경제</a></span>
+</li>
+<li class="ev far">
+  <span class="ev-d">12월 중</span>
+  <span class="ev-dd">12월</span>
+  <span class="ev-e">가덕도신공항법 개정 국회 통과·우선시공분 계약 목표(국토부, 연내)</span>
+  <span class="ev-s"><span class="ev-sec">건설</span><a href="https://www.seoul.co.kr/news/society/2026/11/09/20261109500177" target="_blank" rel="noopener">서울신문</a></span>
+</li>
+<li class="ev far">
+  <span class="ev-d">2027.01.</span>
+  <span class="ev-dd">2027</span>
+  <span class="ev-e">공공건축 설계공모 공고·결과 건축HUB 일원화 시행</span>
+  <span class="ev-s"><span class="ev-sec">건축</span><a href="https://www.fnnews.com/news/202611090958152864" target="_blank" rel="noopener">파이낸셜뉴스</a></span>
+</li>
+<li class="ev far">
+  <span class="ev-d">2027.01.</span>
+  <span class="ev-dd">2027</span>
+  <span class="ev-e">국토부 AI 통합인허가 사전진단 5개 지자체 시범운영 개시</span>
+  <span class="ev-s"><span class="ev-sec">AI</span><a href="https://www.hankyung.com/article/2026110462401" target="_blank" rel="noopener">한국경제</a></span>
+</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="notes">
+    <div class="wrap">
+      <h2 class="rail">사실 확인 노트<span class="rail-sub">본문에서 뺀 항목과 엇갈린 숫자</span></h2>
+      <div class="content">
+        <div class="gchart">
+          <div class="gchart-h">
+            <h3>분야별 수집 항목과 확인 등급</h3>
+            <div class="glegend" aria-label="범례">
+              <span><i class="g1"></i>확인 35</span>
+              <span><i class="g2"></i>단일 출처 6</span>
+              <span><i class="g3"></i>기각 0</span>
+            </div>
+          </div>
+          <div class="gc-rows" role="img" aria-label="분야별 수집 항목 수와 확인 등급 분포">
+<div class="gc-row">
+  <span class="gc-l">정부 정책</span>
+  <span class="gc-track"><span class="gc-bar" style="width:75.00%"><span class="seg g1" style="flex-grow:6" title="정부 정책 확인 6건"></span></span></span>
+  <span class="gc-v">6<span class="muted">/본문 5</span></span>
+</div>
+<div class="gc-row">
+  <span class="gc-l">건축</span>
+  <span class="gc-track"><span class="gc-bar" style="width:87.50%"><span class="seg g1" style="flex-grow:5" title="건축 확인 5건"></span><span class="seg g2" style="flex-grow:2" title="건축 단일 출처 2건"></span></span></span>
+  <span class="gc-v">7<span class="muted">/본문 5</span></span>
+</div>
+<div class="gc-row">
+  <span class="gc-l">건설</span>
+  <span class="gc-track"><span class="gc-bar" style="width:87.50%"><span class="seg g1" style="flex-grow:6" title="건설 확인 6건"></span><span class="seg g2" style="flex-grow:1" title="건설 단일 출처 1건"></span></span></span>
+  <span class="gc-v">7<span class="muted">/본문 6</span></span>
+</div>
+<div class="gc-row">
+  <span class="gc-l">부동산</span>
+  <span class="gc-track"><span class="gc-bar" style="width:100.00%"><span class="seg g1" style="flex-grow:7" title="부동산 확인 7건"></span><span class="seg g2" style="flex-grow:1" title="부동산 단일 출처 1건"></span></span></span>
+  <span class="gc-v">8<span class="muted">/본문 5</span></span>
+</div>
+<div class="gc-row">
+  <span class="gc-l">AI</span>
+  <span class="gc-track"><span class="gc-bar" style="width:87.50%"><span class="seg g1" style="flex-grow:5" title="AI 확인 5건"></span><span class="seg g2" style="flex-grow:2" title="AI 단일 출처 2건"></span></span></span>
+  <span class="gc-v">7<span class="muted">/본문 6</span></span>
+</div>
+<div class="gc-row">
+  <span class="gc-l">경제</span>
+  <span class="gc-track"><span class="gc-bar" style="width:75.00%"><span class="seg g1" style="flex-grow:6" title="경제 확인 6건"></span></span></span>
+  <span class="gc-v">6<span class="muted">/본문 6</span></span>
+</div>
+          </div>
+          <p class="gnote">막대 길이는 수집 항목 수(분야 간 중복 포함), 오른쪽 숫자는 수집/본문 채택 수. 상충 판정은 0건이며 엇갈린 숫자는 아래에 따로 적음.</p>
+        </div>
+        <div class="ngroups">
+<div class="ngroup"><h3>본문에서 뺀 항목</h3><ul><li><p><span class="badge b-past">지난 발표</span> 국토부·금융위의 「11월 중순 추가 부동산 대책」 게시글 부인(11.06.)과 올해 네 번째 수사의뢰 방침은 어제 브리핑에 실은 내용이라 뺐고, 11.10. 14:00 국토부 2차관의 부천 주택공급지역 교통대책 점검도 함께 뺌.</p><p class="srcline"><span class="src-label">출처</span> <a href="https://www.fnnews.com/news/202611061244537214" target="_blank" rel="noopener">파이낸셜뉴스</a><span class="sep">·</span><a href="https://www.newspim.com/news/view/20261109000572" target="_blank" rel="noopener">뉴스핌</a></p></li><li><p><span class="badge b-past">지난 발표</span> 국가AI전략위 「AI 입법 프레임워크」 의결(11.06.)은 어제 핵심 3에 실어 뺌. 22대 국회 「AI」 언급 법안 477건(약 29개월)과 21대 170건(4년)은 디지털데일리·ZDNet·전자신문이 일치함.</p><p class="srcline"><span class="src-label">출처</span> <a href="https://ddaily.co.kr/page/view/2026110616331138429" target="_blank" rel="noopener">디지털데일리</a><span class="sep">·</span><a href="https://zdnet.co.kr/view?no=20261106111202" target="_blank" rel="noopener">ZDNet Korea</a></p></li><li><p><span class="badge b-past">지난 발표</span> 다세대·오피스텔 층간소음 차단기준 49dB 강화 행정예고(11.05.)는 어제 실은 내용이라 일정(11.26. 마감)에만 둠.</p><p class="srcline"><span class="src-label">출처</span> <a href="https://www.korea.kr/news/policyNewsView.do?newsId=148975109" target="_blank" rel="noopener">대한민국 정책브리핑(국토교통부)</a></p></li><li><p>미 상원 인허가 개혁법(S.5653, BAAJA) 첫 cloture 표결은 11.09. 17:30(미 동부) 예정까지만 확인했고 결과를 확인하지 못해 뺌. 트럼프 개선문(250피트)의 국가수도계획위원회(NCPC) 8대 4 승인과 연방법원의 최소 14일 착공 금지 명령(11.05., 지난 발표)은 NBC·CBS·Al Jazeera가 일치함.</p><p class="srcline"><span class="src-label">출처</span> <a href="https://hillheat.com/events/2026/11/09/first-cloture-vote-on-baaja-s-5653" target="_blank" rel="noopener">HillHeat</a><span class="sep">·</span><a href="https://www.nbcnews.com/politics/trump-administration/trump-triumphal-arch-approval-opposition-asks-judge-to-block-rcna607642" target="_blank" rel="noopener">NBC News</a></p></li><li><p><span class="badge b-past">지난 발표</span> 수도권 공공주택 착공이 연간 목표의 26%(10월 둘째 주)이고 2027년 주택공급 예산 30조원·공적주택 21.8만호라는 내용(11.03. 보도)과 5대 은행 10월 가계대출 2.77조원 증가(11.02. 보도)는 앞선 발표라 뺌. 10월 전 금융권 가계대출은 11.11. 발표됨.</p><p class="srcline"><span class="src-label">출처</span> <a href="https://m.news.nate.com/view/20261103n27312" target="_blank" rel="noopener">아주경제(네이트뉴스)</a><span class="sep">·</span><a href="https://www.segye.com/newsView/20261102515970" target="_blank" rel="noopener">세계일보</a></p></li><li><p><span class="badge b-past">지난 발표</span> 중국 100대 도시 10월 신축 가격 전년 대비 2.02% 상승·기존주택 전월 대비 0.61% 하락(중국지수연구원)은 SteelOrbis 한 곳뿐이라 뺌.</p><p class="srcline"><span class="src-label">출처</span> <a href="https://www.steelorbis.com/steel-news/latest-news/new-house-prices-in-100-chinese-cities-up-202-percent-in-october-2026-1487503.htm" target="_blank" rel="noopener">SteelOrbis</a></p></li><li><p>스마트건설 지수 「SCCI 2026」은 11.27. 발표 예정이라 일정에만 둠. 부동산원 11월 2주 주간 동향(11.12.)은 정례 발표일로 짐작한 날짜이고, 개포현대2차 재건축 설계자 선정 주민총회(11.14.)는 한 곳에서만 확인돼 둘 다 일정에서 뺌.</p><p class="srcline"><span class="src-label">출처</span> <a href="https://www.dnews.co.kr/uhtml/view.jsp?idxno=202611051649087470876" target="_blank" rel="noopener">대한경제</a></p></li></ul></div>
+<div class="ngroup"><h3>출처끼리 엇갈린 숫자</h3><ul><li><p>국민의힘 예산 삭감 규모: 11.03. 자체안의 「최소 30조원」과 그 뒤 보도의 「27조원 이상」(쿠키뉴스·SBS Biz)이 엇갈려 본문에 둘 다 적음. 예산안조정소위 종료일(11.27.)은 확인하지 못해 뺌.</p><p class="srcline"><span class="src-label">출처</span> <a href="https://www.kukinews.com/article/view/kuk202611090015" target="_blank" rel="noopener">쿠키뉴스</a></p></li><li><p>11.09. 외국인 코스피 순매도 금액: 6,930억원(BusinessKorea)·8,642억원(서울신문)·6,561억원(인포스탁데일리)으로 엇갈려 금액을 적지 않음.</p><p class="srcline"><span class="src-label">출처</span> <a href="https://www.businesskorea.co.kr/news/articleView.html?idxno=280833" target="_blank" rel="noopener">BusinessKorea</a><span class="sep">·</span><a href="https://www.seoul.co.kr/news/economy/securities/2026/11/09/20261109500283" target="_blank" rel="noopener">서울신문</a></p></li><li><p>2027년 SOC 예산 증가율: 4.0%(이코노믹리뷰)와 4.3%(헤럴드경제, 27.7조→28.9조원)로 엇갈려 증가율을 뺌.</p><p class="srcline"><span class="src-label">출처</span> <a href="https://www.econovill.com/news/articleView.html?idxno=754278" target="_blank" rel="noopener">이코노믹리뷰</a><span class="sep">·</span><a href="https://biz.heraldcorp.com/article/10858711" target="_blank" rel="noopener">헤럴드경제</a></p></li><li><p>서울 아파트 매물 8만528건의 기준일은 서울신문 11.08., 서울경제 11.07.로 다름. 증가율 33.3%는 8.3. 대비, 29.6%는 3개월 전 대비라 서로 어긋나지 않음.</p></li><li><p>서울신문 정비사업 단독 기사 제목은 「213곳」이나 본문 수치(2만㎡ 미만 231곳, 500가구 기준 193곳, 차이 38곳)가 일관돼 231곳으로 적음.</p></li><li><p>프론티어 AI 사업비: 아주경제 4조6,250억원, ZDNet Korea(10.02.) 약 4.7조원.</p></li><li><p>목동13단지 신축 가구: 대부분 3,757가구, 아시아타임즈만 3,852가구.</p></li><li><p>미 10월 고용 예상치: 로이터 6.5만명, 다우존스 5.9만명.</p></li><li><p>11.09. 원·달러 종가는 대부분 1,347.1원이고 서플만 1,347.50원. S&amp;P500 종가는 7,549.94(뉴데일리)와 7,549.83(서울신문)으로 소폭 다름. WTI는 정산가 86.85달러 기준이며 톱스타뉴스의 86.69달러는 정산 뒤 시세로 보임.</p></li></ul></div>
+<div class="ngroup"><h3>확인 범위가 좁은 내용</h3><ul><li><p>Fable 5.2 가격 인하율 20%는 Anthropic 공식 글에 비율이 없어 Bloomberg 보도와 5.1 가격(10·50달러, 가격 집계 사이트 기준) 대비 계산으로 확인함.</p></li><li><p>11.26. 금통위 인상 전망은 우리금융경영연구소 한 기관의 전망이며(겟뉴스 보도), 서울신문도 「세 번째 인상」 가능성을 보도함.</p></li><li><p>OpenAI 기업가치 1.25조 달러가 투자 전 가치인지 투자 후 가치인지는 보도에서 밝혀지지 않음.</p></li><li><p>22대 국회 행정수도 관련 의안 15건은 교차 확인하지 못해 뺌.</p></li><li><p>행안부 「온AI」 웹검색·보고서 협업 기능, NIA의 공공 AI 서비스 12개 과제 중간점검, 공공 AI 대전환 챌린지 일정은 각각 한 기사(ZDNet Korea·Korea Daily·뉴스핌)에만 근거함.</p></li><li><p>감리비 예치제에 대한 대한건축사협회 요구는 건축사신문 한 곳뿐이고, 의안번호·발의일·상정일은 국회 의안정보로 확인함.</p></li></ul></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="sources">
+    <div class="wrap">
+      <h2 class="rail">출처 목록<span class="rail-sub">항목 42개 · 링크 132개</span></h2>
+      <div class="content">
+        <div class="sgrid">
+<div class="sgroup"><h3>정부 정책</h3><ul><li class="sitem"><p class="sitem-h"><span class="place">핵심 1</span>행정수도특별법, 11.11. 국토위 소위 축조심사…연내 제정 분수령</p><ul class="slinks"><li><a href="https://open.assembly.go.kr" target="_blank" rel="noopener">열린국회정보(국회 일정 API)</a> <span class="muted">제439회국회(정기회) 제2차 국토법안심사소위원회 2026-11-11 10:00</span></li><li><a href="https://www.daejonilbo.com/news/articleView.html?idxno=2311853" target="_blank" rel="noopener">대전일보</a> <span class="muted">제자리 걸음 &#x27;행정수도특별법&#x27; 11일 연내 제정 분수령(11.05.)</span></li><li><a href="https://www.cctoday.co.kr/news/articleView.html?idxno=2239188" target="_blank" rel="noopener">충청투데이</a> <span class="muted">행정수도특별법 연내 제정, 11월 국회 심사가 분수령(10.28.)</span></li><li><a href="https://www.news1.kr/politics/assembly/6335047" target="_blank" rel="noopener">뉴스1</a> <span class="muted">국토위 소위, &#x27;행정수도특별법&#x27; 첫 심사…11월11일 집중 논의(10.28.)</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">본문</span>예결위 2027년 예산안 부별 심사, 162조원 미래대응기금 공방</p><ul class="slinks"><li><a href="https://www.news1.kr/politics/assembly/6348080" target="_blank" rel="noopener">뉴스1</a> <span class="muted">예결위, 이틀째 경제부처 심사…162조 미래대응기금 놓고 재격돌(11.10.)</span></li><li><a href="https://supple.kr/news/cmw9ptf75leckal9phjr9anub" target="_blank" rel="noopener">서플(연합뉴스)</a> <span class="muted">예결위, 경제부처 예산안 심사 이틀차…미래대응기금 공방 지속(11.10.)</span></li><li><a href="https://www.segye.com/newsView/20261109502069" target="_blank" rel="noopener">세계일보</a> <span class="muted">820조원대 &#x27;슈퍼 예산&#x27; 심사 본격화…162조 미래대기금 놓고 여야 대치(11.09.)</span></li><li><a href="https://www.kukinews.com/article/view/kuk202611090015" target="_blank" rel="noopener">쿠키뉴스</a> <span class="muted">예결위, 오늘부터 &#x27;821조&#x27; 예산안 심사…162조 미래대응기금 쟁점(11.09.)</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">본문</span>전세사기피해자 최소보장제 11.13. 시행, 오늘부터 온라인 사전 신청</p><ul class="slinks"><li><a href="https://www.korea.kr/briefing/pressReleaseView.do?newsId=156788424" target="_blank" rel="noopener">국토교통부(정책브리핑)</a> <span class="muted">전세사기피해자 최소보장제 시행, 10일부터 최소지원금 신청하세요!</span></li><li><a href="https://www.jungbunews.com/news/articleView.html?idxno=2794290" target="_blank" rel="noopener">중부뉴스통신</a> <span class="muted">국토교통부, 전세사기피해자 최소보장제 시행, 10일부터 최소지원금 신청하세요!</span></li><li><a href="https://gosiweek.com/article/1065565700368580" target="_blank" rel="noopener">고시위크</a> <span class="muted">전세사기 피해자, 보증금 3분의 1까지 회복 보장…오늘부터 지원금 신청</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">확인 노트</span><span class="badge b-past">지난 발표</span> 국토부·금융위, 「11월 중순 추가 부동산 대책」 게시글 부인…올해 네 번째 수사의뢰</p><ul class="slinks"><li><a href="https://www.fnnews.com/news/202611061244537214" target="_blank" rel="noopener">파이낸셜뉴스</a> <span class="muted">&quot;부천·수원 규제지역 추가&quot; 확산에...정부 &quot;사실 아냐, 수사 의뢰&quot;(11.06.)</span></li><li><a href="https://www.newspim.com/news/view/20261109000572" target="_blank" rel="noopener">뉴스핌</a> <span class="muted">부천 규제·주담대 축소설 또 확산…국토부 &quot;유포자 수사의뢰&quot;(11.09.)</span></li><li><a href="https://www.newstong.co.kr/view3.aspx?seq=14804613" target="_blank" rel="noopener">연합뉴스(뉴스통 전재)</a> <span class="muted">[총리·장차관 일정](10일·화)</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">본문</span>과기정통부, 국산 NPU를 엔비디아 시스템과 연계(AI 분야 NVLink Fusion 협약 항목에 합침)</p><ul class="slinks"><li><a href="https://www.korea.kr/briefing/pressReleaseView.do?newsId=156788455" target="_blank" rel="noopener">과학기술정보통신부(정책브리핑)</a> <span class="muted">국산 NPU, 엔비디아 시스템과 연계해 글로벌 AI 인프라 시장 진출 길 연다</span></li><li><a href="https://www.etoday.co.kr/news/view/2645820" target="_blank" rel="noopener">이투데이</a> <span class="muted">엔비디아·SK텔레콤·리벨리온 맞손...국산 NPU, 엔비디아 시스템과 연계</span></li><li><a href="https://www.aitimes.com/news/articleView.html?idxno=217170" target="_blank" rel="noopener">AI타임스</a> <span class="muted">엔비디아·SK텔레콤·리벨리온, 이기종 AI 컴퓨팅 겨냥 3각 동맹</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">본문</span>과기정통부 전 직급 AI 대화형 코딩 실습</p><ul class="slinks"><li><a href="https://www.korea.kr/briefing/pressReleaseView.do?newsId=156788451" target="_blank" rel="noopener">과학기술정보통신부(정책브리핑)</a> <span class="muted">과기정통부, 전직급 인공지능 대화형 코딩으로 행정혁신 앞당긴다</span></li><li><a href="https://zdnet.co.kr/view/?no=20261109105952" target="_blank" rel="noopener">ZDNet Korea</a> <span class="muted">과기정통부 실국장도 AI로 코딩...국산 AI 모델 활용 실습</span></li><li><a href="https://www.news1.kr/it-science/cc-newmedia/6347275" target="_blank" rel="noopener">뉴스1</a> <span class="muted">&quot;행정혁신 앞당긴다&quot;…과기정통부, 전 직원에 &#x27;AI 바이브코딩&#x27; 교육</span></li></ul></li></ul></div>
+<div class="sgroup"><h3>건축</h3><ul><li class="sitem"><p class="sitem-h"><span class="place">핵심 2</span>공공건축 설계공모 공고·결과, 2027년 1월부터 건축HUB로 일원화</p><ul class="slinks"><li><a href="https://www.fnnews.com/news/202611090958152864" target="_blank" rel="noopener">파이낸셜뉴스</a> <span class="muted">부동산원, 공공건축 설계공모 공고·결과 &#x27;건축HUB&#x27;로 일원화</span></li><li><a href="https://www.ancnews.kr/news/articleView.html?idxno=21374" target="_blank" rel="noopener">건축사신문</a> <span class="muted">내년부터 공공건축 설계공모(공고·결과) &#x27;건축HUB&#x27;로 일원화</span></li><li><a href="https://korean-vibe.com/news/newsview.php?ncode=179532459666002" target="_blank" rel="noopener">연합뉴스(K-VIBE 재게재, 지난 보도 09.10.)</a> <span class="muted">끊이지 않는 설계공모 &#x27;로비&#x27; 논란…징계받고도 심사위원으로</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">본문</span><span class="badge b-past">지난 발표</span> 다세대·다가구 면적 660→1,000㎡, 11.12. 시행</p><ul class="slinks"><li><a href="https://www.korea.kr/news/policyNewsView.do?newsId=148974876" target="_blank" rel="noopener">대한민국 정책브리핑(국토교통부)</a> <span class="muted">다세대·다가구 면적 제한 1000㎡로 완화…다가구 4층까지 허용</span></li><li><a href="https://www.ancnews.kr/news/articleView.html?idxno=21359" target="_blank" rel="noopener">건축사신문</a> <span class="muted">11월 12일부터 다세대·다가구 1,000㎡으로 면적제한 상향…일조권 규제도 완화</span></li><li><a href="https://www.kbcs.kr/news/article.html?no=456944" target="_blank" rel="noopener">한국소통투데이</a> <span class="muted">국토교통부, 11월 12일부터 다세대·다가구주택 면적 제한 1,000㎡로 완화</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">본문</span>서울시 공공건축심의 통과 사업 4건 설계 후 중단, 설계비 21억1,200만원<span class="tag-note">(보도 기준)</span></p><ul class="slinks"><li><a href="https://newspim.com/news/view/20261109000562" target="_blank" rel="noopener">뉴스핌</a> <span class="muted">오중석 시의원, 공공건축심의 통과 사업 4개 멈춰…설계비 21억 원 낭비</span></li><li><a href="https://www.webeconomy.co.kr/news/articleView.html?idxno=2367239" target="_blank" rel="noopener">웹이코노미</a> <span class="muted">서울시의회 오중석 의원, 공공건축심의 사후관리 미흡 지적</span></li><li><a href="https://go.seoul.co.kr/news/newsView.php?id=20261110500025" target="_blank" rel="noopener">서울신문</a> <span class="muted">오중석 서울시의원 &quot;심의는 관문, 그 뒤는 깜깜이&quot;… 공공건축심의 사후관리 허점 질타</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">본문</span>감리비 예치제 건축법 개정안, 건축사협회 「사용승인 연동 지급」 삭제 요구 <span class="badge b-single">단일 출처</span><span class="badge b-single">단일 출처</span></p><ul class="slinks"><li><a href="https://www.ancnews.kr/news/articleView.html?idxno=21373" target="_blank" rel="noopener">건축사신문</a> <span class="muted">감리 독립성 높일 &#x27;감리비 예치제&#x27; 제도화…업무 대가 지급시기는 계약 기준 준수해야</span></li><li><a href="https://likms.assembly.go.kr/bill/billDetail.do?billId=PRC_X2W6D0C6K1L9J1I1G3H9Q0O2N8M9U9" target="_blank" rel="noopener">국회 의안정보시스템</a> <span class="muted">건축법 일부개정법률안(김종양의원 등 10인, 2220008)</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">본문</span>민주당, 서울 정비사업 인허가권 일부 구청장 이양 추진 <span class="badge b-single">단일 출처</span><span class="badge b-single">단일 출처</span></p><ul class="slinks"><li><a href="https://www.seoul.co.kr/news/politics/2026/11/10/20261110004002" target="_blank" rel="noopener">서울신문</a> <span class="muted">[단독] 서울 재건축·재개발 213곳, 구청장에 인허가권 준다… 공급 속도</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">확인 노트</span><span class="badge b-past">지난 발표</span> 다세대·오피스텔 층간소음 차단기준 49dB 강화 행정예고</p><ul class="slinks"><li><a href="https://www.korea.kr/news/policyNewsView.do?newsId=148975109" target="_blank" rel="noopener">대한민국 정책브리핑(국토교통부)</a> <span class="muted">다세대·오피스텔 층간소음 기준 강화 행정예고</span></li><li><a href="https://biz.sbs.co.kr/amp/article/20000344415" target="_blank" rel="noopener">SBS Biz</a> <span class="muted">다세대·오피스텔 층간소음 기준 강화…중량·경량충격음 모두 49dB 이하</span></li><li><a href="https://www.ancnews.kr/news/articleView.html?idxno=21368" target="_blank" rel="noopener">건축사신문</a> <span class="muted">다세대·오피스텔 층간소음 차단기준 강화…중량·경량충격음 49dB 이하로</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">확인 노트</span>미 상원 인허가 개혁법(BAAJA) cloture 표결 예정, 트럼프 개선문 NCPC 승인 뒤 법원 제동</p><ul class="slinks"><li><a href="https://hillheat.com/events/2026/11/09/first-cloture-vote-on-baaja-s-5653" target="_blank" rel="noopener">HillHeat</a> <span class="muted">First Cloture Vote on BAAJA, S. 5653</span></li><li><a href="https://www.naco.org/news/us-senate-releases-updates-bipartisan-american-affordability-and-jobs-act-ahead-anticipated" target="_blank" rel="noopener">NACo</a> <span class="muted">U.S. Senate releases updates to BAAJA ahead of anticipated vote</span></li><li><a href="https://www.archpaper.com/2026/11/senate-baaja/" target="_blank" rel="noopener">The Architect&#x27;s Newspaper</a> <span class="muted">Senate BAAJA</span></li><li><a href="https://www.nbcnews.com/politics/trump-administration/trump-triumphal-arch-approval-opposition-asks-judge-to-block-rcna607642" target="_blank" rel="noopener">NBC News</a> <span class="muted">Trump&#x27;s D.C.-area arch approved by federal planning commission as court battle looms</span></li><li><a href="https://www.cbsnews.com/news/trump-arch-approval-national-capital-planning-commission/" target="_blank" rel="noopener">CBS News</a> <span class="muted">Judge blocks construction on Trump&#x27;s 250-foot arch for now</span></li><li><a href="https://www.aljazeera.com/amp/news/2026/11/6/us-judge-halts-construction-of-trumps-triumphal-arch-in-washington-dc" target="_blank" rel="noopener">Al Jazeera</a> <span class="muted">US judge halts construction of Trump&#x27;s triumphal arch in Washington, DC</span></li></ul></li></ul></div>
+<div class="sgroup"><h3>건설</h3><ul><li class="sitem"><p class="sitem-h"><span class="place">본문</span>현대엔지니어링 양산 아파트 현장 신호수 사망, 노동부 작업중지</p><ul class="slinks"><li><a href="https://www.seoultimes.news/news/article.html?no=2000101970" target="_blank" rel="noopener">서울타임즈뉴스</a> <span class="muted">현대엔지니어링, 양산 공사현장서 중대재해…50대 하청 노동자 사망</span></li><li><a href="https://www.geconomy.co.kr/news/article.html?no=325432" target="_blank" rel="noopener">지이코노미</a> <span class="muted">현대엔지니어링 양산 건설현장서 또 사망사고</span></li><li><a href="https://www.ajunews.com/view/20261109161150083" target="_blank" rel="noopener">아주경제</a> <span class="muted">아파트 건설현장서 레미콘에 치인 50대 노동자... 사흘 만에 숨져</span></li><li><a href="https://news.nate.com/view/20261109n32191" target="_blank" rel="noopener">이데일리(네이트)</a> <span class="muted">대형건설사 건설현장서 중대재해 발생…노동부, 작업중지명령</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">본문</span>가덕도신공항 부지조성공사 실시설계 착수, 공사비 반영 특별법 개정 연내 추진</p><ul class="slinks"><li><a href="https://www.seoul.co.kr/news/society/2026/11/09/20261109500177" target="_blank" rel="noopener">서울신문</a> <span class="muted">가덕신공항, 공사비 현실화 앞서 실시설계 우선 착수</span></li><li><a href="https://view.asiae.co.kr/article/2026110910100370013" target="_blank" rel="noopener">아시아경제</a> <span class="muted">공사비 갈등 가덕도신공항 다시 본궤도…국토부·대우 컨소, 실시설계 착수</span></li><li><a href="https://www.fnnews.com/news/202611091825541718" target="_blank" rel="noopener">파이낸셜뉴스</a> <span class="muted">가덕도신공항 부지 실시설계 착수</span></li><li><a href="https://www.segye.com/newsView/20261109515452" target="_blank" rel="noopener">세계일보</a> <span class="muted">가덕도신공항 부지조성 실시설계 착수</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">본문</span>삼성물산 목동13단지 재건축 시공사 선정, 예정 공사비 2조3,763억원</p><ul class="slinks"><li><a href="https://www.segye.com/newsView/20261109503149" target="_blank" rel="noopener">세계일보</a> <span class="muted">삼성물산, 목동13단지 재건축 시공사 선정…2조3763억원 규모</span></li><li><a href="https://www.sentv.co.kr/article/view/sentv202611090238" target="_blank" rel="noopener">서울경제TV</a> <span class="muted">삼성물산, 목동13단지 재건축 시공사 선정…2.3조 규모</span></li><li><a href="https://www.businesspost.co.kr/BP?command=article_view&amp;num=451547" target="_blank" rel="noopener">비즈니스포스트</a> <span class="muted">삼성물산 서울 양천구 목동13단지 재건축 시공사 선정돼</span></li><li><a href="https://www.dpnews.co.kr/news/articleView.html?idxno=2722" target="_blank" rel="noopener">디벨로퍼뉴스</a> <span class="muted">목동13단지 재건축, 삼성물산 시공사 선정…찬성률 95.7%</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">본문</span>GS건설 용인 기흥역세권2지구 9,271억원 수주 공시</p><ul class="slinks"><li><a href="https://www.digitaltoday.co.kr/disclosure/articleView.html?idxno=713894" target="_blank" rel="noopener">디지털투데이</a> <span class="muted">GS건설, 용인 기흥역세권2지구 주상복합 9271억원 규모 공사 수주</span></li><li><a href="https://m.news.nate.com/view/20261109n24722" target="_blank" rel="noopener">네이트 뉴스</a> <span class="muted">GS건설 수주공시</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">본문</span><span class="badge b-past">지난 발표</span> 9월 건설수주 23.3조원, 전년 동월 대비 49.8% 증가</p><ul class="slinks"><li><a href="https://www.newsfreezone.co.kr/news/articleView.html?idxno=716767" target="_blank" rel="noopener">뉴스프리존</a> <span class="muted">9월 산업생산 15년6개월 만 최대폭 늘어</span></li><li><a href="https://biz.heraldcorp.com/article/10919919" target="_blank" rel="noopener">헤럴드경제</a> <span class="muted">9월 산업생산, 15년 6개월 만에 최대폭↑</span></li><li><a href="https://www.kyongbuk.co.kr/news/articleView.html?idxno=4089373" target="_blank" rel="noopener">경북일보</a> <span class="muted">9월 건설수주 대구 79.6%↓·경북 471.8%↑…엇갈린 지역 경기</span></li><li><a href="https://cerik.re.kr/material/prospect/3136" target="_blank" rel="noopener">한국건설산업연구원</a> <span class="muted">2026년 10월 월간건설시장동향</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">본문</span>내년 건설경기 회복 열쇠는 반도체·3기 신도시·SOC라는 업계 전망 <span class="badge b-single">단일 출처</span><span class="badge b-single">단일 출처</span></p><ul class="slinks"><li><a href="https://www.dailian.co.kr/news/view/1712580/" target="_blank" rel="noopener">데일리안</a> <span class="muted">건설경기 바닥 찍었나…&#x27;반도체·공공주택&#x27;이 내년 회복 열쇠</span></li><li><a href="https://biz.heraldcorp.com/article/10858711" target="_blank" rel="noopener">헤럴드경제</a> <span class="muted">내년 SOC에 28.9조 투입…행정수도·GTX에 투자 늘린다</span></li><li><a href="https://www.econovill.com/news/articleView.html?idxno=754278" target="_blank" rel="noopener">이코노믹리뷰</a> <span class="muted">SOC 예산 고작 4% 증가?… 내년 건설시장, 13조 &#x27;숨은 예산&#x27;에 달렸다</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">확인 노트</span>스마트건설 지수 SCCI 2026 11.27. 발표(일정에만 둠)</p><ul class="slinks"><li><a href="https://www.dnews.co.kr/uhtml/view.jsp?idxno=202611051649087470876" target="_blank" rel="noopener">대한경제</a> <span class="muted">[알립니다] 2026 SCCI 발표…&#x27;Smart Construction Day&#x27; 11월 27일 개최</span></li><li><a href="https://www.kintex.com/web/ko/event/view.do?seq=26071604" target="_blank" rel="noopener">킨텍스</a> <span class="muted">2026 스마트건설·안전·AI 엑스포 행사 안내</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">지표판</span>건설경기실사지수(CBSI)·해외건설 수주 누계<span class="badge b-past">지난 발표</span></p><ul class="slinks"><li><a href="https://cerik.re.kr/material/prospect/3136" target="_blank" rel="noopener">한국건설산업연구원</a></li><li><a href="https://www.newspim.com/news/view/20261105000556" target="_blank" rel="noopener">뉴스핌</a></li></ul></li></ul></div>
+<div class="sgroup"><h3>부동산</h3><ul><li class="sitem"><p class="sitem-h"><span class="place">본문</span>서울 아파트 매물 8만528건, 8·3 세제개편안 발표 뒤 33% 증가<span class="tag-note">(보도 기준)</span></p><ul class="slinks"><li><a href="https://seoul.co.kr/news/editOpinion/column/politics-story/2026/11/10/20261110025001" target="_blank" rel="noopener">서울신문</a> <span class="muted">[세종로의 아침] 매물 늘고 거래량 줄면, 집값은 내려갈까</span></li><li><a href="https://m.sedaily.com/article/20111915" target="_blank" rel="noopener">서울경제</a> <span class="muted">요즘 서울 집값 심상찮더니 &quot;팔겠다는 사람만 넘쳐&quot;…매물 3개월새 &#x27;30%&#x27; 급증</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">본문</span><span class="badge b-past">지난 발표</span> 부동산원 11월 1주 서울 0.07%로 3주째 둔화, 경기 0.20%</p><ul class="slinks"><li><a href="https://news.jkn.co.kr/post/1072662" target="_blank" rel="noopener">재경일보</a> <span class="muted">서울 아파트값 91주째 상승…0.07% 올라</span></li><li><a href="https://www.hankookilbo.com/news/article/amp/A2026110813500003000" target="_blank" rel="noopener">한국일보</a> <span class="muted">8주째 서울 상승세 앞지른 경기... 반도체 벨트 넘어 부천·오산까지</span></li><li><a href="https://www.kukinews.com/article/view/kuk202611090212" target="_blank" rel="noopener">쿠키뉴스</a> <span class="muted">서울 아파트값 91주 연속 상승…전월세도 불안</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">본문</span>종부세·양도세 개편안 이달 조세소위 심사, 여당 안에서 추가 수정론</p><ul class="slinks"><li><a href="https://www.mt.co.kr/amp/economy/2026/11/09/2026110819462134702" target="_blank" rel="noopener">머니투데이</a> <span class="muted">&quot;빌라 전셋값 1억 뛰었다&quot;...실거주 중심 &#x27;세제 개편&#x27;, 與도 추가 수정론</span></li><li><a href="https://biz.sbs.co.kr/amp/article/20000332033" target="_blank" rel="noopener">SBS Biz</a> <span class="muted">정부, 비거주 1주택 종부세 공제 12억원 유지…9억원 축소안 철회</span></li><li><a href="https://biz.heraldcorp.com/article/10922692" target="_blank" rel="noopener">헤럴드경제</a> <span class="muted">“집 팔라면서 팔땐 세금 더 내라”…부동산 세제개편 꼬집은 예정처</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">본문</span>서울 전세 0.17% 상승, 전세 매물은 1년 새 15.7% 감소</p><ul class="slinks"><li><a href="https://www.kukinews.com/article/view/kuk202611090212" target="_blank" rel="noopener">쿠키뉴스</a> <span class="muted">서울 아파트값 91주 연속 상승…전월세도 불안</span></li><li><a href="https://www.dailian.co.kr/news/view/1711787/%EC%84%9C%EC%9A%B8-%EC%A7%91%EA%B0%92-%EC%83%81%EC%8A%B9%ED%8F%AD-%EC%A4%84%EC%96%B4%EB%8F%84-%EC%A0%84%EC%85%8B%EA%B0%92-%E2%80%98%EA%BB%91-2026" target="_blank" rel="noopener">데일리안</a> <span class="muted">서울 집값 상승폭 줄어도 전셋값은 ‘껑충’…매물 부족 심화</span></li><li><a href="https://news.jkn.co.kr/post/1072662" target="_blank" rel="noopener">재경일보</a> <span class="muted">서울 아파트값 91주째 상승…0.07% 올라</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">본문</span>세종 11월 분양전망지수 115.4, 전국에서 유일하게 100 넘어</p><ul class="slinks"><li><a href="https://www.etoday.co.kr/news/view/2645098" target="_blank" rel="noopener">이투데이</a> <span class="muted">세종 분양시장 다시 &#x27;꿈틀&#x27;…행정기관 이전 기대 속 신중론</span></li><li><a href="https://www.thedailyeconomy.kr/news/articleView.html?idxno=6664" target="_blank" rel="noopener">The Daily Economy</a> <span class="muted">세종 분양시장 회복 조짐…행정기관 44곳 이전 기대감에 수요 반등하나</span></li><li><a href="https://news.jkn.co.kr/post/1072662" target="_blank" rel="noopener">재경일보</a> <span class="muted">서울 아파트값 91주째 상승…0.07% 올라</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">확인 노트</span><span class="badge b-past">지난 발표</span> 수도권 공공주택 착공 연간 목표의 26%, 2027년 주택공급 예산 30조원</p><ul class="slinks"><li><a href="https://m.news.nate.com/view/20261103n27312" target="_blank" rel="noopener">아주경제(네이트뉴스)</a> <span class="muted">30조 들여 21.8만호 짓겠다는 정부…올해 공공주택 착공은 목표의 26%</span></li><li><a href="https://www.koreareport.co.kr/news/articleView.html?idxno=53733" target="_blank" rel="noopener">코리아리포트</a> <span class="muted">수도권 착공, 올해 목표 밑돌 전망…정부 예상 달성률 81～88%</span></li><li><a href="https://www.dailian.co.kr/news/view/1685208" target="_blank" rel="noopener">데일리안</a> <span class="muted">[2027 예산안] 청년 공적주택 10.6만가구로 확대…도로·철도 예산은 뒷걸음</span></li><li><a href="https://www.etoday.co.kr/news/view/2641870" target="_blank" rel="noopener">이투데이</a> <span class="muted">9월 주택 인허가·착공 40%대 급감…수도권 공급 목표 ‘먹구름’</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">확인 노트</span><span class="badge b-past">지난 발표</span> 5대 은행 가계대출 10월 2.77조원 증가</p><ul class="slinks"><li><a href="https://www.segye.com/newsView/20261102515970" target="_blank" rel="noopener">세계일보</a> <span class="muted">은행 가계대출 지난 10월 2.7조 증가세 전환</span></li><li><a href="https://sateconomy.co.kr/news/view/1065591767385222" target="_blank" rel="noopener">토요경제</a> <span class="muted">5대 은행 가계대출, 10월 2조7717억원 늘어…한 달 만에 반등</span></li><li><a href="https://m.news.nate.com/view/20261102n26937" target="_blank" rel="noopener">네이트뉴스</a> <span class="muted">5대 은행 가계대출 다시 증가…한 달 새 2조7천억원 늘어</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">확인 노트</span><span class="badge b-past">지난 발표</span> 중국 100대 도시 신축 가격 0.18% 상승, 기존주택 -0.61% <span class="badge b-single">단일 출처</span><span class="badge b-single">단일 출처</span></p><ul class="slinks"><li><a href="https://www.steelorbis.com/steel-news/latest-news/new-house-prices-in-100-chinese-cities-up-202-percent-in-october-2026-1487503.htm" target="_blank" rel="noopener">SteelOrbis</a> <span class="muted">New house prices in 100 Chinese cities up 2.02 percent in October 2026</span></li></ul></li></ul></div>
+<div class="sgroup"><h3>AI</h3><ul><li class="sitem"><p class="sitem-h"><span class="place">본문</span>프론티어 AI 개발 사업, 독파모 최종팀에 우선 제안 <span class="badge b-single">단일 출처</span><span class="badge b-single">단일 출처</span></p><ul class="slinks"><li><a href="https://www.ajunews.com/view/20261109142854617" target="_blank" rel="noopener">아주경제</a> <span class="muted">과기정통부 &quot;독파모 최종팀에 프론티어 AI 사업 우선 제안&quot;</span></li><li><a href="https://zdnet.co.kr/view/?no=20261002195243" target="_blank" rel="noopener">ZDNet Korea(지난 보도, 10.02.)</a> <span class="muted">정부, 4.7조 &#x27;프론티어 AI&#x27; 12월 공모…내년 2월 출자 대상 뽑는다</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">핵심 3</span>Anthropic, Claude Fable 5.2·Mythos 5.2 공개…API 가격 5.1보다 20% 낮춤</p><ul class="slinks"><li><a href="https://www.anthropic.com/claude-fable-and-mythos-5-2" target="_blank" rel="noopener">Anthropic</a> <span class="muted">Introducing Claude Fable 5.2 and Claude Mythos 5.2</span></li><li><a href="https://finance.yahoo.com/technology/ai/articles/anthropic-launches-powerful-models-ahead-191625170.html" target="_blank" rel="noopener">Bloomberg(Yahoo Finance 게재)</a> <span class="muted">Anthropic launches powerful new models ahead of Wall Street debut</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">확인 노트</span><span class="badge b-past">지난 발표</span> 국가AI전략위 「AI 입법 프레임워크」 의결</p><ul class="slinks"><li><a href="https://ddaily.co.kr/page/view/2026110616331138429" target="_blank" rel="noopener">디지털데일리</a> <span class="muted">정부 AI 입법, 기본법·기존법 개정 우선… AI전략위, 초지능·글로벌 협력 등 TF 7개 구성</span></li><li><a href="https://zdnet.co.kr/view?no=20261106111202" target="_blank" rel="noopener">ZDNet Korea</a> <span class="muted">AI 입법, 기존 법률 개정 우선…국가AI전략위 3차 전체회의서 확정</span></li><li><a href="https://m.etnews.com/20261106000224" target="_blank" rel="noopener">전자신문</a> <span class="muted">기본법 우선 등 &#x27;AI 입법 프레임워크&#x27; 나왔다…국가AI전략위, 7개 TF 신설</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">본문</span><span class="badge b-past">지난 발표</span> AI 통합인허가 사전진단 서비스, 2027년 1월 5개 지자체 시범</p><ul class="slinks"><li><a href="https://www.hankyung.com/article/2026110462401" target="_blank" rel="noopener">한국경제</a> <span class="muted">이 땅에 집 지어도 돼?…AI가 인허가 사전진단</span></li><li><a href="https://www.ajunews.com/view/20261104094340247" target="_blank" rel="noopener">아주경제</a> <span class="muted">&#x27;이 땅에 집 지을 수 있나&#x27; AI로 사전진단… 내년 1월 5곳서 시범운영</span></li><li><a href="https://www.asiatoday.co.kr/kn/view.php?key=20261104010001738" target="_blank" rel="noopener">아시아투데이</a> <span class="muted">국토부, AI 기반 통합인허가 사전진단 서비스 개발</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">본문</span>엔비디아·SKT·리벨리온·과기정통부 NVLink Fusion 협약, 국산 NPU를 엔비디아 시스템에 연동</p><ul class="slinks"><li><a href="https://zdnet.co.kr/view/?no=20261109140908" target="_blank" rel="noopener">ZDNet Korea</a> <span class="muted">엔비디아 옆자리 꿰차는 토종 NPU...SKT·리벨리온 길 연다</span></li><li><a href="https://www.fnnews.com/news/202611091824126848" target="_blank" rel="noopener">파이낸셜뉴스</a> <span class="muted">엔비디아·SKT·리벨리온 &quot;소버린AI 인프라 구축&quot;</span></li><li><a href="https://www.shinailbo.co.kr/news/articleView.html?idxno=5081357" target="_blank" rel="noopener">신아일보</a> <span class="muted">&#x27;엔비디아 AI데이&#x27; 국산 NPU 글로벌 진출 길 연다…소버린 AI 협력 확대</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">본문</span><span class="badge b-past">지난 발표</span> Anthropic 3분기 매출 약 170억 달러·상장 추진, OpenAI 110억 달러 조달</p><ul class="slinks"><li><a href="https://www.sec.gov/Archives/edgar/data/2130357/000162828026068676/anthropicpbc-sx1ax1.htm" target="_blank" rel="noopener">SEC EDGAR</a> <span class="muted">Anthropic PBC S-1/A</span></li><li><a href="https://finance.yahoo.com/technology/ai/articles/anthropic-launches-powerful-models-ahead-191625170.html" target="_blank" rel="noopener">Bloomberg(Yahoo Finance 게재)</a> <span class="muted">Anthropic launches powerful new models ahead of Wall Street debut</span></li><li><a href="https://www.pymnts.com/news/artificial-intelligence/2026/openai-valuation-hits-1-25-trillion-in-new-funding-round/" target="_blank" rel="noopener">PYMNTS</a> <span class="muted">OpenAI Valuation Hits $1.25 Trillion in New Funding Round</span></li><li><a href="https://www.thestar.com.my/tech/tech-news/2026/11/07/openai-secures-11-billion-funding-at-125-trillion-valuation-bloomberg-news-reports" target="_blank" rel="noopener">The Star(Reuters)</a> <span class="muted">OpenAI gets $11 billion funding at $1.25 trillion valuation, source says</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">본문</span><span class="badge b-past">지난 발표</span> 행안부 「온AI」 보고서 협업 기능 시범·공공 AI 챌린지 11.11. 마감 <span class="badge b-single">단일 출처</span><span class="badge b-single">단일 출처</span></p><ul class="slinks"><li><a href="https://zdnet.co.kr/view/?no=20261101130513" target="_blank" rel="noopener">ZDNet Korea</a> <span class="muted">행안부, 공무원 업무망에 AI 웹검색 도입…12월 한글 보고서 작성 지원</span></li><li><a href="https://www.newspim.com/news/view/20261021000295" target="_blank" rel="noopener">뉴스핌</a> <span class="muted">행안부, &#x27;공공 AI 대전환 챌린지&#x27; 개최</span></li><li><a href="https://www.koreadaily.com/article/20261103224517610" target="_blank" rel="noopener">Korea Daily</a> <span class="muted">NIA, &#x27;공공부문 AI 서비스&#x27; 12개 과제 중간점검</span></li></ul></li></ul></div>
+<div class="sgroup"><h3>경제</h3><ul><li class="sitem"><p class="sitem-h"><span class="place">본문</span>코스피 5,018.85로 0.81% 하락, 외국인 7거래일 연속 순매도</p><ul class="slinks"><li><a href="https://www.businesskorea.co.kr/news/articleView.html?idxno=280833" target="_blank" rel="noopener">BusinessKorea</a> <span class="muted">[마감 시황] 외국인·개인 &#x27;팔자&#x27;에 코스피 5,018선 턱걸이 마감</span></li><li><a href="https://www.seoul.co.kr/news/economy/securities/2026/11/09/20261109500283" target="_blank" rel="noopener">서울신문</a> <span class="muted">[마감시황]코스피, 0.81% 내린 5018.85 마감…기관 매수에도 외국인·개인 매도 우위</span></li><li><a href="https://www.infostockdaily.co.kr/news/articleView.html?idxno=218842" target="_blank" rel="noopener">인포스탁데일리</a> <span class="muted">[1109마감체크] 코스피, 외인·개인 매도에 반등 실패... 5000선 턱걸이</span></li><li><a href="https://www.issueon.co.kr/news/articleView.html?idxno=14333" target="_blank" rel="noopener">이슈온</a> <span class="muted">코스피 한 주 11.7% 급락…서킷브레이커 속 외국인 이틀간 6조원 매도</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">본문</span>뉴욕증시 반도체 주도로 급반등, 국제유가는 4～6% 하락</p><ul class="slinks"><li><a href="https://www.newdaily.co.kr/site/data/html/2026/11/10/2026111000032.html" target="_blank" rel="noopener">뉴데일리</a> <span class="muted">뉴욕증시 3대 지수 2%대 급등 … 엔비디아만 4.27% 급락</span></li><li><a href="https://www.seoul.co.kr/news/economy/2026/11/10/20261110500004" target="_blank" rel="noopener">서울신문</a> <span class="muted">[서울데이터랩] 미국 증시, 기술주·반도체 강세에 일제히 급등 마감</span></li><li><a href="https://topstarnews.net/news/articleView.html?idxno=16272538" target="_blank" rel="noopener">톱스타뉴스</a> <span class="muted">미국증시 나스닥 2.74% 급등…유가 급락에 반도체 반등</span></li><li><a href="https://www.getnews.co.kr/news/articleView.html?idxno=886582" target="_blank" rel="noopener">겟뉴스</a> <span class="muted">국제유가, 對이란 추가공격 &#x27;자제&#x27; 트럼프 발언에 4% 넘게 급락</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">본문</span><span class="badge b-past">지난 발표</span> 미 10월 고용 16.5만명 증가, 오늘 밤 10월 CPI 발표</p><ul class="slinks"><li><a href="https://www.newspim.com/news/view/20261106001315" target="_blank" rel="noopener">뉴스핌</a> <span class="muted">[종합] 美 10월 고용 16만5000명 &#x27;깜짝 증가&#x27;…12월 금리 인상 전망 강화</span></li><li><a href="https://www.fnnews.com/news/202611062256534209" target="_blank" rel="noopener">파이낸셜뉴스</a> <span class="muted">美 10월 고용 깜짝 증가…실업률도 4.1%로 하락</span></li><li><a href="https://news.mtn.co.kr/article/2026110701045951496" target="_blank" rel="noopener">MTN</a> <span class="muted">미국 10월 고용 16만5000명 증가…12월 금리인상 전망 강화</span></li><li><a href="https://www.newspim.com/news/view/20261110000034" target="_blank" rel="noopener">뉴스핌</a> <span class="muted">[채권/외환] 미 국채 금리 상승·달러 약세…이란 확전 우려 완화 속 CPI 주목</span></li><li><a href="https://www.tokenpost.kr/news/economy/434748" target="_blank" rel="noopener">토큰포스트</a> <span class="muted">12월 금리 인상 가능성 80%…미국 10월 CPI·PPI 발표</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">본문</span>한은 11.26. 금통위 0.25%p 인상(3.25%) 전망, 오늘 16시 10월 의사록 공개</p><ul class="slinks"><li><a href="https://www.getnews.co.kr/news/articleView.html?idxno=886539" target="_blank" rel="noopener">겟뉴스</a> <span class="muted">우리금융硏 &quot;한은, 11월 금통위서 기준금리 3.25%로 인상 전망&quot;</span></li><li><a href="https://www.fntimes.com/html/view.php?ud=202610220949143753179ad43907_18" target="_blank" rel="noopener">한국금융신문</a> <span class="muted">[속보] 10월 한은 금통위, 기준금리 연 3.00% 동결</span></li><li><a href="https://www.seoul.co.kr/news/newsView.php?id=20261023031006" target="_blank" rel="noopener">서울신문</a> <span class="muted">기준금리 일단 3.0% 동결… 새달 &#x27;세 번째 인상&#x27; 나서나</span></li><li><a href="https://www.korea.kr/briefing/policyBriefingView.do?newsId=156787698" target="_blank" rel="noopener">대한민국 정책브리핑(국가데이터처)</a> <span class="muted">2026년 10월 소비자물가동향</span></li><li><a href="https://www.newspim.com/news/view/20261106001172" target="_blank" rel="noopener">뉴스핌</a> <span class="muted">이번주 국내 주요 금융일정(11.9～11.13)</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">본문</span>원·달러 1,347.1원으로 9.5원 하락(코스피 항목에 합침)</p><ul class="slinks"><li><a href="https://seoul.co.kr/news/economy/finance/2026/11/10/20261110031002" target="_blank" rel="noopener">서울신문</a> <span class="muted">반도체가 달러 벌어도 외국인 자금 이탈… 환율 다시 출렁</span></li><li><a href="https://www.segye.com/newsView/20261109513513" target="_blank" rel="noopener">세계일보</a> <span class="muted">원·달러 환율, 9.5원 내린 1347.1원 마감</span></li><li><a href="https://www.news1.kr/finance/market-exr/6348028" target="_blank" rel="noopener">뉴스1</a> <span class="muted">달러·원 16원 하락한 1347원…1363원 출발 후 상승분 반납(종합)</span></li><li><a href="https://www.businesskorea.co.kr/news/articleView.html?idxno=280833" target="_blank" rel="noopener">BusinessKorea</a> <span class="muted">[마감 시황] 외국인·개인 &#x27;팔자&#x27;에 코스피 5,018선 턱걸이 마감</span></li></ul></li><li class="sitem"><p class="sitem-h"><span class="place">본문</span><span class="badge b-past">지난 발표</span> 10월 수출 1,152.8억달러 역대 2위(한은 항목에 합침)</p><ul class="slinks"><li><a href="https://www.motir.go.kr/kor/article/ATCL3f49a5a8c/172360/view" target="_blank" rel="noopener">산업통상부</a> <span class="muted">2026년 10월 수출입 동향</span></li><li><a href="https://www.newspim.com/news/view/20261031000112" target="_blank" rel="noopener">뉴스핌</a> <span class="muted">10월 수출 1153억달러 &#x27;역대 2위&#x27;…반도체 564억달러 견인</span></li></ul></li></ul></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>작성 기준 2026-11-10(화) 오전. 숫자는 1차 출처를 우선했고, 언론 보도만 있는 값은 「보도 기준」으로 적음.</p>
+    <p>11.10. 국내 증시 장 흐름, 한은 10월 금통위 의사록(16:00)과 미 10월 CPI(22:30)는 작성 시점에 나오지 않아 담지 않음.</p>
+    <p>미 상원 BAAJA cloture 표결(11.09. 현지) 결과는 확인하지 못함. 11.11. 행정수도특별법 축조심사 결과는 다음 브리핑에서 확인함.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  // K: 생성기가 viz-data.json의 대표 지표(feature)로 채움. 없으면 null
+  var K = {"kind": "종가", "dec": 2, "lo": 4900.0, "hi": 6100.0, "ticks": [5000, 5500, 6000], "closes": [{"d": "10.30.", "v": 5730.74}, {"d": "11.02.", "v": 5859.08}, {"d": "11.03.", "v": 5648.79}, {"d": "11.04.", "v": 5683.8}, {"d": "11.05.", "v": 5383.8}, {"d": "11.06.", "v": 5059.69}, {"d": "11.09.", "v": 5018.85}], "intra": null};
+  if (!K) return;
+  var el = document.getElementById('feat-chart');
+  var tip = document.getElementById('feat-tip');
+  if (!el) return;
+  var pts = K.closes.map(function (p) { return { d: p.d, v: p.v, kind: K.kind }; });
+  if (K.intra) pts.push({ d: K.intra.d, v: K.intra.v, kind: '장중' });
+  var ni = K.intra ? 1 : 0;
+  function fmt(v) { return v.toLocaleString('ko-KR', { minimumFractionDigits: K.dec, maximumFractionDigits: K.dec }); }
+
+  function draw() {
+    var W = Math.max(260, el.clientWidth);
+    var narrow = W < 460;
+    var H = narrow ? 210 : 236;
+    var m = { l: 44, r: ni ? (narrow ? 70 : 96) : (narrow ? 28 : 40), t: 22, b: 26 };
+    var lo = K.lo, hi = K.hi, ticks = K.ticks;
+    var n = pts.length;
+    var iw = W - m.l - m.r, ih = H - m.t - m.b;
+    function x(i) { return m.l + i * iw / Math.max(1, n - 1); }
+    function y(v) { return m.t + (hi - v) / (hi - lo) * ih; }
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" aria-hidden="true">';
+    ticks.forEach(function (t) {
+      s += '<line class="c-grid" x1="' + m.l + '" x2="' + (W - m.r + 8) + '" y1="' + y(t) + '" y2="' + y(t) + '"/>';
+      s += '<text class="c-tick" x="' + (m.l - 8) + '" y="' + (y(t) + 4) + '" text-anchor="end">' + t.toLocaleString('ko-KR') + '</text>';
+    });
+    s += '<line class="c-axis" x1="' + m.l + '" x2="' + (W - m.r + 8) + '" y1="' + (m.t + ih) + '" y2="' + (m.t + ih) + '"/>';
+    var nc = n - ni;
+    var line = '', area = 'M' + x(0) + ',' + (m.t + ih);
+    for (var i = 0; i < nc; i++) {
+      line += (i ? ' ' : '') + x(i).toFixed(1) + ',' + y(pts[i].v).toFixed(1);
+      area += ' L' + x(i).toFixed(1) + ',' + y(pts[i].v).toFixed(1);
+    }
+    area += ' L' + x(nc - 1).toFixed(1) + ',' + (m.t + ih) + ' Z';
+    s += '<path class="c-area" d="' + area + '"/>';
+    s += '<polyline class="c-line" points="' + line + '"/>';
+    if (ni) s += '<line class="c-intra-line" x1="' + x(nc - 1) + '" y1="' + y(pts[nc - 1].v) + '" x2="' + x(nc) + '" y2="' + y(pts[nc].v) + '"/>';
+    // x labels
+    for (var j = 0; j < n; j++) {
+      var show = narrow ? (j % 3 === 0) : true;
+      if (j === n - 1) show = true;
+      if (!show) continue;
+      var lab = (ni && j === nc) ? K.intra.xd : pts[j].d.replace(/\.$/, '');
+      s += '<text class="c-tick" x="' + x(j) + '" y="' + (H - 6) + '" text-anchor="middle">' + lab + '</text>';
+    }
+    // peak label
+    var pk = 0; for (var k = 1; k < nc; k++) if (pts[k].v > pts[pk].v) pk = k;
+    if (pk !== nc - 1) {
+      s += '<circle class="c-dot" cx="' + x(pk) + '" cy="' + y(pts[pk].v) + '" r="3.5"/>';
+      s += '<text class="c-lab-v" x="' + x(pk) + '" y="' + (y(pts[pk].v) - 9) + '" text-anchor="middle">' + fmt(pts[pk].v) + '</text>';
+    }
+    // last close
+    s += '<circle class="c-dot" cx="' + x(nc - 1) + '" cy="' + y(pts[nc - 1].v) + '" r="4"/>';
+    s += '<text class="c-lab-v" x="' + (x(nc - 1) - 8) + '" y="' + (y(pts[nc - 1].v) + 18) + '" text-anchor="end">' + fmt(pts[nc - 1].v) + '</text>';
+    // intraday
+    if (ni) {
+      s += '<circle class="c-intra-dot" cx="' + x(nc) + '" cy="' + y(pts[nc].v) + '" r="4.5"/>';
+      s += '<text class="c-lab-d" x="' + (x(nc) + 9) + '" y="' + (y(pts[nc].v) - 2) + '">' + fmt(pts[nc].v) + '</text>';
+      s += '<text class="c-lab" x="' + (x(nc) + 9) + '" y="' + (y(pts[nc].v) + 13) + '">' + K.intra.lab + '</text>';
+    }
+    s += '<line class="c-cross" id="kx" x1="0" x2="0" y1="' + m.t + '" y2="' + (m.t + ih) + '" visibility="hidden"/>';
+    s += '<rect class="c-hit" id="khit" x="' + (m.l - 10) + '" y="0" width="' + (iw + 20) + '" height="' + H + '"/>';
+    s += '</svg>';
+    el.innerHTML = s;
+    var hit = document.getElementById('khit'), cx = document.getElementById('kx');
+    function move(ev) {
+      var r = el.getBoundingClientRect();
+      var px = ev.clientX - r.left;
+      var i = Math.round((px - m.l) / (iw / Math.max(1, n - 1)));
+      i = Math.max(0, Math.min(n - 1, i));
+      cx.setAttribute('x1', x(i)); cx.setAttribute('x2', x(i)); cx.setAttribute('visibility', 'visible');
+      tip.textContent = pts[i].d + ' ' + pts[i].kind + ' ' + fmt(pts[i].v);
+      tip.style.left = Math.min(Math.max(x(i), 70), W - 70) + 'px';
+      tip.style.top = y(pts[i].v) + 'px';
+      tip.hidden = false;
+    }
+    function leave() { tip.hidden = true; cx.setAttribute('visibility', 'hidden'); }
+    hit.addEventListener('pointermove', move);
+    hit.addEventListener('pointerdown', move);
+    hit.addEventListener('pointerleave', leave);
+  }
+  draw();
+  var lastW = el.clientWidth;
+  if (window.ResizeObserver) {
+    new ResizeObserver(function () { if (el.clientWidth !== lastW) { lastW = el.clientWidth; draw(); } }).observe(el);
+  } else {
+    window.addEventListener('resize', draw);
+  }
+})();
+</script>
+</body>
+</html>
