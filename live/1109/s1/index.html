@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>리서치 보고서 · 11. 9. 실습 결과</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root{color-scheme:dark;--void:#05090f;--bg0:#0a1424;--bg1:#17305a;--ink:#eef4fb;--mu:#b4c5de;--mu2:#93a7c6;--dim:#6f83a3;--line:#2a4268;--panel:rgba(17,31,54,.86);--cy:#4fd1e8;--warn:#f4b740;--bad:#ff7a66;--gr:#5fe0a0;
+--f-ui:"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",sans-serif;--f-mono:"JetBrains Mono",Consolas,monospace}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--void) radial-gradient(ellipse at 72% -8%,var(--bg1) 0%,var(--bg0) 58%,var(--void) 100%) no-repeat fixed;color:var(--ink);font-family:var(--f-ui);word-break:keep-all;overflow-wrap:anywhere;line-height:1.55;-webkit-text-size-adjust:100%}
+a{color:var(--cy)}
+.wrap{max-width:1180px;margin:0 auto;padding:22px 16px 40px}
+.hd{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
+.hd .dot{width:12px;height:12px;border-radius:50%;background:var(--cy);box-shadow:0 0 12px var(--cy);flex:none;margin-top:9px;animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+.hd .tt{flex:1 1 auto;min-width:0}
+.eb{font-weight:700;font-size:14px;color:var(--cy);letter-spacing:.06em}
+h1{font-size:clamp(26px,4.2vw,40px);font-weight:900;margin:2px 0 0;letter-spacing:-.015em;line-height:1.25}
+.back{flex:none;font-weight:700;font-size:14px;text-decoration:none;color:var(--cy);border:1px solid rgba(79,209,232,.5);border-radius:8px;padding:6px 12px;background:rgba(79,209,232,.08)}
+.back:hover{background:rgba(79,209,232,.2)}
+.what{font-size:clamp(16px,2.1vw,19px);font-weight:500;line-height:1.55;border-left:4px solid var(--cy);padding:8px 0 8px 16px;margin:16px 0 8px;background:linear-gradient(90deg,rgba(79,209,232,.14),transparent 80%)}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;color:var(--mu2);font-size:14px;margin:0 0 14px}
+.meta b{color:var(--mu);font-weight:700}
+.pn{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 18px}
+.lab{font-weight:700;font-size:15px;color:var(--cy);letter-spacing:.04em}
+.sum ul{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.sum li{position:relative;padding-left:18px;font-size:16px;color:#dfe8f4}
+.sum li::before{content:"";position:absolute;left:0;top:.62em;width:8px;height:8px;border-radius:2px;background:var(--cy);box-shadow:0 0 6px var(--cy)}
+.art{margin-top:16px}
+.art .bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.art .bar .sp{flex:1}
+.btn{display:inline-block;font:700 14px var(--f-ui);padding:7px 14px;border-radius:8px;border:1px solid var(--cy);background:rgba(79,209,232,.12);color:var(--cy);text-decoration:none;white-space:nowrap}
+.btn:hover{background:rgba(79,209,232,.25)}
+.btn.sub{border-color:#2b3f60;background:#111c2e;color:var(--ink)}
+.frame{display:block;width:100%;height:78vh;min-height:520px;border:1px solid var(--line);border-radius:10px;background:#0a1424}
+.pdfv{border:1px solid var(--line);border-radius:10px;background:#1b2536;padding:12px;min-height:240px;max-height:88vh;overflow:auto}
+.pdfv .pg{display:block;width:100%;height:auto;margin:0 auto 12px;background:#fff;border-radius:3px;box-shadow:0 6px 18px rgba(0,0,0,.45)}
+.pdfv .ld{color:var(--mu);padding:30px 10px;text-align:center}
+.pdfv iframe{display:block;width:100%;height:80vh;border:0;background:#fff}
+.note{font-size:13.5px;color:var(--mu2);margin-top:8px}
+.more{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.warnband{border:1px solid rgba(244,183,64,.7);background:rgba(40,30,8,.55);border-radius:10px;padding:10px 14px;color:#f6e3b8;font-size:14.5px;margin-top:12px}
+footer{margin-top:22px;border-top:1px dashed #335789;padding-top:12px;font-size:13.5px;color:var(--mu2);line-height:1.6}
+footer .k{font-weight:700;color:var(--cy);margin-right:8px}
+.mono{font-family:var(--f-mono)}
+.md{font-size:16px;line-height:1.7;color:#e3ebf6}
+.md h1,.md h2,.md h3,.md h4{line-height:1.35;margin:1.2em 0 .5em}.md h1{font-size:28px}.md h2{font-size:22px;color:var(--cy)}.md h3{font-size:19px}.md h4{font-size:17px}
+.md table{border-collapse:collapse;width:100%;margin:.8em 0;font-size:15px;display:block;overflow-x:auto}
+.md th,.md td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}.md th{background:rgba(79,209,232,.1);color:var(--cy)}
+.md code{font-family:var(--f-mono);font-size:.92em;background:rgba(79,209,232,.1);padding:1px 5px;border-radius:4px}
+.md pre{background:#081424;border:1px solid var(--line);border-radius:8px;padding:12px;overflow:auto}.md pre code{background:none;padding:0}
+.md blockquote{margin:.8em 0;padding:4px 14px;border-left:4px solid var(--warn);color:var(--mu)}
+.md hr{border:0;border-top:1px dashed #335789;margin:1.4em 0}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-top:16px}
+.card{display:block;text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;min-height:132px}
+.card:hover{border-color:var(--cy)}
+.card.on{border-color:rgba(95,224,160,.75);box-shadow:0 0 18px rgba(95,224,160,.12)}
+.card .tag{display:inline-block;font:700 13px var(--f-mono);padding:2px 9px;border-radius:5px;background:rgba(79,209,232,.14);color:var(--cy);border:1px solid rgba(79,209,232,.5)}
+.card .no{font:700 22px var(--f-mono);color:var(--cy);margin-right:8px}
+.card .t{font-size:20px;font-weight:900;margin-top:8px}
+.card .st{font-size:14px;margin-top:6px;color:var(--mu2)}
+.card.on .st{color:var(--gr);font-weight:700}
+.wait{max-width:760px;margin:6vh auto 0;text-align:center}
+.wait .big{font-size:clamp(22px,4vw,34px);font-weight:900;line-height:1.4;margin:22px 0 10px}
+.wait .orb{width:72px;height:72px;margin:0 auto;border-radius:50%;border:3px solid rgba(79,209,232,.35);border-top-color:var(--cy);animation:spin 1.6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.hd .dot,.wait .orb{animation:none}}
+@media (max-width:600px){.frame{height:70vh;min-height:420px}.wrap{padding:16px 14px 32px}}
+</style><meta name="gongju-live" content="published"></head>
+<body data-live="gongju-live:published:1109:s1:1109-s1-mw9bbuu8" data-pub="1109-s1-mw9bbuu8"><div class="wrap">
+<header class="hd"><span class="dot"></span><div class="tt"><div class="eb">2026. 11. 9.(월) 실습 결과 · S1</div><h1>리서치 보고서 — 공주시 여성 고용 현황과 재취업 지원 과제</h1></div><a class="back" href="../">← 오늘의 실습 결과</a></header>
+<p class="what">수강생이 고른 주제로 통계와 자료를 찾아, 숫자마다 출처가 달린 한글 보고서를 만들었습니다.</p>
+<div class="meta"><span>만든 시각 <b>2026. 11. 9. 22:42</b></span><span>AI가 일한 시간 <b>2분 30초</b></span><span>주제 <b>공주시 여성 고용 현황과 재취업 지원 과제</b></span><span>공개 <b>2026. 11. 9. 22:44</b></span></div>
+
+<section class="pn sum"><div class="lab">한눈에</div><ul><li>공주시 여성 고용률 51.8%로 남성(66.8%)보다 15.0%p 낮음 (KOSIS DT_1ES3A03_A03S·A02S, 2026년 상반기)</li><li>30～49세 여성 고용률 77.4% → 70.8%로 6.6%p 하락 (KOSIS DT_1ES3A03_A03S, 2024 하반기～2026 상반기)</li><li>경력단절 사유 1위는 육아 489.5천 명(44.3%) (KOSIS DT_1ES4H07J, 2025년 전국)</li><li>제안: 양육기 여성 맞춤 재취업 경로·훈련·인턴·사후관리 강화</li></ul></section>
+<section class="art"><div class="bar"><span class="lab">리서치 보고서 (한글 파일을 PDF로)</span></div><div class="pdfv" id="pdfv" data-src="report.pdf"><div class="ld">보고서를 불러오는 중…</div></div>
+<div class="more"><a class="btn" href="report.pdf" download>PDF 내려받기</a><a class="btn sub" href="report.pdf" target="_blank" rel="noopener">PDF 새 창으로 열기 ↗</a></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+(function(){var box=document.getElementById("pdfv"),src=box.getAttribute("data-src"),MAX=40;
+function fallback(why){box.innerHTML='<iframe src="'+src+'" title="리서치 보고서 (한글 파일을 PDF로)"></iframe><div class="note">미리보기를 그리지 못해 브라우저 PDF 보기로 엽니다'+(why?' ('+why+')':'')+'. 보이지 않으면 아래 [PDF 내려받기].</div>';}
+if(!window.pdfjsLib){fallback("뷰어를 불러오지 못함");return;}
+pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+pdfjsLib.getDocument({url:src,cMapUrl:"https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/cmaps/",cMapPacked:true,standardFontDataUrl:"https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/standard_fonts/"}).promise.then(function(pdf){
+ box.innerHTML="";var n=Math.min(pdf.numPages,MAX),i=1;
+ function next(){if(i>n){if(pdf.numPages>MAX){var m=document.createElement("div");m.className="note";m.textContent="앞 "+MAX+"쪽만 보여 드립니다. 전체는 [PDF 내려받기].";box.appendChild(m);}box.setAttribute("data-pages",String(n));return;}
+  pdf.getPage(i).then(function(page){var w=Math.max(280,box.clientWidth-26),v1=page.getViewport({scale:1}),dpr=Math.min(2,window.devicePixelRatio||1),vp=page.getViewport({scale:w/v1.width*dpr});
+   var c=document.createElement("canvas");c.className="pg";c.width=Math.floor(vp.width);c.height=Math.floor(vp.height);c.setAttribute("aria-label","보고서 "+i+"쪽");box.appendChild(c);
+   return page.render({canvasContext:c.getContext("2d"),viewport:vp}).promise;}).then(function(){i++;next();},function(e){fallback(e&&e.message);});}
+ next();
+},function(e){fallback(e&&e.message);});})();
+</script></section>
+<div class="more"><a class="btn sub" href="report.html" target="_blank" rel="noopener">웹 글로 읽기 ↗</a></div>
+
+<div class="warnband">AI가 만든 <b>초안</b>입니다. 숫자·공고·시설 정보는 원문에서 꼭 다시 확인하세요.</div>
+<footer><span class="k">공주여성새로일하기센터</span>AI 에이전트 활용 강의 · 2026. 11. 9.(월) · 문의 041-850-6061 · <a href="../">오늘의 실습 결과</a> · <a href="../../../">강의 자료</a></footer>
+</div></body></html>
