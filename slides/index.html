@@ -1863,7 +1863,7 @@ function pubView(st) {
   if (j && j.step === st && j.day === LIVE_DAY && j.ok === false && (!dn || dn.at < (j.endedAt || 0))) return { txt: "⬆ 결과 공개 (다시)", note: "공개 실패: " + (j.reason || "까닭 모름"), again: !!dn };
   const itx = ITEMS.find((x) => x.pub === st || (x.pub.endsWith("#") && st.indexOf(x.pub.slice(0, -1)) === 0));
   const rvd = itx ? revOf(itx.id).doneAt : 0;
-  if (dn && rvd > dn.at) return { txt: "⬆ 다시 공개(수정본)", again: true, note: "수정본은 아직 공개 전입니다" };
+  if (dn && rvd > (dn.srcAt || dn.at)) return { txt: "⬆ 다시 공개(수정본)", again: true, note: "수정본은 아직 공개 전입니다" };
   if (dn) return { cls: "done", txt: "공개됨 ✓ " + liveRel(st), again: true, note: dn.pagesOk ? "" : "곧 열립니다(빌드 확인 전)" };
   if (!P.ready || !P.ready[st]) return { dis: true, txt: "⬆ 결과 공개", note: "실행이 끝나면 공개할 수 있습니다" };
   return { txt: "⬆ 결과 공개" };
@@ -1885,8 +1885,10 @@ function liveWatch(p) {
   const m = (p && p.done && p.done[LIVE_DAY]) || {};
   Object.keys(m).forEach((st) => {
     const k = String(m[st].at);
-    if (liveSeen[st] && liveSeen[st] !== k) { liveReload(st); setTimeout(() => liveReload(st), 20000);
+    if (liveSeen[st] && liveSeen[st] !== k) {
       const itx = ITEMS.find((x) => x.pub === st || (x.pub.endsWith("#") && st.indexOf(x.pub.slice(0, -1)) === 0));
+      const rv = itx && !FOLLOW ? revOf(itx.id) : null;   // 공개 중에 보완 지시를 끝냈으면 칸의 수정본을 옛 공개본으로 바꾸지 않음(11.10.)
+      if (!(rv && rv.doneAt && rv.doneAt > (m[st].srcAt || m[st].at))) { liveReload(st); setTimeout(() => liveReload(st), 20000); }
       if (itx && crOK && !FOLLOW && revOf(itx.id).n) crApi("/screen", { kind: "slide", kicker: "rev:" + itx.id, title: "다시 공개됨", lines: [] }).catch(() => {}); }   // 공개 직후 + 20초 뒤 한 번 더(Pages 캐시)
     liveSeen[st] = k;
   });
@@ -2385,7 +2387,7 @@ function revLocal(sc, r) {   // 수정본을 칸에(공개가 수정보다 새�
   const box = layer.querySelector(".lvbox"); if (!box) return;
   const it = ITEM[sc.item], pid = livePub(it), dn = CD && CD.pub && CD.pub.done && CD.pub.done[LIVE_DAY] && CD.pub.done[LIVE_DAY][pid];
   const old = box.querySelector(".loc"); if (old) old.remove();
-  if (dn && dn.at > r.doneAt) { liveReload(pid); return; }
+  if (dn && (dn.srcAt || dn.at) > r.doneAt) { liveReload(pid); return; }
   const last = histOf(it.steps).filter((h) => h.status === "done" && h.result).pop();
   const rel = last && last.result;
   const lab = document.createElement("div"); lab.className = "loc";
