@@ -234,6 +234,7 @@ body.sb .page { padding-right: calc(max(30vw, 320px) + 12px); }
 #psb .tab.on { color: var(--cy); border-bottom-color: var(--cy); background: #0b1626; }
 #psb .tab .bd { display: inline-block; margin-left: 6px; font: 700 10.5px var(--f-ui); color: #04121e; background: var(--gr); border-radius: 999px; padding: 1px 6px; vertical-align: 1px; }
 #psb .tab .bd:empty { display: none; }
+#psb .tab .olc { font: 700 12.5px var(--f-ui); color: var(--gr); }
 #psb .x { flex: none; font: 600 12px var(--f-ui); background: transparent; color: var(--dim); border: 0; padding: 0 10px; cursor: pointer; }
 #psb .x:hover { color: var(--ink); }
 #psb .pane { flex: 1 1 auto; min-height: 0; display: none; flex-direction: column; }
@@ -1992,7 +1993,7 @@ const psbCid = (() => { let c = lsGet("gongjuDeck.cid"); if (!c) { c = "deck-" +
 function psbBuild() {
   if (psbBuilt || !PSB) return; psbBuilt = true;
   PSB.id = "psb"; PSB.setAttribute("aria-label", "발표자 사이드바");
-  PSB.innerHTML = '<div class="tabs"><button type="button" class="tab" data-t="ses">세션<span class="bd"></span></button><button type="button" class="tab" data-t="chat">채팅<span class="bd"></span></button><button type="button" class="x" title="사이드바 닫기 (` 또는 S)">✕</button></div>'
+  PSB.innerHTML = '<div class="tabs"><button type="button" class="tab" data-t="ses">세션<span class="bd"></span></button><button type="button" class="tab" data-t="chat">채팅<span class="olc" title="지금 강의실(/room/)에 접속한 수강생 수 — 실시간"></span><span class="bd"></span></button><button type="button" class="x" title="사이드바 닫기 (` 또는 S)">✕</button></div>'
     + '<div class="pane" data-p="ses"><iframe title="AI 작업 화면" referrerpolicy="no-referrer"></iframe>'
     + '<div class="say"><textarea rows="3" maxlength="2000" placeholder="세션에 직접 지시 — [보내기] 또는 Ctrl+Enter (Enter는 줄바꿈)"></textarea><button type="button" class="go">보내기</button></div><div class="msg sm"></div></div>'
     + '<div class="pane" data-p="chat"><details class="adh"><summary>즉석 투표</summary><div class="ab"><input type="text" class="aq" maxlength="80" placeholder="질문 한 줄"><textarea class="ao" rows="4" placeholder="보기 2～4줄 — 한 줄에 하나(24자 이내)"></textarea><div class="br"><button type="button" class="go aop">▶ 투표 열기</button><button type="button" class="go acl">■ 마감</button><button type="button" class="go abg">결과 크게 보기</button></div><div class="msg am"></div></div></details><div class="pc" hidden></div><div class="cl" aria-live="polite"></div>'
@@ -2128,19 +2129,21 @@ function psbChatLoad(first) {
     if (first && !psbMsgs.size) PSB.querySelector(".cl").innerHTML = '<div class="empty">아직 채팅이 없습니다</div>';
   }, () => {});
 }
+function psbOnline(n) { const o = PSB && PSB.querySelector(".tab .olc"); if (o) o.textContent = n == null ? "" : " · 입장 " + n + "명"; }
 function psbConnect() {
   try {
     const ws = new WebSocket("wss://ai-agent-gongju.pages.dev/api/rt?role=viewer"); psbWS = ws;
     let ping = null;
-    ws.onopen = () => { ping = setInterval(() => { try { ws.send("ping"); } catch (e) {} }, 25000); psbChatLoad(false); };
+    ws.onopen = () => { ping = setInterval(() => { try { ws.send("ping"); } catch (e) {} }, 25000); psbChatLoad(false); try { ws.send("presence"); } catch (e) {} };
     ws.onmessage = (ev) => {
       let m; try { m = JSON.parse(ev.data); } catch (e) { return; }
       if (m.type === "chat") psbAdd(m.msg);
+      else if (m.type === "presence") psbOnline(m.online);   // 11.10. 입장 수(실시간 허브 방송 — 새 폴링 없음)
       else if (m.type === "hide") psbHide(m.id);
       else if (m.type === "ver") { clearTimeout(psbVerT); psbVerT = setTimeout(refreshPoll, 400); }   // 투표 수가 바뀜
       else if (m.type === "reset") { psbMsgs.forEach((el) => el.remove()); psbMsgs.clear(); psbLast = 0; psbChatLoad(true); refreshPoll(); }
     };
-    ws.onclose = () => { clearInterval(ping); if (psbWS === ws) { psbWS = null; setTimeout(psbConnect, 4000); } };
+    ws.onclose = () => { clearInterval(ping); psbOnline(null); if (psbWS === ws) { psbWS = null; setTimeout(psbConnect, 4000); } };
   } catch (e) { setTimeout(psbConnect, 8000); }
   if (!psbPollT) psbPollT = setInterval(() => { if (!document.hidden && (!psbWS || psbWS.readyState !== 1)) psbChatLoad(false); }, 4000); // 웹소켓이 끊긴 동안만
 }
