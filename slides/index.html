@@ -301,6 +301,7 @@ body.cdon .hc:hover { border-color: var(--cy); }
 .hc.done { border-color: rgba(95,224,160,.75); }
 .hc.done .st { color: var(--gr); }
 .hc.done .qr.on { display: block; }
+.hc.done:has(.qr.on) .wh, .hc.done:has(.qr.on) .dp { margin-right: 76px; }
 .hc.lock { opacity: .55; }
 .hub-top { position: absolute; right: 60px; top: 44px; display: flex; align-items: center; gap: 10px; font: 600 14px var(--f-ui); color: var(--mu2); }
 .hub-top .gz { width: 120px; height: 9px; border-radius: 5px; background: #13223a; overflow: hidden; border: 1px solid #2b3f60; }
@@ -1849,7 +1850,7 @@ function actPaint() {
 /* ── 결과 공개(11.09. 밤): [⬆ 결과 공개] → 러너 POST /conduct/publish {step, day} → 공개 레포 live/<MMDD>/<step>/ (GitHub Pages, 1～2분).
    진행기 state 의 pub = {ready{step}, done{day{step:{url,at}}}, job{running, step, last, ok, reason}}. 자동 공개는 없음 ── */
 const PUB_IDS = { "s4-1": "s4", s1: "s1", s7: "s7", s9: "s9", s8: "s8", s5: "s5" };
-const PUB_NAME = { s4: "S4 일자리 지도", s1: "S1 리서치 보고서", s7: "S7 발표 슬라이드", s9: "S9 일하는 엄마 지도", s8: "S8 맞춤 지원서", s5: "S5 수강생 의견 분석" };
+const PUB_NAME = { s4: "공주 일자리 지도", s1: "보고서", s7: "발표 슬라이드", s9: "일하는 엄마 지도", s8: "S8 맞춤 지원서", s5: "S5 수강생 의견 분석", survey: "설문 분석", motion: "모션그래픽 영상", ceo: "CEO 대시보드", wrap: "수업 정리 페이지" };
 let pubPosting = "";
 const liveSeen = {};
 function pubView(st) {
@@ -1870,7 +1871,7 @@ function pubView(st) {
 }
 async function pubRun(st, again) {
   if (!CD || pubPosting) return;
-  if (!confirm((again ? "이미 공개했습니다. 지금 결과로 다시 올릴까요?\n\n" : "") + (PUB_NAME[st] || st) + " 결과를 공개 주소에 올릴까요?\n" + liveUrl(st) + "\n\n(누구나 볼 수 있는 주소입니다. 연락처 · 경로 · 채팅 원문은 빼고 올리며, 걸리면 공개하지 않습니다)")) return;
+  if (!confirm((again ? "이미 공개했습니다. 지금 결과로 다시 올릴까요?\n\n" : "") + (PUB_NAME[st] || (/^req\d+$/.test(st) ? "요청 작업 " + st.slice(3) + "회차" : st)) + " 결과를 공개 주소에 올릴까요?\n" + liveUrl(st) + "\n\n(누구나 볼 수 있는 주소입니다. 연락처 · 경로 · 채팅 원문은 빼고 올리며, 걸리면 공개하지 않습니다)")) return;
   pubPosting = st; actPaint();
   try {
     const r = await cdPost("/conduct/publish", { step: st, day: LIVE_DAY });
