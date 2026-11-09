@@ -2001,7 +2001,7 @@ function psbBuild() {
   PSB.querySelector(".x").onclick = () => psbToggle(false);
   PSB.querySelectorAll(".tab").forEach((t) => { t.onclick = () => psbSetTab(t.dataset.t); });
   PSB.querySelector("iframe").src = "https://ai-agent-gongju.pages.dev/ai/?embed&small";
-  const ta = PSB.querySelector("textarea"), sb = PSB.querySelector('[data-p="ses"] .go'), sm = PSB.querySelector(".sm");
+  const ta = PSB.querySelector('[data-p="ses"] .say textarea'), sb = PSB.querySelector('[data-p="ses"] .say .go'), sm = PSB.querySelector(".sm");
   const say = () => {   // [보내기] 또는 Ctrl+Enter 로만
     const t = ta.value.trim(); if (!t || sb.disabled) return;
     psbAuto("ses");
@@ -2013,7 +2013,7 @@ function psbBuild() {
   };
   sb.onclick = say;
   ta.addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey) && !e.isComposing) { e.preventDefault(); say(); } });
-  const ci = PSB.querySelector('[data-p="chat"] input'), cb = PSB.querySelector('[data-p="chat"] .go'), cm = PSB.querySelector(".cmg");
+  const ci = PSB.querySelector('[data-p="chat"] .say input'), cb = PSB.querySelector('[data-p="chat"] .say .go'), cm = PSB.querySelector(".cmg");
   const post = () => {
     const t = ci.value.trim(); if (!t || cb.disabled) return;
     cb.disabled = true; cm.textContent = "";
