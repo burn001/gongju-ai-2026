@@ -173,7 +173,7 @@ footer{margin-top:14px;font-size:13.5px;color:var(--mu2)}
 @keyframes ctrp{0%{transform:scale(.55);opacity:.75}100%{transform:scale(1.35);opacity:0}}
 @media(prefers-reduced-motion:reduce){.ctr .pl{animation:none;opacity:.35}}
 .ctrlab{background:rgba(5,9,15,.82);border:1.5px solid var(--ctr);color:#fff;font-weight:900;font-size:13.5px;padding:3px 9px;border-radius:7px;box-shadow:0 0 12px rgba(255,90,78,.45);white-space:nowrap}
-.ctrlab.leaflet-tooltip-right::before{border-right-color:var(--ctr)}
+.ctrlab.leaflet-tooltip-top::before{border-top-color:var(--ctr)}
 .ctrsw{width:18px;height:18px;flex:none;display:inline-block}
 .pp .ctrh{color:var(--ctr)}
 @media print{#map{height:420px}}
@@ -304,7 +304,7 @@ const CENTER = { name: "공주여성새로일하기센터", addr: "충남 공주
 const STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.8l3.1 6.6 7.1.8-5.3 4.9 1.5 7.1L12 17.6l-6.4 3.6 1.5-7.1L1.8 9.2l7.1-.8z" fill="#ff5a4e" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>';
 const centerMk = L.marker([CENTER.lat, CENTER.lng], { icon: L.divIcon({ className: "fmk", html: `<div class="ctr"><span class="pl"></span>${STAR}</div>`, iconSize: [36, 36], iconAnchor: [18, 18], popupAnchor: [0, -16] }),
   title: CENTER.name, zIndexOffset: 2000, keyboard: true })
-  .bindTooltip(CENTER.name, { permanent: true, direction: "right", offset: [16, 0], className: "ctrlab", interactive: false })
+  .bindTooltip(CENTER.name, { permanent: true, direction: "top", offset: [0, -16], className: "ctrlab", interactive: false })
   .bindPopup(`<div class="pp"><h4 class="ctrh">★ ${CENTER.name}</h4><table><tr><td>주소</td><td>${CENTER.addr}</td></tr><tr><td>전화</td><td>${CENTER.tel}</td></tr></table><div class="meta" style="margin-top:6px">경력단절여성 취업 상담·직업교육 문의</div></div>`)
   .addTo(map);
 const facLayer = {}; const facMarker = {};
