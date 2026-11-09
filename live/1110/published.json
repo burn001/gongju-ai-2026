@@ -4,5 +4,11 @@
   "atLabel": "00:05",
   "pubId": "1110-s7-mw9e7nlb",
   "title": "발표 슬라이드"
+ },
+ "survey": {
+  "at": 1794237425326,
+  "atLabel": "00:17",
+  "pubId": "1110-survey-mw9emtvg",
+  "title": "설문 자동화"
  }
 }
