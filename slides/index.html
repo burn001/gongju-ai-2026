@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>AI 에이전트에게 일 맡기기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>[hidden]{display:none!important}img{max-width:100%}</style>
+<style>
+/* 틀: ALRIS 최종연구심의회 발표(burn001/alris-final-review-2026)의 관제실 틀을 그대로 씀
+   1280×720 원판을 화면에 맞춰 키움 · 프로젝터용으로 글자 크기만 키움 */
+:root {
+  color-scheme: dark;
+  --void: #05090f; --bg0: #0a1424; --bg1: #17305a;
+  --ink: #eef4fb; --mu: #b4c5de; --mu2: #93a7c6; --dim: #6f83a3;
+  --line: #2a4268; --panel: rgba(17, 31, 54, .86); --panel2: rgba(24, 44, 76, .75);
+  --cy: #4fd1e8; --cy2: #1e4f7a; --ok: #4fd1e8; --warn: #f4b740; --bad: #ff7a66; --gr: #5fe0a0;
+  --f-ui: "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; --f-mono: "JetBrains Mono", Consolas, monospace;
+}
+html, body { height: 100%; }
+body { background: var(--void); color: var(--ink); font-family: var(--f-ui); margin: 0; word-break: keep-all; }
+.page { min-height: 100%; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; gap: 12px;
+  padding-block: 14px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+#deck { position: relative; width: 100%; flex: 1 1 auto; display: flex; align-items: center; justify-content: center; min-height: 0; }
+#deck:fullscreen { background: #000; padding: 0; }
+#stage { position: relative; overflow: hidden; border-radius: 8px; box-shadow: 0 24px 70px rgba(0,0,0,.6); max-width: 100%; }
+#deck:fullscreen #stage { border-radius: 0; box-shadow: none; }
+#canvas { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; transform-origin: 0 0; }
+.ctl { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; font-size: 13px; color: var(--mu); max-width: 100%; }
+.ctl button { font: inherit; font-size: 13px; padding: 7px 12px; border-radius: 6px; border: 1px solid #2b3f60; background: #111c2e; color: var(--ink); cursor: pointer; }
+.ctl button:hover { border-color: var(--cy); }
+.ctl button[aria-pressed="true"] { background: #0f3a4a; border-color: var(--cy); color: var(--cy); }
+.ctl button:focus-visible, a:focus-visible { outline: 2px solid var(--cy); outline-offset: 2px; }
+.ctl .pos { font-family: var(--f-mono); min-width: 74px; text-align: center; }
+.ctl .hint { color: var(--dim); font-size: 12px; }
+@media (max-width: 600px) { .ctl .hint { display: none; } }
+
+/* ── 장면 공통 ── */
+.slide { position: absolute; inset: 0; width: 1280px; height: 720px; overflow: hidden; box-sizing: border-box;
+  background: radial-gradient(ellipse at 72% -8%, var(--bg1) 0%, var(--bg0) 58%); color: var(--ink); font-family: var(--f-ui); }
+.slide * { box-sizing: border-box; }
+.slide::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: linear-gradient(rgba(79,209,232,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(79,209,232,.045) 1px, transparent 1px); background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse at 50% 40%, #000 30%, transparent 85%); }
+.slide.ch { background: radial-gradient(ellipse at 20% 50%, #123a5e 0%, #071020 62%); }
+.mono { font-family: var(--f-mono); }
+.num { font-variant-numeric: tabular-nums; }
+.glow { text-shadow: 0 0 16px rgba(79,209,232,.55); }
+.cy { color: var(--cy); } .mu { color: var(--mu); } .mu2 { color: var(--mu2); } .warn { color: var(--warn); } .bad { color: var(--bad); } .gr { color: var(--gr); }
+.pn { position: absolute; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
+.pn.rel { position: relative; }
+.hd { position: absolute; left: 60px; right: 60px; top: 28px; display: flex; align-items: center; gap: 16px; }
+.hd .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--cy); box-shadow: 0 0 12px var(--cy); flex: none; }
+.hd .eb { font: 700 16px var(--f-ui); color: var(--cy); letter-spacing: .06em; }
+.hd .t { font-size: 36px; font-weight: 900; line-height: 1.25; margin-top: 2px; letter-spacing: -.015em; }
+.hd .ref { margin-left: auto; align-self: flex-start; margin-top: 4px; font: 700 15px var(--f-ui); color: var(--mu2); white-space: nowrap; }
+.lab { font: 700 17px var(--f-ui); color: var(--cy); letter-spacing: .04em; }
+.note { position: absolute; left: 60px; right: 60px; display: flex; gap: 16px; align-items: baseline; border-top: 1px dashed #335789; padding-top: 12px; font-size: 21px; line-height: 1.5; color: #d2deee; }
+.note .k { font: 700 16px var(--f-ui); color: var(--cy); letter-spacing: .04em; flex: none; }
+ul.li { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+ul.li li { position: relative; padding-left: 22px; font-size: 23px; line-height: 1.45; color: #dfe8f4; }
+ul.li li::before { content: ""; position: absolute; left: 0; top: .6em; width: 9px; height: 9px; border-radius: 2px; background: var(--cy); box-shadow: 0 0 6px var(--cy); }
+ul.li.w li::before { background: var(--warn); box-shadow: 0 0 6px var(--warn); }
+ul.li.b li::before { background: var(--bad); box-shadow: 0 0 6px var(--bad); }
+.chip { display: inline-block; font-size: 17px; font-weight: 700; padding: 4px 14px; border-radius: 999px; border: 1px solid currentColor; }
+.tag { display: inline-block; font: 700 15px var(--f-mono); padding: 3px 10px; border-radius: 5px; background: rgba(79,209,232,.14); color: var(--cy); border: 1px solid rgba(79,209,232,.5); vertical-align: middle; }
+.keymsg { position: absolute; left: 60px; right: 60px; font-size: 27px; font-weight: 700; line-height: 1.45; border-left: 5px solid var(--cy); padding: 8px 0 8px 24px; background: linear-gradient(90deg, rgba(79,209,232,.14), transparent 75%); }
+.shot { background: #fff; border-radius: 8px; border: 1px solid var(--line); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,.45); }
+.shot img { display: block; width: 100%; }
+.cap { font-size: 17px; color: var(--mu); margin-top: 8px; line-height: 1.4; }
+/* 지시(프롬프트) 상자 */
+.pbox { position: absolute; border-radius: 12px; border: 1px solid rgba(79,209,232,.45); background: rgba(8, 22, 40, .92); box-shadow: 0 0 26px rgba(79,209,232,.12); padding: 18px 24px 18px; }
+.pbox .pl { display: flex; align-items: center; gap: 10px; font: 700 17px var(--f-ui); color: var(--cy); margin-bottom: 10px; }
+.pbox .pl i { font-style: normal; width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: var(--cy); color: #04121e; font-size: 16px; }
+.pbox .pt { font-size: 23px; line-height: 1.62; color: #eef4fb; }
+.pbox .pt b { color: var(--warn); font-weight: 700; }
+.pbox .pt .r { display: block; padding-left: 1.1em; text-indent: -1.1em; }
+/* 워크플로 그림 */
+.wf-row { position: absolute; left: 60px; right: 60px; display: flex; align-items: stretch; gap: 0; }
+.wf-lab { flex: none; width: 112px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900; border-radius: 10px 0 0 10px; }
+.wf-items { flex: 1; display: flex; gap: 12px; padding: 12px 14px; border-radius: 0 10px 10px 0; flex-wrap: nowrap; }
+.wf-in .wf-lab { background: rgba(244,183,64,.18); color: var(--warn); border: 1.5px solid rgba(244,183,64,.7); border-right: 0; }
+.wf-in .wf-items { border: 1.5px solid rgba(244,183,64,.7); background: rgba(244,183,64,.05); }
+.wf-out .wf-lab { background: rgba(95,224,160,.16); color: var(--gr); border: 1.5px solid rgba(95,224,160,.7); border-right: 0; }
+.wf-out .wf-items { border: 1.5px solid rgba(95,224,160,.7); background: rgba(95,224,160,.05); }
+.wf-chip { flex: 1; font-size: 20px; line-height: 1.35; padding: 8px 12px; border-radius: 7px; background: rgba(10,20,36,.75); border: 1px solid var(--line); display: flex; align-items: center; }
+.wf-steps { position: absolute; left: 60px; right: 60px; display: flex; align-items: stretch; }
+.wf-step { flex: 1; min-width: 0; border: 1.5px solid var(--cy); border-radius: 10px; background: var(--bg0); box-shadow: 0 0 16px rgba(79,209,232,.18); padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; }
+.wf-step .n { font: 700 16px var(--f-mono); color: var(--cy); }
+.wf-step .tt { font-size: 23px; font-weight: 900; line-height: 1.25; }
+.wf-step .dd { font-size: 20px; line-height: 1.4; color: var(--mu); }
+.wf-step .sub2 { border: 1px solid var(--line); border-radius: 7px; padding: 6px 10px; background: rgba(79,209,232,.07); }
+.wf-step .sub2 b { display: block; font-size: 19px; }
+.wf-step .sub2 span { font-size: 17.5px; color: var(--mu); line-height: 1.35; display: block; }
+.wf-arr { flex: none; width: 30px; display: flex; align-items: center; justify-content: center; color: var(--cy); font-size: 26px; font-weight: 900; }
+.wf-down { position: absolute; left: 0; right: 0; text-align: center; color: var(--mu2); font-size: 26px; line-height: 1; }
+
+/* 상시 겹 · 진행 바, 꼬리말, 자막 */
+#hud { position: absolute; inset: 0; pointer-events: none; z-index: 5; }
+#prog { position: absolute; left: 0; right: 0; top: 0; height: 6px; display: flex; gap: 3px; pointer-events: auto; }
+#prog .seg { position: relative; height: 100%; background: rgba(79,209,232,.14); cursor: pointer; }
+#prog .seg i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--cy); box-shadow: 0 0 8px var(--cy); transition: width .5s ease; }
+#ft { position: absolute; left: 60px; right: 60px; bottom: 14px; display: flex; justify-content: space-between; font: 500 15px var(--f-ui); color: var(--mu2); }
+#ft .c { color: var(--mu2); }
+#ftn { font-family: var(--f-mono); font-weight: 700; color: var(--mu); }
+#sub { position: absolute; left: 120px; right: 120px; bottom: 46px; display: flex; justify-content: center; }
+#sub span { display: inline-block; max-width: 1040px; text-align: center; font-size: 25px; font-weight: 500; line-height: 1.45; color: #fff;
+  background: rgba(3, 8, 16, .88); border: 1px solid rgba(79,209,232,.25); padding: 8px 20px; border-radius: 6px; text-wrap: balance; word-break: keep-all;
+  animation: subIn .35s ease both; }
+@keyframes subIn { from { opacity: 0; transform: translateY(8px); } }
+
+/* 장면 전환 */
+.slide.enter { animation: enter .6s cubic-bezier(.2,.7,.2,1) both; }
+.slide.leave { animation: leave .45s ease both; z-index: 2; }
+@keyframes enter { from { opacity: 0; transform: scale(1.025); filter: blur(6px); } }
+@keyframes leave { to { opacity: 0; transform: scale(.985); filter: blur(4px); } }
+
+/* 효과: .play가 걸린 동안만 돎. 걸리지 않은 상태가 곧 완성된 정지 화면 */
+@keyframes rise { from { opacity: 0; transform: translateY(18px); } }
+@keyframes fade { from { opacity: 0; } }
+@keyframes grow { from { transform: scaleX(0); } }
+@keyframes draw { from { stroke-dashoffset: var(--len, 2000); } }
+@keyframes pulse { 0%,100% { opacity: .35; transform: scale(1); } 50% { opacity: 1; transform: scale(1.6); } }
+@keyframes wipe { from { clip-path: inset(0 100% 0 0); } }
+@keyframes pop { 0% { opacity: 0; transform: scale(.6); } 70% { transform: scale(1.06); } }
+@keyframes sweep { to { transform: rotate(360deg); } }
+.play .a-rise { animation: rise .7s cubic-bezier(.2,.7,.2,1) both; animation-delay: var(--d, 0s); }
+.play .a-fade { animation: fade .8s ease both; animation-delay: var(--d, 0s); }
+.play .a-grow { transform-origin: left center; animation: grow 1.1s cubic-bezier(.2,.7,.2,1) both; animation-delay: var(--d, 0s); }
+.play .a-draw { stroke-dasharray: var(--len, 2000); animation: draw 1.4s ease both; animation-delay: var(--d, 0s); }
+.play .a-wipe { animation: wipe .9s cubic-bezier(.6,0,.2,1) both; animation-delay: var(--d, 0s); }
+.play .a-pop { animation: pop .55s cubic-bezier(.3,1.3,.5,1) both; animation-delay: var(--d, 0s); }
+.a-pulse { animation: pulse 2.4s ease-in-out infinite; }
+.lpdot { transform-origin: 250px 230px; animation: sweep 6s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .play *, .slide.enter, .slide.leave, .a-pulse, .lpdot, #sub span { animation: none !important; } }
+
+.lnk { font: 700 16px var(--f-ui); padding: 6px 12px; border-radius: 6px; border: 1px solid var(--cy); background: rgba(79,209,232,.12); color: var(--cy); cursor: pointer; text-decoration: none; }
+.lnk:hover { background: rgba(79,209,232,.25); }
+.slide a { color: inherit; }
+.slide a.cy { color: var(--cy); }
+</style>
+</head>
+<body>
+<div class="page">
+  <div id="deck">
+    <div id="stage" aria-live="polite"><div id="canvas"><div id="layer"></div>
+      <div id="hud"><div id="prog"></div><div id="sub" hidden></div><div id="ft"><span id="ftl"></span><span class="c" id="ftc"></span><span id="ftn"></span></div></div>
+    </div></div>
+  </div>
+  <div class="ctl" role="toolbar" aria-label="발표 조작">
+    <button id="bPrev" type="button" aria-label="이전 장면">← 이전</button>
+    <span class="pos" id="pos"></span>
+    <button id="bNext" type="button" aria-label="다음 장면">다음 →</button>
+    <button id="bAuto" type="button" aria-pressed="false">▶ 자동 재생(해설 자막)</button>
+    <button id="bReplay" type="button">효과 다시 보기</button>
+    <button id="bFull" type="button">전체 화면</button>
+    <span class="hint">← → 넘기기 · A 자동 재생 · R 효과 · F 전체 화면</span>
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════════════════════════════════════
+   공주여성새로일하기센터 AI 리터러시 제고교육 · AI 에이전트 활용(2시간)
+   A반 2026. 11. 10.(화) · B반 2026. 11. 17.(화) — B반은 주소 끝에 ?b
+   실습 시나리오는 v2 강의 장치(scenarios/s1·s2·s2b·s3)와 이름을 맞춤.
+   결과물 그림은 recordings/의 리허설 녹화본(2026. 11. 7.～8.)에서 가져옴.
+   ALRIS 수치는 최종연구심의회 발표(보고서 v13, 2026. 11. 8.)에서 가져옴.
+   ════════════════════════════════════════════════════════════ */
+const B = /[?&]b\b/.test(location.search) || /반=B/i.test(decodeURIComponent(location.search));
+const DAY = B ? "2026. 11. 17.(화)" : "2026. 11. 10.(화)";
+const CLS = B ? "B반" : "A반";
+const SITE = "https://ai-agent-gongju.pages.dev";
+const ROOM = "ai-agent-gongju.pages.dev/room";
+const CH = ["시작", "강사 소개", "ALRIS 이야기", "실습 안내", "실습 ① 리서치", "실습 ② 설문조사", "실습 ③ CEO 대시보드", "마무리"];
+const d = (s) => `data-d="${(+s).toFixed(2)}"`;
+function hd(s, title) {
+  return `<div class="hd"><span class="dot a-pulse"></span><div><div class="eb">${s.eb || CH[s.ch]}</div><div class="t a-rise" ${d(.05)}>${title}</div></div><span class="ref">${s.ref || ""}</span></div>`;
+}
+function chCard(no, label, title, items) {
+  return () => `<div class="slide ch">
+    <div class="a-fade" ${d(.05)} style="position:absolute;left:120px;top:190px;font-size:22px;font-weight:700;letter-spacing:.2em;color:var(--cy)">${label}</div>
+    <div class="a-wipe" ${d(.2)} style="position:absolute;left:116px;top:228px;font-size:72px;font-weight:900;letter-spacing:-.02em;line-height:1.2;white-space:nowrap">${title}</div>
+    <div class="a-grow" ${d(.6)} style="position:absolute;left:120px;top:344px;width:220px;height:4px;background:var(--cy);box-shadow:0 0 12px var(--cy)"></div>
+    <div style="position:absolute;left:120px;top:378px;display:flex;flex-direction:column;gap:14px">${items.map((t, i) => `<div class="a-rise" ${d(.8 + i * .12)} style="font-size:27px;color:var(--mu)"><span class="mono cy" style="font-size:19px;margin-right:16px">${String(i + 1).padStart(2, "0")}</span>${t}</div>`).join("")}</div>
+    <div class="mono a-fade" ${d(.3)} style="position:absolute;right:100px;top:130px;font-size:320px;font-weight:700;color:rgba(79,209,232,.08);line-height:1">${no}</div>
+  </div>`;
+}
+/* 워크플로 그림: 입력 → 단계들 → 결과물 */
+function wf(o) {
+  const yIn = o.yIn || 120, hIn = o.hIn || 88, ySt = yIn + hIn + 34, hSt = o.hSt || 230, yOut = ySt + hSt + 34, hOut = o.hOut || 88;
+  const steps = o.steps.map((st, i) => {
+    const body = st.par ? st.par.map((p) => `<div class="sub2"><b>${p[0]}</b><span>${p[1]}</span></div>`).join("") : `<div class="dd">${st.d}</div>`;
+    return (i ? `<div class="wf-arr a-fade" ${d(.5 + i * .18)}>▶</div>` : "") + `<div class="wf-step a-pop" ${d(.4 + i * .18)} style="${st.w ? `flex:${st.w}` : ""}"><div class="n">${String(i + 1).padStart(2, "0")}</div><div class="tt">${st.t}</div>${body}</div>`;
+  }).join("");
+  return `<div class="wf-row wf-in a-rise" ${d(.15)} style="top:${yIn}px;height:${hIn}px"><div class="wf-lab">입력</div><div class="wf-items">${o.inputs.map((x) => `<div class="wf-chip"><span>${x}</span></div>`).join("")}</div></div>
+  <div class="wf-down a-fade" ${d(.3)} style="top:${yIn + hIn + 4}px">▼</div>
+  <div class="wf-steps" style="top:${ySt}px;height:${hSt}px">${steps}</div>
+  <div class="wf-down a-fade" ${d(1.3)} style="top:${ySt + hSt + 4}px">▼</div>
+  <div class="wf-row wf-out a-rise" ${d(1.4)} style="top:${yOut}px;height:${hOut}px"><div class="wf-lab">결과물</div><div class="wf-items">${o.outputs.map((x) => `<div class="wf-chip"><span>${x}</span></div>`).join("")}</div></div>`;
+}
+function pbox(label, lines, style) {
+  return `<div class="pbox a-rise" ${d(.35)} style="${style}"><div class="pl"><i>▸</i>${label}</div><div class="pt">${lines.map((l) => `<span class="r">${l}</span>`).join("")}</div></div>`;
+}
+/* 함께 보기 — 강사가 실행, 수강생은 휴대폰 강의실 'AI 작업 화면' 탭에서 지켜보며 채팅 */
+function watch(s, o) {
+  return `<div class="slide">${hd(s, o.title)}
+  <div class="pn a-rise" ${d(.15)} style="left:60px;top:126px;width:520px;height:440px;padding:22px 26px">
+    <div class="lab">이렇게 함께 봅니다</div>
+    <div style="display:flex;flex-direction:column;gap:16px;margin-top:16px">
+      ${[["1", "강사가 실행합니다", o.run], ["2", "휴대폰으로 지켜봅니다", `가상 강의실 <b class="cy">'AI 작업 화면'</b> 탭에서 에이전트가 지금 하는 일이 한 줄씩 올라옵니다`], ["3", "채팅으로 남겨 주세요", "궁금한 점·의견은 채팅창에, 질문은 <b class=\"cy\">'질문'</b> 버튼으로"]].map((r, i) => `<div class="a-rise" ${d(.3 + i * .15)} style="display:grid;grid-template-columns:44px 1fr;gap:14px;align-items:start">
+        <span class="mono" style="width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--cy);color:var(--cy);font-size:20px;font-weight:700">${r[0]}</span>
+        <div><div style="font-size:24px;font-weight:900">${r[1]}</div><div style="font-size:20px;line-height:1.45;color:var(--mu);margin-top:2px">${r[2]}</div></div></div>`).join("")}
+    </div>
+    <div class="a-fade" ${d(.9)} style="position:absolute;left:26px;right:26px;bottom:18px;font-size:19px;color:var(--mu2)">휴대폰 주소 <b class="mono cy" style="font-size:19px">${ROOM}</b></div>
+  </div>
+  <div style="position:absolute;left:610px;right:60px;top:126px;display:flex;flex-direction:column;gap:16px">
+    <div class="pn rel a-rise" ${d(.4)} style="padding:18px 22px"><div class="lab">화면에서 눈여겨볼 것</div>
+      <ul class="li" style="margin-top:12px;gap:10px">${o.look.map((x) => `<li style="font-size:22px">${x}</li>`).join("")}</ul></div>
+    <div class="pn rel a-rise" ${d(.6)} style="padding:18px 22px;border-color:rgba(244,183,64,.7);background:rgba(40,30,8,.55)"><div class="lab" style="color:var(--warn)">채팅으로 답해 주세요</div>
+      <div style="font-size:26px;font-weight:900;line-height:1.4;margin-top:8px">${o.ask}</div></div>
+  </div>
+  <div class="note a-fade" ${d(1)} style="top:590px"><span class="k">${o.k || "실행"}</span><span>${o.note}</span></div>
+  </div>`;
+}
+
+/* ════════════ 장면 ════════════ */
+const S = [];
+const add = (o) => S.push(o);
+
+/* 01 표지 */
+add({ ch: 0, sub: ["안녕하세요. 오늘은 AI에게 묻는 법을 넘어, AI 에이전트에게 일을 맡기고 관리하는 법을 함께 보겠습니다."],
+  html: () => `<div class="slide ch">
+  <div class="mono a-fade" ${d(.3)} style="position:absolute;right:50px;top:470px;font-size:190px;font-weight:700;letter-spacing:-.02em;color:rgba(79,209,232,.06);line-height:1">AGENT</div>
+  <div class="a-fade" ${d(.05)} style="position:absolute;left:96px;top:104px;display:flex;align-items:center;gap:12px;color:var(--cy);font-size:21px;font-weight:700;letter-spacing:.06em"><span class="a-pulse" style="width:12px;height:12px;border-radius:50%;background:var(--cy);box-shadow:0 0 12px var(--cy)"></span>2026 새일센터 AI 리터러시 제고교육</div>
+  <div class="a-rise" ${d(.15)} style="position:absolute;left:96px;top:152px;font-size:76px;font-weight:900;line-height:1.22;letter-spacing:-.02em">AI <span class="cy glow">에이전트</span>에게<br>일 맡기기</div>
+  <div class="a-grow" ${d(.5)} style="position:absolute;left:100px;top:358px;width:240px;height:4px;background:var(--cy);box-shadow:0 0 12px var(--cy)"></div>
+  <div class="a-rise" ${d(.4)} style="position:absolute;left:96px;top:384px;font-size:27px;color:var(--mu);line-height:1.45">묻고 답하는 챗봇을 넘어, 조사 · 설문 · 보고를 맡기고 관리하는 법</div>
+  <div class="a-rise" ${d(.55)} style="position:absolute;left:96px;top:460px;display:flex;align-items:center;gap:18px">
+    <span style="border:1.5px solid var(--cy);color:var(--cy);font-weight:700;font-size:23px;padding:6px 18px;border-radius:5px">${CLS}</span>
+    <span style="font-size:27px;font-weight:700">${DAY} 10:00</span>
+    <span style="font-size:22px;color:var(--mu)">국립공주대학교 옥룡캠퍼스 예술관 205호</span></div>
+  <div class="a-rise" ${d(.7)} style="position:absolute;left:96px;top:540px;width:820px;border-top:1px solid var(--line);padding-top:18px;display:grid;grid-template-columns:110px 1fr;row-gap:10px;font-size:23px">
+    <span class="mu2">강사</span><span><b>조상규</b> · 건축공간연구원 선임연구위원</span>
+    <span class="mu2">주관</span><span>공주여성새로일하기센터</span></div>
+  </div>` });
+
+/* 02 강사 소개 — burn001.github.io 한국어판 */
+add({ ch: 1, sub: ["건축공간연구원에서 스마트시티, 녹색건축과 도시, 건축·도시정보체계를 연구합니다.", "요즘은 AI에게 건축법령을 가르치고, AI가 숙제하는 모습을 구경하는 도구도 만듭니다."],
+  html: (s) => `<div class="slide">${hd(s, "강사 소개")}
+  <div class="a-pop" ${d(.2)} style="position:absolute;left:60px;top:120px;width:430px;height:430px;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:#fff;box-shadow:0 0 40px rgba(79,209,232,.18)">
+    <img src="assets/avatar.png" alt="서서 코딩하는 조상규 박사의 복셀 아바타" style="width:100%;height:100%;object-fit:cover"></div>
+  <div class="a-fade" ${d(.5)} style="position:absolute;left:60px;top:560px;width:430px;text-align:center;font-size:18px;color:var(--mu2)">복셀 아바타 · "서서 코딩 중"</div>
+  <div style="position:absolute;left:530px;right:60px;top:118px">
+    <div class="a-rise" ${d(.15)} style="font-size:20px;color:var(--cy);font-weight:700">건축공간연구원 선임연구위원</div>
+    <div class="a-rise" ${d(.2)} style="display:flex;align-items:baseline;gap:16px;margin-top:4px"><span style="font-size:52px;font-weight:900">조상규</span><span class="mono mu" style="font-size:22px">Ph.D. · Dr.Egg · burn001</span></div>
+    <div class="a-rise" ${d(.3)} style="font-size:23px;line-height:1.6;margin-top:10px;color:#e3ebf6">건축공간연구원(AURI) 건축혁신본부에서 스마트시티, 녹색건축 · 도시, 건축 · 도시정보체계를 연구합니다. 요즘은 <b class="cy">AI에게 건축법령을 가르치고</b>, AI가 숙제하는 모습을 구경하는 도구도 만듭니다.</div>
+    <div class="a-rise" ${d(.45)} style="display:flex;flex-wrap:wrap;gap:10px;margin-top:16px">${["스마트시티", "녹색건축·도시", "건축·도시정보체계", "건축법령 AI", "건축 통계"].map((f) => `<span class="chip" style="color:var(--mu);border-color:var(--line);background:var(--panel)">${f}</span>`).join("")}</div>
+    <div class="pn rel a-rise" ${d(.6)} style="margin-top:20px;padding:14px 20px;display:grid;grid-template-columns:150px 1fr;row-gap:8px;font-size:20px">
+      <span class="mu2">2023～</span><span>건축공간연구원 건축혁신본부 선임연구위원</span>
+      <span class="mu2">2021～2022</span><span>건축공간연구원 기획조정실장</span>
+      <span class="mu2">2019～2021</span><span>건축공간연구원 스마트·녹색 연구단장</span>
+      <span class="mu2">학력</span><span>서울대학교 건축학과 · 도시설계 협동과정 도시계획학 박사</span></div>
+    <div class="a-fade" ${d(.8)} style="margin-top:14px;font-size:19px;color:var(--mu2)">더 보기 <b class="mono cy">burn001.github.io</b> · <b class="mono cy">github.com/burn001</b></div>
+  </div>
+  </div>` });
+
+/* 03 만들고 있는 것 */
+add({ ch: 1, sub: ["제가 만들고 있는 것은 두 가지입니다. 연구원의 인공지능 건축법령 서비스 ALRIS와, 개인 프로젝트인 Agent4D입니다.", "에이전트는 일하고 저는 그걸 3D로 구경합니다. 방금 아바타도 이 프로젝트 출신입니다."],
+  html: (s) => `<div class="slide">${hd(s, "요즘 만들고 있는 것 두 가지")}
+  ${[["연구 시스템 · 건축공간연구원", "ALRIS", "assets/alris_home.jpg", "건축법령을 물으면 조문 번호부터 내밀어서, 믿어 달라고 조를 일이 없습니다. 법령과 자치법규 15만여 건을 야근 수당 안 받는 에이전트들이 나눠 읽습니다.", "alris.auri.re.kr"],
+     ["개인 프로젝트 · 오픈소스", "Agent4D", "assets/agent4d.jpg", "에이전트는 일하고 저는 그걸 3D로 구경합니다. 실시간으로도, 다시 보기로도요. 앞 장의 아바타도 이 프로젝트 출신입니다.", "github.com/burn001/agent4d"]].map((c, i) => `<div class="pn a-rise" ${d(.2 + i * .2)} style="left:${60 + i * 590}px;top:120px;width:570px;height:530px;overflow:hidden">
+    <div style="height:268px;overflow:hidden;border-bottom:1px solid var(--line);background:#fff"><img src="${c[2]}" alt="${c[1]} 화면" style="width:100%;display:block"></div>
+    <div style="padding:16px 22px">
+      <div style="font-size:17px;color:var(--cy);font-weight:700">${c[0]}</div>
+      <div style="font-size:34px;font-weight:900;margin-top:2px">${c[1]}</div>
+      <div style="font-size:20px;line-height:1.55;color:#dbe5f2;margin-top:6px">${c[3]}</div>
+      <div class="mono cy" style="font-size:17px;margin-top:10px">${c[4]} →</div></div></div>`).join("")}
+  </div>` });
+
+/* 04 ALRIS 무엇을 하나 */
+add({ ch: 2, eb: "시작 · 제가 AI로 만든 것", sub: ["먼저 제가 AI로 만든 시스템부터 보여 드리겠습니다. 건축법령 질문에 근거 조문과 함께 답하는 ALRIS입니다.", "서울 제2종일반주거지역의 건폐율을 물으면, 60%라는 답과 함께 법률과 서울시 조례 조문을 붙여 줍니다.", "누구나 로그인 없이 alris.auri.re.kr에서 써 보실 수 있습니다."],
+  html: (s) => `<div class="slide">${hd(s, "ALRIS — 건축법령을 물으면 근거 조문과 함께 답하는 AI")}
+  <div class="shot a-rise" ${d(.2)} style="position:absolute;left:60px;top:126px;width:720px">
+    <img src="assets/alris_answer.jpg" alt="ALRIS 답변 화면: 서울특별시 제2종일반주거지역 건폐율 60퍼센트, 용적률 200퍼센트와 근거 조문"></div>
+  <div class="a-fade" ${d(.4)} style="position:absolute;left:60px;top:436px;width:720px"><div class="cap">실제 답변 화면(2026. 11. 8.) — 답마다 법률 · 조례 조문 번호가 붙습니다</div></div>
+  <div style="position:absolute;left:820px;right:60px;top:126px;display:flex;flex-direction:column;gap:14px">
+    ${[["무엇을", "건축법령 질문에 <b class=\"cy\">근거 조문</b>과 함께 답합니다"], ["얼마나", "법령과 자치법규 <b class=\"cy\">15만여 건</b>"], ["어떻게", "질문한 <b class=\"cy\">시점</b>의 법, 해당 <b class=\"cy\">지역</b>의 조례까지 확인"], ["누가", "누구나 로그인 없이 · <span class=\"mono cy\">alris.auri.re.kr</span>"]].map((r, i) => `<div class="pn rel a-rise" ${d(.35 + i * .12)} style="padding:12px 18px"><div style="font-size:16px;color:var(--mu2);font-weight:700">${r[0]}</div><div style="font-size:22px;line-height:1.4;margin-top:2px">${r[1]}</div></div>`).join("")}
+  </div>
+  <div class="a-rise" ${d(.9)} style="position:absolute;left:60px;width:720px;top:506px;display:grid;grid-template-columns:repeat(4,1fr);gap:0">
+    ${[["2023", "가능성 확인"], ["2024", "공개 시범 서비스"], ["2025", "답변 품질 향상"], ["2026", "검색 고도화 · 자료 확장"]].map((y, i) => `<div style="border-top:3px solid ${i === 3 ? "var(--cy)" : "#2c5a8a"};padding-top:10px;padding-right:12px"><span class="mono" style="font-size:26px;font-weight:700;${i === 3 ? "color:var(--cy)" : ""}">${y[0]}</span><div style="font-size:20px;color:var(--mu);margin-top:2px">${y[1]}</div></div>`).join("")}
+  </div>
+  </div>` });
+
+/* 05 에이전트와 함께 만들었다 */
+add({ ch: 2, eb: "시작 · 제가 AI로 만든 것", sub: ["이 시스템을 저 혼자 만든 것이 아닙니다. AI 에이전트 여럿이 24시간 쉬지 않고 계획, 실행, 보고를 되풀이했습니다.", "9월 말부터 11월 초까지 850번을 돌았고, 61일 동안 개선이 없던 날은 하루도 없었습니다.", "저는 그 고리 위에서 방향을 정하고, 승인하고, 필요하면 멈췄습니다."],
+  html: (s) => {
+  const cx = 250, cy = 230, R = 150;
+  const N = [["계획", -90], ["실행", 0], ["보고", 90], ["계획 수정", 180]];
+  const pos = (a) => [cx + Math.cos(a * Math.PI / 180) * R, cy + Math.sin(a * Math.PI / 180) * R];
+  const K = [["850", "번", "쉬지 않고 돈 개선 작업", "9. 27.～11. 2. · 누적 약 649시간"], ["2,849", "건", "반영한 변경", "9. 3.～11. 2."], ["159", "/ 172", "마친 개선 과업", "연구책임자가 정한 과업 기준"], ["29", "개", "동시에 움직인 에이전트", "11. 5. 아침 가장 바빴던 때"]];
+  return `<div class="slide">${hd(s, "AI 에이전트 팀과 함께 만들었습니다")}
+  <div style="position:absolute;left:50px;top:110px;width:500px;height:470px">
+    <svg width="500" height="470" style="position:absolute;inset:0;overflow:visible">
+      <defs><marker id="lp" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#4fd1e8"/></marker></defs>
+      ${[[-90, 0], [0, 90], [90, 180], [180, 270]].map((g, i) => { const p0 = pos(g[0] + 24), p1 = pos(g[1] - 24); return `<path class="a-draw" ${d(.4 + i * .25)} style="--len:300;filter:drop-shadow(0 0 4px #4fd1e8)" d="M${p0[0].toFixed(1)} ${p0[1].toFixed(1)} A${R} ${R} 0 0 1 ${p1[0].toFixed(1)} ${p1[1].toFixed(1)}" stroke="#4fd1e8" stroke-width="3" fill="none" marker-end="url(#lp)"/>`; }).join("")}
+      <g class="lpdot"><circle cx="${cx}" cy="${cy - R}" r="8" fill="#eef4fb" style="filter:drop-shadow(0 0 8px #4fd1e8)"/></g>
+      <circle cx="${cx}" cy="${cy}" r="72" fill="rgba(79,209,232,.08)" stroke="#2c5a8a" stroke-dasharray="4 5"/>
+      <text x="${cx}" y="${cy - 6}" text-anchor="middle" font-size="22" font-weight="700" fill="#eef4fb">AI 에이전트</text>
+      <text x="${cx}" y="${cy + 22}" text-anchor="middle" font-size="18" fill="#b4c5de">24시간 반복</text></svg>
+    ${N.map((n, i) => { const p = pos(n[1]); return `<div class="a-pop" ${d(.2 + i * .25)} style="position:absolute;left:${(p[0] - 70).toFixed(0)}px;top:${(p[1] - 26).toFixed(0)}px;width:140px;padding:8px 0;border-radius:9px;text-align:center;background:var(--bg0);border:2px solid ${i === 3 ? "var(--warn)" : "var(--cy)"};font-size:22px;font-weight:900;color:${i === 3 ? "var(--warn)" : "var(--ink)"}">${n[0]}</div>`; }).join("")}
+    <div class="a-fade" ${d(1.4)} style="position:absolute;left:0;right:0;top:430px;text-align:center;font-size:21px;color:var(--warn);font-weight:700">사람은 고리 위에서 방향 · 승인 · 정지</div>
+  </div>
+  <div style="position:absolute;left:590px;right:60px;top:122px;display:grid;grid-template-columns:1fr 1fr;gap:14px">${K.map((k, i) => `<div class="pn rel a-rise" ${d(.5 + i * .12)} style="padding:16px 20px;height:176px">
+    <div style="font-size:19px;color:var(--mu)">${k[2]}</div>
+    <div style="margin-top:4px;white-space:nowrap"><span class="mono num glow" style="font-size:50px;font-weight:700">${k[0]}</span><span class="cy" style="font-size:22px;margin-left:6px">${k[1]}</span></div>
+    <div style="font-size:17px;color:var(--mu2);margin-top:4px">${k[3]}</div></div>`).join("")}</div>
+  <div class="note a-fade" ${d(1.6)} style="top:594px"><span class="k">한 줄로</span><span>61일 동안 개선이 반영되지 않은 날 <b class="cy">0일</b> — 주말 · 공휴일 포함</span></div>
+  </div>`; } });
+
+/* 06 배운 것 */
+add({ ch: 2, eb: "시작 · 제가 AI로 만든 것", sub: ["저는 건축과 도시를 연구하는 사람입니다. 코드는 에이전트가 썼고, 무엇을 만들지와 결과를 받아들일지는 제가 정했습니다.", "이 경험에서 배운 세 가지가 오늘 강의의 핵심입니다."],
+  html: (s) => `<div class="slide">${hd(s, "ALRIS를 만들며 배운 세 가지")}
+  <div class="a-rise" ${d(.15)} style="position:absolute;left:60px;right:60px;top:122px;font-size:25px;line-height:1.55;color:#e3ebf6">저는 개발자가 아니라 <b>건축 · 도시 연구자</b>입니다. 코드는 에이전트가 썼고, <b class="cy">무엇을 만들지 · 결과를 받아들일지 · 이용자에게 내보낼지</b>는 제가 정했습니다.</div>
+  <div style="position:absolute;left:60px;right:60px;top:220px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px">
+    ${[["1", "일을 글로 맡깁니다", "목적 · 자료 위치 · 결과물 모양 · 하지 말 것. 새 직원에게 주는 인수인계서처럼 씁니다."], ["2", "과정을 보며 바로잡습니다", "작게 맡기고 중간에 봅니다. 방향이 틀리면 바로 멈추고 지시를 고칩니다."], ["3", "결과는 원자료와 대조합니다", "숫자 · 출처 · 기준 시점은 사람이 확인합니다. 내보내는 결정도 사람이 합니다."]].map((g, i) => `<div class="pn rel a-rise" ${d(.3 + i * .15)} style="padding:22px 24px;height:250px">
+      <span class="mono" style="display:inline-flex;width:48px;height:48px;border-radius:50%;align-items:center;justify-content:center;background:var(--cy);color:#04121e;font-size:24px;font-weight:700">${g[0]}</span>
+      <div style="font-size:27px;font-weight:900;margin-top:14px">${g[1]}</div>
+      <div style="font-size:21px;line-height:1.5;color:var(--mu);margin-top:8px">${g[2]}</div></div>`).join("")}
+  </div>
+  <div class="keymsg a-wipe" ${d(1)} style="top:510px">에이전트는 일을 준비하고, <span class="cy">결정과 책임은 사람</span>이 집니다.</div>
+  </div>` });
+
+/* 07 챗봇과 에이전트 */
+add({ ch: 3, sub: ["챗봇은 질문 한 번에 답 한 번입니다. 자료를 붙여 넣고 결과를 옮기는 일은 사람이 합니다.", "에이전트는 폴더 안 파일을 직접 읽고 쓰고, 검색과 통계 조회 같은 도구를 쓰며, 여러 단계를 이어서 합니다.", "비유하면 챗봇은 전화 상담, 에이전트는 내 사무실에 앉은 신입 직원입니다."],
+  html: (s) => `<div class="slide">${hd(s, "챗봇과 에이전트는 무엇이 다른가")}
+  ${[["챗봇", "ChatGPT · Gemini · Claude 대화창", ["질문 한 번에 답 한 번", "자료는 내가 복사해 붙여 넣음", "결과도 내가 옮겨서 정리", "창을 닫으면 맥락이 끊김"], "전화 상담", "var(--mu2)"],
+     ["에이전트", "Claude Code 같은 도구", ["폴더 안 파일을 직접 읽고 씀", "검색 · 통계 조회 · 문서 변환 도구를 씀", "여러 단계를 이어서 하고 기록을 남김", "일을 나눠 다른 에이전트에게 맡김"], "내 사무실에 앉은 신입 직원", "var(--cy)"]].map((c, i) => `<div class="pn a-rise" ${d(.2 + i * .2)} style="left:${60 + i * 590}px;top:122px;width:570px;height:430px;padding:22px 26px;${i ? "border-color:var(--cy);box-shadow:0 0 24px rgba(79,209,232,.18)" : ""}">
+    <div style="font-size:34px;font-weight:900;color:${c[4]}">${c[0]}</div><div style="font-size:19px;color:var(--mu2);margin-top:2px">${c[1]}</div>
+    <ul class="li ${i ? "" : "w"}" style="margin-top:20px;gap:14px">${c[2].map((x) => `<li>${x}</li>`).join("")}</ul>
+    <div style="position:absolute;left:26px;right:26px;bottom:22px;font-size:22px;border-top:1px dashed #335789;padding-top:12px">비유하면 <b style="color:${c[4]}">${c[3]}</b></div></div>`).join("")}
+  <div class="note a-fade" ${d(.9)} style="top:582px"><span class="k">그래서</span><span>에이전트는 <b class="cy">일을 잘 시키는 법</b>을 알아야 합니다. 신입 직원에게 일을 맡기듯이요.</span></div>
+  </div>` });
+
+/* 08 오늘 해 볼 세 가지 */
+add({ ch: 3, sub: ["오늘은 세 가지 업무를 에이전트에게 맡기는 모습을 함께 봅니다. 리서치, 설문조사, 그리고 센터장용 리포트와 대시보드입니다.", "셋째는 앞의 두 결과를 이어받아 만듭니다. 제가 실행하고, 여러분은 휴대폰으로 진행을 지켜보며 채팅으로 함께하시면 됩니다."],
+  html: (s) => `<div class="slide">${hd(s, "오늘 함께 볼 세 가지 워크플로")}
+  <div style="position:absolute;left:60px;right:60px;top:122px;display:flex;align-items:stretch">
+  ${[["①", "리서치", "S1", "심층리서치 → 한글 보고서", "통계청 수치와 웹 자료를 모아 출처를 단 개조식 보고서(HWPX)", "주제는 여러분이 투표로"],
+     ["②", "설문조사 자동화", "S2 · S2b", "설문 설계 · 게시 → 응답 분석", "7문항 설문을 휴대폰에 띄우고, 응답을 차트와 세 줄 해석으로", "여러분이 휴대폰으로 응답"],
+     ["③", "CEO 대시보드", "S3", "CEO 리포트 · 사업 대시보드", "①·②의 결과를 묶어 센터장용 한 장 리포트와 진행 대시보드", "매일 아침 저절로 만들기까지"]].map((c, i) => (i ? `<div class="a-fade" ${d(.5 + i * .2)} style="flex:none;width:36px;display:flex;align-items:center;justify-content:center;color:var(--cy);font-size:28px;font-weight:900">▶</div>` : "") + `<div class="pn rel a-rise" ${d(.25 + i * .2)} style="flex:1;padding:22px 22px;height:400px;${i === 2 ? "border-color:var(--cy)" : ""}">
+    <div style="display:flex;align-items:center;gap:10px"><span style="font-size:40px;font-weight:900;color:var(--cy)">${c[0]}</span><span class="tag">${c[2]}</span></div>
+    <div style="font-size:31px;font-weight:900;margin-top:6px">${c[1]}</div>
+    <div style="font-size:19px;color:var(--cy);margin-top:4px;font-weight:700">${c[3]}</div>
+    <div style="font-size:21px;line-height:1.5;color:#dbe5f2;margin-top:14px">${c[4]}</div>
+    <div style="position:absolute;left:22px;right:22px;bottom:20px;font-size:19px;color:var(--warn);font-weight:700;border-top:1px dashed #335789;padding-top:10px">${c[5]}</div></div>`).join("")}
+  </div>
+  <div class="note a-fade" ${d(1.1)} style="top:556px;font-size:20px"><span class="k">함께 보는 법</span><span>강사가 실행하고, 여러분은 휴대폰 가상 강의실 <b class="cy">'AI 작업 화면'</b> 탭에서 지켜보며 채팅으로 질문 · 의견을 남깁니다. <span class="mu2">(S0 '작업 공간 만들기'는 1부에서 짧게 보는 준비 단계)</span></span></div>
+  </div>` });
+
+/* ── 실습 ① 리서치 (S1) ── */
+add({ ch: 4, chap: true, dur: 4.5, sub: ["첫째, 리서치입니다."], html: chCard("01", "실습 ①  ·  S1", "리서치", ["상황과 지시", "에이전트의 일하는 순서", "결과물 — 한글 보고서", "함께 보기"]) });
+
+add({ ch: 4, ref: "시나리오 S1", sub: ["내년도 사업계획서에 공주시 여성 고용 통계를 넣어야 하는 상황입니다. 통계청 숫자를 찾고, 정책 자료를 모으고, 출처를 달아 한글 문서로 만드는 데 보통 반나절이 걸립니다.", "에이전트에게는 오른쪽처럼 지시합니다. 핵심은 숫자는 조회한 값만, 옆에 출처, 확인 담당이 대조라는 규칙입니다."],
+  html: (s) => `<div class="slide">${hd(s, "상황과 지시 — 출처가 달린 보고서가 필요합니다")}
+  <div class="pn a-rise" ${d(.15)} style="left:60px;top:122px;width:470px;height:450px;padding:22px 26px">
+    <div class="lab">상황</div>
+    <div style="font-size:23px;line-height:1.55;margin-top:10px">센터장님 메모: <b>"내년도 사업계획서에 공주시 여성 고용 통계를 넣을 것. 숫자는 반드시 출처를."</b></div>
+    <ul class="li w" style="margin-top:18px;gap:10px"><li style="font-size:21px">통계청 표를 찾아 숫자 옮기기</li><li style="font-size:21px">정책 · 사례 자료 모으기</li><li style="font-size:21px">한글 문서로 개조식 정리</li></ul>
+    <div style="position:absolute;left:26px;right:26px;bottom:20px;font-size:20px;color:var(--mu)">사람이 하면 반나절 → 에이전트는 <b class="cy">6분 안에</b></div></div>
+  ${pbox("에이전트에게 준 지시(요약)", [
+    "당신은 공주여성새로일하기센터의 <b>리서치 책임 에이전트</b>입니다.",
+    "수강생이 고른 주제로 <b>출처가 달린 개조식 보고서</b>를 한글(HWPX) 파일로 만드세요. 6분 안에.",
+    "· 통계 담당 · 웹 자료 담당에게 <b>동시에</b> 맡기세요",
+    "· 모든 숫자는 <b>조회 결과에 있는 값만</b>, 옆에 출처를 붙입니다",
+    "· 사실 확인 담당이 숫자를 모두 대조합니다",
+    "· 없으면 지어내지 말고 <b>\"확인 필요\"</b>로 둡니다"], "left:560px;right:60px;top:122px;height:450px")}
+  <div class="note a-fade" ${d(.9)} style="top:594px;font-size:19px"><span class="k">주제 3개</span><span>공주시 여성 고용 현황과 재취업 지원 과제 · 경력단절 여성 디지털 역량 교육 수요 · 지역 돌봄 · 일자리 연계 사례 — 휴대폰 투표로 고릅니다</span></div>
+  </div>` });
+
+add({ ch: 4, ref: "시나리오 S1", sub: ["리서치 책임 에이전트가 일을 나눕니다. 통계 담당은 통계청 KOSIS에서, 웹 자료 담당은 정부·공공기관 자료를 동시에 찾습니다.", "초안을 쓴 뒤 사실 확인 담당이 숫자를 모두 대조하고, 마지막으로 한글 파일을 만듭니다."],
+  html: (s) => `<div class="slide">${hd(s, "에이전트의 일하는 순서 — 한 사람에게 다 시키지 않습니다")}
+  ${wf({ inputs: ["휴대폰 투표로 고른 <b class=\"warn\">&nbsp;주제&nbsp;</b>", "통계 조회 메모(통계청 명령 목록)", "센터 규칙: 출처 · 개인정보"],
+    steps: [{ t: "일 나누기", d: "리서치 책임 에이전트가 담당을 정함" },
+      { t: "동시에 조사", w: 1.5, par: [["통계 담당", "통계청 KOSIS 지표 4～6개"], ["웹 자료 담당", "정부 · 공공기관 자료 4～6건"]] },
+      { t: "초안 쓰기", d: "개조식 보고서 A4 2쪽 · 숫자마다 출처" },
+      { t: "사실 확인", d: "확인 담당이 숫자를 모두 대조 · 핵심 통계 다시 조회" },
+      { t: "한글 파일", d: "HWPX 만들기 · 미리보기 그림" }],
+    outputs: ["<b class=\"gr\">보고서.hwpx</b>&nbsp;(한글 문서)", "사실 확인표(일치 · 불일치)", "휴대폰 요약 4줄"] })}
+  </div>` });
+
+add({ ch: 4, ref: "리허설 결과 · 2026. 11. 7.", sub: ["리허설 때 실제로 만든 보고서입니다. 공주시 여성 고용률 51.8퍼센트, 남성 66.8퍼센트, 숫자마다 통계표 번호가 붙어 있습니다.", "시작부터 한글 파일까지 약 3분 걸렸습니다. 그래도 숫자는 반드시 원래 표와 대조합니다."],
+  html: (s) => `<div class="slide">${hd(s, "결과물 — 약 3분 만에 나온 한글 보고서")}
+  <div class="shot a-rise" ${d(.2)} style="position:absolute;left:60px;top:118px;width:470px;height:534px"><img src="assets/s1_report.jpg" alt="공주시 여성 고용 현황과 재취업 지원 과제 보고서 첫 쪽" style="width:100%"></div>
+  <div style="position:absolute;left:570px;right:60px;top:122px;display:flex;flex-direction:column;gap:14px">
+    <div class="pn rel a-rise" ${d(.35)} style="padding:16px 22px"><div class="lab">휴대폰에 올라온 요약</div>
+      <ul class="li" style="margin-top:10px;gap:8px">
+        <li style="font-size:21px">공주시 여성 고용률 <b class="cy">51.8%</b>, 남성 66.8% <span class="mu2" style="font-size:17px">(KOSIS, 2026년 상반기)</span></li>
+        <li style="font-size:21px">30～49세 여성 고용률 70.8%, 직전 반기 75.5%에서 하락</li>
+        <li style="font-size:21px">전국 경력단절 사유 1위는 육아 489.5천 명 <span class="mu2" style="font-size:17px">(KOSIS, 2025년)</span></li>
+        <li style="font-size:21px">제안: 육아기 여성 맞춤 단시간 훈련과 일자리 연계</li></ul></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div class="pn rel a-rise" ${d(.5)} style="padding:14px 20px"><div style="font-size:18px;color:var(--mu)">걸린 시간(리허설)</div><span class="mono glow" style="font-size:44px;font-weight:700">약 3</span><span class="cy" style="font-size:22px"> 분</span></div>
+      <div class="pn rel a-rise" ${d(.6)} style="padding:14px 20px"><div style="font-size:18px;color:var(--mu)">함께 일한 담당</div><span class="mono glow" style="font-size:44px;font-weight:700">3</span><span class="cy" style="font-size:22px"> 명</span><div style="font-size:16px;color:var(--mu2)">통계 · 웹 자료 · 사실 확인</div></div></div>
+    <div class="pn rel a-rise" ${d(.7)} style="padding:14px 22px;border-color:rgba(255,122,102,.6)"><div class="lab" style="color:var(--bad)">사람이 볼 것</div>
+      <div style="font-size:20px;line-height:1.5;margin-top:6px">숫자가 원래 표와 같은가 · 우리 센터 사정과 맞는가 · 시 · 군 고용 통계는 표본 추정치라 한 시점만 보고 단정하지 않기</div></div>
+  </div>
+  </div>` });
+
+add({ ch: 4, eb: "실습 ① 리서치 · 함께 보기", sub: ["이제 여러분이 고른 주제로 실제로 실행해 보겠습니다. 휴대폰 가상 강의실의 AI 작업 화면 탭을 열어 주세요.", "에이전트가 일을 나누고, 통계를 조회하고, 숫자를 대조하는 모습이 한 줄씩 올라옵니다. 궁금한 점은 채팅으로 남겨 주세요."],
+  html: (s) => watch(s, { title: "함께 보기 — 여러분이 고른 주제로 지금 실행합니다",
+    run: "투표에서 이긴 주제로 S1을 실행합니다(6분 안팎)",
+    look: ["담당 둘이 <b class=\"cy\">동시에</b> 일을 시작하는 순간", "통계청에서 숫자를 조회하고 표 번호를 적는 줄", "사실 확인 담당이 <b class=\"cy\">불일치</b>를 찾아 고치는지", "한글 파일이 만들어지고 휴대폰에 올라오는 순간"],
+    ask: "여러분이라면 어떤 주제를 조사시키고 싶나요?",
+    note: "결과 보고서는 끝나면 휴대폰 채팅창에 올라옵니다. 실행이 늦거나 막히면 리허설 녹화본으로 다시 보여 드립니다." }) });
+
+/* ── 실습 ② 설문조사 자동화 (S2 · S2b) ── */
+add({ ch: 5, chap: true, dur: 4.5, sub: ["둘째, 설문조사 자동화입니다."], html: chCard("02", "실습 ②  ·  S2 · S2b", "설문조사 자동화", ["상황과 지시", "설계 → 게시 → 응답 → 분석", "결과물 — 설문과 분석 차트", "함께 보기"]) });
+
+add({ ch: 5, ref: "시나리오 S2 · S2b", sub: ["교육이 끝나면 만족도 조사를 해야 합니다. 문항 만들기, 배포, 집계, 보고 문장까지 손이 많이 갑니다.", "에이전트에게는 문항 수, 응답 시간, 묻지 말 것을 정해 주고, 설계와 분석을 두 번에 나눠 맡깁니다."],
+  html: (s) => `<div class="slide">${hd(s, "상황과 지시 — 교육 만족도 조사를 맡깁니다")}
+  <div class="pn a-rise" ${d(.15)} style="left:60px;top:122px;width:470px;height:450px;padding:22px 26px">
+    <div class="lab">상황</div>
+    <div style="font-size:23px;line-height:1.55;margin-top:10px">센터장님 메모: <b>"11월 AI 리터러시 교육 2회 운영 — 수강생 만족도 조사 필요"</b></div>
+    <ul class="li w" style="margin-top:18px;gap:10px"><li style="font-size:21px">문항 만들고 점검하기</li><li style="font-size:21px">휴대폰으로 배포하기</li><li style="font-size:21px">응답 세고 차트 · 보고 문장 쓰기</li></ul>
+    <div style="position:absolute;left:26px;right:26px;bottom:20px;font-size:20px;color:var(--mu)">설계 <b class="cy">2분</b> · 분석 <b class="cy">2분</b> 안에</div></div>
+  ${pbox("에이전트에게 준 지시(요약)", [
+    "<span class=\"tag\" style=\"margin-right:8px\">S2 설계</span> 수강생이 휴대폰으로 바로 응답할 설문을 만드세요.",
+    "· 주제: AI 리터러시 교육 — 사전 인식 · 만족도 · AI 활용 실태",
+    "· <b>7문항</b>, 휴대폰에서 <b>1분</b> 안에 끝나게",
+    "· 이름 · 연락처 · 소속은 <b>묻지 않습니다</b>",
+    "<span class=\"tag\" style=\"margin-right:8px\">S2b 분석</span> 들어온 응답을 집계해 차트 한 장과 <b>세 줄 해석</b>을.",
+    "· 숫자는 집계 결과에 있는 값만 · 채팅 의견도 한 줄로"], "left:560px;right:60px;top:122px;height:450px")}
+  </div>` });
+
+add({ ch: 5, ref: "시나리오 S2 · S2b", sub: ["S2에서 에이전트가 문항을 설계하면 가상 강의실에 바로 올라가 여러분 휴대폰에 설문 카드가 뜹니다.", "응답이 모이면 S2b에서 에이전트가 분석 프로그램을 직접 짜서 돌리고, 차트와 세 줄 해석을 다시 휴대폰으로 보내 줍니다."],
+  html: (s) => `<div class="slide">${hd(s, "에이전트의 일하는 순서 — 설계에서 분석까지")}
+  ${wf({ inputs: ["설문 주제 · 대상(수강생 약 15명)", "조건: 7문항 · 1분 · 개인정보 묻지 않기", "강의 중 채팅 의견"],
+    steps: [{ t: "문항 설계", d: "선택형 · 복수 선택 · 5점 척도 · 자유 의견 7개" },
+      { t: "게시", d: "가상 강의실에 올려 휴대폰에 설문 카드" },
+      { t: "응답 모으기", d: "여러분이 휴대폰으로 응답 · 익명" },
+      { t: "분석", d: "분석 프로그램을 직접 짜서 실행 · 문항별 집계" },
+      { t: "차트 · 해석", d: "차트 한 장 + 세 줄 해석, 사람 수로" }],
+    outputs: ["설문 7문항과 <b class=\"gr\">분석 계획</b>", "<b class=\"gr\">응답 차트</b>(그림 한 장)", "세 줄 해석 → 휴대폰 결과 카드"] })}
+  </div>` });
+
+add({ ch: 5, ref: "리허설 결과 · 연습용 응답 12명", sub: ["리허설 때 만든 설문과 분석 결과입니다. 응답은 연습용 12명입니다.", "에이전트의 해석은 이렇습니다. 오늘 교육 만족도는 평균 4.58점이고, 12명 모두 4점 이상이었습니다. 대부분이라고 쓰지 않고 몇 명인지 붙이게 했습니다."],
+  html: (s) => `<div class="slide">${hd(s, "결과물 — 설문 7문항과 응답 분석")}
+  <div class="pn a-rise" ${d(.15)} style="left:60px;top:118px;width:520px;height:300px;padding:16px 22px"><div class="lab">S2 · 에이전트가 만든 설문</div>
+    <ol style="margin:10px 0 0;padding-left:28px;font-size:19.5px;line-height:1.5;color:#e3ebf6">
+      <li>평소 AI를 얼마나 자주 쓰시나요?</li><li>써 본 AI 도구(복수 선택)</li><li>업무에 AI를 쓰고 싶은 일(복수 선택)</li><li>교육 전, AI를 잘 알고 있었다 (1～5)</li><li>오늘 교육에 만족한다 (1～5)</li><li>AI 에이전트를 업무에 써 볼 생각이 있다 (1～5)</li><li>자유 의견</li></ol></div>
+  <div class="pn a-rise" ${d(.35)} style="left:60px;top:432px;width:520px;height:220px;padding:16px 22px;border-color:rgba(95,224,160,.6)"><div class="lab" style="color:var(--gr)">S2b · 세 줄 해석(요약) <span class="mu2" style="font-weight:500">· 분석 약 1분</span></div>
+    <ul class="li" style="margin-top:10px;gap:6px"><li style="font-size:19.5px">12명 중 9명이 AI를 주 1～2회 사용, 가장 많이 써 본 도구는 ChatGPT(8명)</li><li style="font-size:19.5px">교육 만족도 평균 <b class="cy">4.58점</b>, 12명 모두 4점 이상</li><li style="font-size:19.5px">"실습 시간이 더 있으면 좋겠다"는 의견이 반복</li></ul></div>
+  <div class="a-rise" ${d(.5)} style="position:absolute;left:620px;top:118px;width:600px">
+    <div class="shot" style="height:498px"><img src="assets/s2b_chart_2.png" alt="응답 분석 차트: 업무에 AI를 쓰고 싶은 일, 오늘 교육 만족도" style="width:100%;height:100%;object-fit:contain"></div>
+    <div class="cap">에이전트가 그린 차트 6칸 중 2칸 — 쓰고 싶은 일 · 오늘 교육 만족도</div></div>
+  </div>` });
+
+add({ ch: 5, eb: "실습 ② 설문조사 · 함께 보기", sub: ["이번에는 여러분이 직접 응답자가 됩니다. 설문이 올라오면 휴대폰에 설문 카드가 뜹니다. 1분이면 끝납니다.", "응답이 모이면 분석을 실행하고, 결과가 다시 여러분 휴대폰으로 갑니다."],
+  html: (s) => watch(s, { title: "함께 보기 — 설문이 휴대폰에 뜨면 응답해 주세요",
+    run: "S2로 설문을 올리고, 응답이 모이면 S2b로 분석합니다",
+    look: ["설문 카드가 <b class=\"cy\">휴대폰에 바로</b> 뜨는 순간(1분이면 끝)", "에이전트가 분석 프로그램을 <b class=\"cy\">직접 짜서</b> 돌리는 줄", "해석 문장에 <b class=\"cy\">몇 명인지</b>가 붙는지", "여러분의 채팅 의견이 셋째 줄에 들어가는지"],
+    ask: "설문으로 꼭 알고 싶은 것이 있다면 무엇인가요?",
+    k: "익명", note: "응답에는 닉네임을 저장하지 않습니다. 15명 남짓은 작은 표본이라 비율보다 사람 수로 말합니다." }) });
+
+/* ── 실습 ③ CEO 대시보드 (S3) ── */
+add({ ch: 6, chap: true, dur: 4.5, sub: ["셋째, CEO 리포트와 대시보드입니다."], html: chCard("03", "실습 ③  ·  S3", "CEO 대시보드", ["상황과 지시", "앞의 결과를 묶는 순서", "결과물 — 한 장 리포트 · 대시보드", "매일 아침 저절로", "함께 보기"]) });
+
+add({ ch: 6, ref: "시나리오 S3", sub: ["센터장님은 바쁩니다. 1분 안에 읽고 결정할 수 있는 한 장이 필요합니다.", "에이전트에게 앞 시간의 리서치 보고서와 설문 분석, 그리고 사업 실적을 주고, 결론 한 줄과 핵심 숫자, 오늘 결정할 일을 뽑게 합니다."],
+  html: (s) => `<div class="slide">${hd(s, "상황과 지시 — 센터장님이 1분 안에 읽을 한 장")}
+  <div class="pn a-rise" ${d(.15)} style="left:60px;top:122px;width:470px;height:450px;padding:22px 26px">
+    <div class="lab">상황</div>
+    <div style="font-size:23px;line-height:1.55;margin-top:10px">아침마다 <b>"그래서 지금 어떻게 돼 가요?"</b></div>
+    <ul class="li w" style="margin-top:18px;gap:10px"><li style="font-size:21px">흩어진 보고서 · 설문 · 실적 모으기</li><li style="font-size:21px">진행률 · 집행률 계산하기</li><li style="font-size:21px">결정할 일 추려 한 장으로</li></ul>
+    <div style="position:absolute;left:26px;right:26px;bottom:20px;font-size:20px;color:var(--mu)">①·②의 결과를 이어받아 <b class="cy">3분 안에</b></div></div>
+  ${pbox("에이전트에게 준 지시(요약)", [
+    "당신은 센터장을 돕는 <b>보고 담당 에이전트</b>입니다.",
+    "앞 시간의 리서치 보고서 · 설문 분석 · 사업 실적으로 두 화면을 만드세요.",
+    "· <b>한 장 리포트</b>: 맨 위 결론 한 줄, 핵심 숫자 3～4개, 오늘 결정할 일 2～3개",
+    "· <b>사업 대시보드</b>: 사업별 진행률, 월별 취업 연계, 예산 집행률",
+    "· 숫자는 입력 자료에서 계산 · 없으면 <b>\"자료 없음\"</b>",
+    "· 사업 실적은 <b>가상 자료</b>라고 화면에 꼭 표시"], "left:560px;right:60px;top:122px;height:450px")}
+  </div>` });
+
+add({ ch: 6, ref: "시나리오 S3", sub: ["입력은 네 가지입니다. 리서치 보고서, 설문 분석, 채팅에 올라온 질문, 그리고 사업 실적입니다.", "에이전트는 먼저 숫자를 계산해 확인하고, 리포트와 대시보드를 각각 웹 화면으로 만듭니다."],
+  html: (s) => `<div class="slide">${hd(s, "에이전트의 일하는 순서 — 앞의 결과를 한곳에")}
+  ${wf({ inputs: ["① 리서치 보고서", "② 설문 분석 · 차트", "채팅에 올라온 질문", "사업 실적(<b class=\"warn\">가상</b>)"],
+    steps: [{ t: "자료 읽기", d: "네 가지 입력을 읽고 빠진 것 표시" },
+      { t: "숫자 계산", d: "진행률 · 집행률 · 누적 건수를 계산해 확인" },
+      { t: "한 장 리포트", d: "결론 · 핵심 숫자 · 결정할 일 · 출처" },
+      { t: "대시보드", d: "사업별 막대 · 월별 추이 · 예산" },
+      { t: "요약 · 알림", d: "휴대폰 3줄 요약 · 결과 카드" }],
+    outputs: ["<b class=\"gr\">센터장 리포트</b>(웹 화면 한 장)", "<b class=\"gr\">사업 진행 대시보드</b>", "휴대폰 요약 3줄"] })}
+  </div>` });
+
+add({ ch: 6, ref: "리허설 결과 · 2026. 11. 8.", sub: ["리허설 때 만든 센터장 리포트와 대시보드입니다. 맨 위에 결론 한 줄, 핵심 숫자 카드, 오늘 결정할 일이 있습니다.", "사업 실적은 시연용 가상 자료이고, 화면에도 그렇게 표시되어 있습니다. 만드는 데 1분 남짓 걸렸습니다."],
+  html: (s) => `<div class="slide">${hd(s, "결과물 — 센터장 리포트와 사업 대시보드")}
+  <div class="a-rise" ${d(.2)} style="position:absolute;left:60px;top:116px;width:690px">
+    <div class="shot"><img src="assets/s3_ceo_top.jpg" alt="센터장 아침 리포트: 결론 한 줄, 핵심 숫자 카드, 오늘 결정할 일"></div>
+    <div class="cap"><b class="cy">센터장 리포트</b>(윗부분) — 결론 한 줄 · 핵심 숫자 · 오늘 결정할 일 · 아래에 설문 차트</div>
+    <div class="pn rel" style="margin-top:14px;padding:12px 18px;font-size:20px;line-height:1.5">만드는 데 <b class="cy">1분 남짓</b>(리허설) · 숫자 카드마다 출처와 <b class="warn">연습 데이터 · 가상 자료</b> 표시</div></div>
+  <div class="a-rise" ${d(.4)} style="position:absolute;left:780px;top:116px;width:440px">
+    <div class="shot" style="height:440px"><img src="assets/s3_dashboard.jpg" alt="사업 진행 대시보드: 사업별 진행률, 예산 집행률, 월별 취업 연계"></div>
+    <div class="cap"><b class="cy">사업 대시보드</b> — 사업별 진행률 · 예산 집행률 72% · 월별 취업 연계(가상 자료)</div></div>
+  </div>` });
+
+add({ ch: 6, ref: "시나리오 S3", sub: ["이 리포트는 매일 아침 저절로 만들 수 있습니다. 예약만 걸어 두면 됩니다.", "제 아침 브리핑도 이렇게 만들어집니다. 출근하면 한 장이 와 있습니다. 그래도 숫자와 출처는 제가 확인합니다."],
+  html: (s) => `<div class="slide">${hd(s, "매일 아침 저절로 만들어 두기")}
+  <div class="a-rise" ${d(.2)} style="position:absolute;left:60px;right:60px;top:140px;display:flex;align-items:stretch">
+    ${[["예약", "매일 07:40", 1], ["자료 모으기", "실적 · 설문 · 뉴스", 0], ["사실 확인", "숫자 · 출처 대조", 1], ["리포트 작성", "한 장 + 대시보드", 0], ["알림", "메신저 · 메일", 0]].map((x, i) => (i ? `<div style="flex:none;width:34px;display:flex;align-items:center;justify-content:center;color:var(--cy);font-size:26px;font-weight:900">▶</div>` : "") + `<div class="a-pop" ${d(.3 + i * .15)} style="flex:1;padding:16px 12px;border-radius:10px;text-align:center;border:2px solid ${x[2] ? "var(--cy)" : "var(--line)"};background:${x[2] ? "rgba(79,209,232,.12)" : "var(--panel)"}"><div style="font-size:25px;font-weight:900">${x[0]}</div><div style="font-size:19px;color:var(--mu);margin-top:4px">${x[1]}</div></div>`).join("")}
+  </div>
+  <div class="pbox a-rise" ${d(.8)} style="left:60px;width:560px;top:300px;height:250px"><div class="pl"><i>▸</i>예약은 이렇게 한 줄로 부탁합니다</div>
+    <div style="font-size:25px;line-height:1.55;font-weight:700">"매일 아침 <b class="warn">7시 40분</b>에 이 리포트를 새로 만들어서 메신저로 보내 줘."</div>
+    <div style="font-size:18px;color:var(--mu2);margin-top:12px">오늘은 시연이라 직접 실행합니다. 실제 예약 등록은 하지 않습니다.</div></div>
+  <div class="pn a-rise" ${d(1)} style="left:650px;right:60px;top:300px;height:250px;padding:20px 24px"><div class="lab">제 하루로 보면</div>
+    <ul class="li" style="margin-top:12px;gap:10px"><li style="font-size:21px"><b>아침 브리핑</b> — 정책 · 건축 · AI 소식을 분야별로 조사 · 확인해 한 장으로</li><li style="font-size:21px"><b>메일 분류</b> — 광고는 정리, 중요한 메일은 요약. 답장은 초안까지만</li></ul></div>
+  <div class="keymsg a-wipe" ${d(1.3)} style="top:576px;font-size:24px">자동이라고 믿고 넘기지 않습니다. <span class="cy">받아 보면 숫자와 출처는 확인</span>합니다.</div>
+  </div>` });
+
+add({ ch: 6, eb: "실습 ③ CEO 대시보드 · 함께 보기", sub: ["이제 앞의 리서치와 여러분의 설문 응답을 묶어 리포트를 만들어 보겠습니다.", "여러분이 채팅에 남긴 질문도 리포트의 수강생 질문 칸에 들어갑니다. 센터장이라면 무엇을 보고 싶은지 채팅으로 알려 주세요."],
+  html: (s) => watch(s, { title: "함께 보기 — 오늘의 결과로 센터장 리포트를 만듭니다",
+    run: "S3를 실행합니다. 오늘 만든 ①·② 결과를 그대로 씁니다(3분 안팎)",
+    look: ["에이전트가 숫자를 <b class=\"cy\">먼저 계산해 확인</b>하는 줄", "리포트 파일이 <b class=\"cy\">한 줄씩 써지는</b> 모습", "여러분의 채팅 질문이 '수강생 질문' 칸에 들어가는지", "'가상 자료' 표시가 빠지지 않았는지"],
+    ask: "센터장이라면 매일 아침 어떤 숫자를 보고 싶나요?",
+    note: "완성된 리포트 · 대시보드는 휴대폰 채팅창 결과 카드에서 열어 볼 수 있습니다." }) });
+
+/* ── 마무리 ── */
+add({ ch: 7, chap: true, dur: 6, sub: ["오늘 본 세 가지는 시작일 뿐입니다. AI로 할 수 있는 것은 무궁무진합니다.", "중요한 것은 무엇을 맡길지 고르는 눈입니다. 조사, 설문, 보고는 어느 직장에나 있는 일입니다."],
+  html: () => `<div class="slide ch">
+  <div class="a-fade" ${d(.05)} style="position:absolute;left:0;right:0;top:170px;text-align:center;font-size:22px;font-weight:700;letter-spacing:.2em;color:var(--cy)">마무리</div>
+  <div class="a-wipe" ${d(.2)} style="position:absolute;left:0;right:0;top:214px;text-align:center;font-size:66px;font-weight:900;letter-spacing:-.02em;line-height:1.3">AI로 할 수 있는 것은<br><span class="cy glow">무궁무진합니다</span></div>
+  <div class="a-grow" ${d(.7)} style="position:absolute;left:530px;top:410px;width:220px;height:4px;background:var(--cy);box-shadow:0 0 12px var(--cy);transform-origin:center"></div>
+  <div class="a-rise" ${d(.9)} style="position:absolute;left:0;right:0;top:440px;text-align:center;font-size:28px;color:var(--mu);line-height:1.55">오늘 본 리서치 · 설문 · 보고는 시작일 뿐입니다.<br>중요한 것은 <b style="color:var(--ink)">무엇을 맡길지 고르는 눈</b>입니다.</div>
+  </div>` });
+
+add({ ch: 7, sub: ["재취업을 준비하실 때도, 지금 하시는 업무에서도 AI에게 맡길 일은 많습니다.", "이력서 문장 다듬기, 채용공고 읽기, 모의 면접, 그리고 회의록 정리, 안내문, 실적 집계 같은 일입니다."],
+  html: (s) => `<div class="slide">${hd(s, "여러분의 일에 바로 닿는 것들")}
+  ${[["재취업을 준비할 때", "var(--warn)", [["이력서 · 자기소개서", "경력 공백 기간에 한 일을 강점으로 풀어 쓰기"], ["채용공고 읽기", "공고를 붙여 넣고 필요한 역량과 내 경험 잇기"], ["모의 면접", "예상 질문 10개와 내 답변 다듬기"], ["자격증 공부 계획", "시험일까지 주차별 계획표"]]],
+     ["지금 하는 업무에서", "var(--cy)", [["회의록 · 상담 기록 정리", "이름 · 연락처는 빼고 요점만"], ["안내문 · 홍보 문구 · 문자", "대상에 맞춰 쉬운 말로 초안"], ["실적 집계 · 차트", "엑셀 표를 붙여 넣고 월별로 정리"], ["보고서 · 계획서 초안", "개조식으로, 숫자에는 출처"]]]].map((c, i) => `<div class="pn a-rise" ${d(.2 + i * .2)} style="left:${60 + i * 590}px;top:122px;width:570px;height:470px;padding:20px 24px;border-color:${c[1]}">
+    <div style="font-size:28px;font-weight:900;color:${c[1]}">${c[0]}</div>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-top:16px">${c[2].map((r, j) => `<div class="a-rise" ${d(.4 + i * .2 + j * .1)} style="border-left:3px solid ${c[1]};padding:4px 0 4px 16px"><div style="font-size:24px;font-weight:700">${r[0]}</div><div style="font-size:20px;color:var(--mu);margin-top:2px">${r[1]}</div></div>`).join("")}</div></div>`).join("")}
+  </div>` });
+
+add({ ch: 7, sub: ["오늘 바로 무언가를 하실 필요는 없습니다. 집이나 일터에서 생각날 때 하나씩 해 보시면 됩니다.", "가장 쉬운 시작은 무료 AI 챗봇에 한 줄 부탁해 보는 것입니다."],
+  html: (s) => `<div class="slide">${hd(s, "나중에 집이나 일터에서 쉽게 해 볼 것")}
+  <div style="position:absolute;left:60px;top:122px;width:640px;display:flex;flex-direction:column;gap:12px">
+    ${[["무료 AI 챗봇에 한 줄 부탁해 보기", "ChatGPT · Gemini · Claude 무료 요금제, 휴대폰 앱도 됩니다"], ["매주 하는 작은 일 하나 맡겨 보기", "회의록 정리, 안내 문자, 실적 표 정리"], ["부탁할 때 네 가지 적기", "목적 · 자료 · 결과물 모양 · 하지 말 것"], ["받은 답의 숫자 · 날짜는 원문과 대조", "AI는 그럴듯하게 틀립니다"], ["잘된 부탁은 메모장에 저장해 다시 쓰기", "모이면 나만의 지시서가 됩니다"]].map((r, i) => `<div class="a-rise" ${d(.2 + i * .12)} style="display:grid;grid-template-columns:48px 1fr;gap:14px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)">
+      <span class="mono" style="width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--cy);color:var(--cy);font-size:20px;font-weight:700">${i + 1}</span>
+      <div><div style="font-size:24px;font-weight:900">${r[0]}</div><div style="font-size:19px;color:var(--mu)">${r[1]}</div></div></div>`).join("")}
+  </div>
+  <div class="pbox a-rise" ${d(.6)} style="left:740px;right:60px;top:122px;height:340px"><div class="pl"><i>▸</i>한 줄 부탁 예시</div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      ${[["재취업", "\"이 자기소개서 문단을 더 짧고 자신 있게 고쳐 주세요.\""], ["업무", "\"이 안내문을 어르신도 읽기 쉽게 고쳐 주세요.\""], ["정리", "\"이 회의 메모를 할 일 목록으로 정리해 주세요.\""]].map((r) => `<div><span class="tag">${r[0]}</span><div style="font-size:21px;line-height:1.45;margin-top:6px">${r[1]}</div></div>`).join("")}
+    </div></div>
+  <div class="pn a-rise" ${d(.8)} style="left:740px;right:60px;top:476px;height:116px;padding:14px 20px"><div style="font-size:18px;color:var(--mu)">폴더 · 지시서 틀과 오늘 쓴 도구 안내</div>
+    <div class="mono cy" style="font-size:20px;font-weight:700;margin-top:6px">github.com/burn001/<br>ai_workflow_toolkit</div></div>
+  </div>` });
+
+add({ ch: 7, sub: ["마지막으로 꼭 지킬 네 가지입니다. AI는 숫자를 틀립니다. 개인정보는 넣지 않습니다.", "삭제, 발송, 결재 같은 위험한 일은 먼저 묻게 하고, 내부 자료를 올려도 되는지는 기관 지침을 먼저 확인합니다."],
+  html: (s) => `<div class="slide">${hd(s, "꼭 지킬 것 네 가지")}
+  <div style="position:absolute;left:60px;right:60px;top:122px;display:grid;grid-template-columns:1fr 1fr;gap:18px">
+    ${[["AI는 숫자를 틀립니다", "원래 출처(통계표 번호 · 기준 시점)와 대조하고, 비율 · 합계는 다시 계산합니다.", "var(--bad)"], ["개인정보는 넣지 않습니다", "이름 · 연락처 · 상담 내용은 빼거나 \"참여자 A\"처럼 바꿉니다.", "var(--bad)"], ["위험한 일은 먼저 묻게", "삭제 · 발송 · 결재 · 결제는 AI가 먼저 묻도록 지시서에 적습니다.", "var(--warn)"], ["기관 지침이 먼저", "내부 자료를 AI 서비스에 올려도 되는지 기관 규정을 확인합니다.", "var(--warn)"]].map((c, i) => `<div class="pn rel a-rise" ${d(.2 + i * .12)} style="padding:22px 26px;height:212px;border-color:${c[2]}">
+      <div style="font-size:29px;font-weight:900;color:${c[2]}">${c[0]}</div><div style="font-size:22px;line-height:1.55;color:#e3ebf6;margin-top:10px">${c[1]}</div></div>`).join("")}
+  </div>
+  <div class="note a-fade" ${d(.9)} style="top:594px;font-size:19px"><span class="k">요금</span><span>무료 요금제로 충분히 시작할 수 있습니다. 요금과 무료 한도는 자주 바뀌니 가입 전에 각 서비스 안내를 확인하세요.</span></div>
+  </div>` });
+
+add({ ch: 7, sub: ["오늘 강의 자료와 AI가 만든 결과물을 한 페이지로 묶어 보내 드리겠습니다.", "원하시는 분만 휴대폰 가상 강의실의 자료 받기에 이메일 주소를 남겨 주세요. 자료를 보내는 데만 쓰고, 보낸 뒤에는 지웁니다."],
+  html: (s) => `<div class="slide">${hd(s, "자료 받아 가기")}
+  <div style="position:absolute;left:60px;top:126px;width:640px;display:flex;flex-direction:column;gap:16px">
+    ${[["휴대폰 가상 강의실을 엽니다", `주소 <b class="mono cy">${ROOM}</b>`], ["<span class=\"cy\">'자료 받기'</span>에 이메일 주소를 남깁니다", "원하시는 분만 · 남기지 않으셔도 됩니다"], ["강의 뒤 메일로 보내 드립니다", "강의 자료 + 오늘 AI가 만든 결과물을 <b>한 페이지</b>로 묶어서"]].map((r, i) => `<div class="pn rel a-rise" ${d(.2 + i * .15)} style="display:grid;grid-template-columns:56px 1fr;gap:16px;align-items:center;padding:18px 22px">
+      <span class="mono" style="width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--cy);color:#04121e;font-size:24px;font-weight:700">${i + 1}</span>
+      <div><div style="font-size:26px;font-weight:900">${r[0]}</div><div style="font-size:20px;color:var(--mu);margin-top:4px">${r[1]}</div></div></div>`).join("")}
+  </div>
+  <div class="pn a-rise" ${d(.6)} style="left:740px;right:60px;top:126px;height:300px;padding:20px 24px;border-color:rgba(95,224,160,.7)"><div class="lab" style="color:var(--gr)">받으시는 것</div>
+    <ul class="li" style="margin-top:14px;gap:12px"><li style="font-size:21px">오늘 슬라이드</li><li style="font-size:21px">리서치 보고서(한글 파일)</li><li style="font-size:21px">설문 분석 차트 · 해석</li><li style="font-size:21px">센터장 리포트 · 대시보드</li></ul>
+    <div style="position:absolute;left:24px;right:24px;bottom:16px;font-size:17px;color:var(--mu2)">GitHub Pages 웹 페이지 한 장 · 휴대폰에서 바로 열림</div></div>
+  <div class="pn a-rise" ${d(.8)} style="left:740px;right:60px;top:442px;height:150px;padding:16px 24px;border-color:rgba(244,183,64,.7);background:rgba(40,30,8,.55)"><div class="lab" style="color:var(--warn)">개인정보 안내</div>
+    <div style="font-size:21px;line-height:1.5;margin-top:8px">이메일 주소는 <b>자료 발송 목적에만</b> 쓰고, <b>발송 후 파기</b>합니다.</div></div>
+  <div class="note a-fade" ${d(1)} style="top:612px;font-size:19px"><span class="k">선택</span><span>남기지 않으셔도 괜찮습니다. 결과물은 강의실 채팅창에서도 볼 수 있습니다.</span></div>
+  </div>` });
+
+add({ ch: 7, eb: "END", sub: ["감사합니다. 궁금한 점을 받겠습니다. 채팅창에 질문으로 남긴 글을 공감 많은 순서로 보겠습니다."], html: () => `<div class="slide ch">
+  <div class="a-pop" ${d(.1)} style="position:absolute;left:150px;top:170px;width:330px;height:330px;border-radius:14px;overflow:hidden;background:#fff;border:1px solid var(--line);box-shadow:0 0 40px rgba(79,209,232,.2)"><img src="assets/avatar.png" alt="조상규 박사의 복셀 아바타" style="width:100%;height:100%;object-fit:cover"></div>
+  <div class="a-wipe" ${d(.25)} style="position:absolute;left:540px;top:178px;font-size:76px;font-weight:900;letter-spacing:-.02em">감사합니다</div>
+  <div class="a-grow" ${d(.7)} style="position:absolute;left:544px;top:290px;width:220px;height:4px;background:var(--cy);box-shadow:0 0 12px var(--cy)"></div>
+  <div class="a-rise" ${d(.9)} style="position:absolute;left:544px;top:318px;font-size:32px;font-weight:700">질문 받겠습니다</div>
+  <div class="a-rise" ${d(1)} style="position:absolute;left:544px;top:370px;font-size:22px;color:var(--mu);line-height:1.55">채팅창에서 <b class="cy">'질문'</b>으로 남긴 글을 공감 많은 순서로 봅니다.<br>오늘 만든 결과물은 강의실 채팅창에 그대로 남아 있습니다.</div>
+  <div class="a-rise" ${d(1.1)} style="position:absolute;left:544px;top:470px;font-size:21px;color:var(--mu2)">조상규 · 건축공간연구원 선임연구위원 · <span class="mono cy">burn001.github.io</span></div>
+  </div>` });
+
+/* ════════════ 재생 엔진(틀 그대로) ════════════ */
+const layer = document.getElementById("layer"), canvas = document.getElementById("canvas"), stage = document.getElementById("stage"), deck = document.getElementById("deck");
+const subEl = document.getElementById("sub"), RM = matchMedia("(prefers-reduced-motion: reduce)");
+let cur = -1, auto = false, timers = [];
+document.getElementById("ftl").textContent = "공주여성새로일하기센터 · AI 에이전트 활용 · " + DAY;
+const prog = document.getElementById("prog");
+const chStart = CH.map((_, c) => S.findIndex((x) => x.ch === c));
+const chCount = CH.map((_, c) => S.filter((x) => x.ch === c).length);
+prog.innerHTML = CH.map((c, i) => `<div class="seg" data-ch="${i}" title="${c}" style="flex:${chCount[i]}"><i></i></div>`).join("");
+prog.addEventListener("click", (e) => { const sg = e.target.closest(".seg"); if (sg) { stopAuto(); go(chStart[+sg.dataset.ch]); } });
+
+function prep(root) { root.querySelectorAll("[data-d]").forEach((el) => el.style.setProperty("--d", el.dataset.d + "s")); }
+function play(sl) {
+  if (!sl) return; clearTimeout(sl._end); sl.classList.remove("play");
+  if (RM.matches || document.hidden) return;
+  void sl.offsetWidth; sl.classList.add("play");
+  sl._end = setTimeout(() => { sl.classList.remove("play"); }, 4600);
+}
+function go(i) {
+  i = Math.max(0, Math.min(S.length - 1, i)); if (i === cur && layer.firstElementChild) return;
+  const old = layer.querySelector(".slide:not(.leave)");
+  if (old) { old.classList.remove("enter", "play"); old.classList.add("leave"); setTimeout(() => old.remove(), 460); }
+  cur = i; const sc = S[i];
+  const w = document.createElement("div"); w.innerHTML = sc.html(sc); const sl = w.firstElementChild;
+  layer.appendChild(sl); prep(sl);
+  if (!RM.matches) sl.classList.add("enter");
+  play(sl);
+  document.getElementById("ftc").textContent = CH[sc.ch];
+  document.getElementById("ftn").textContent = String(i + 1).padStart(2, "0") + " / " + S.length;
+  document.getElementById("pos").textContent = (i + 1) + " / " + S.length;
+  prog.querySelectorAll(".seg").forEach((sg, c) => { const st = chStart[c], n = chCount[c]; sg.firstElementChild.style.width = (i >= st + n ? 100 : i < st ? 0 : ((i - st + 1) / n * 100)) + "%"; });
+  try { history.replaceState(null, "", location.search + "#s" + (i + 1)); } catch (e) { location.hash = "s" + (i + 1); }
+  if (auto) runAuto();
+}
+function clearT() { timers.forEach(clearTimeout); timers = []; }
+function runAuto() {
+  clearT(); const sc = S[cur], lines = sc.sub || [];
+  let t = sc.chap ? 500 : 1100;
+  subEl.hidden = false; subEl.innerHTML = "";
+  lines.forEach((ln) => { const len = Math.max(2600, ln.length * 145); timers.push(setTimeout(() => { subEl.innerHTML = `<span>${ln}</span>`; }, t)); t += len; });
+  t += sc.chap ? 600 : 1400;
+  if (sc.dur) t = Math.max(t, sc.dur * 1000);
+  timers.push(setTimeout(() => { subEl.innerHTML = ""; if (cur < S.length - 1) go(cur + 1); else stopAuto(); }, t));
+}
+function startAuto() { auto = true; bAuto.setAttribute("aria-pressed", "true"); bAuto.textContent = "❚❚ 자동 재생 멈춤"; runAuto(); }
+function stopAuto() { auto = false; clearT(); subEl.hidden = true; subEl.innerHTML = ""; bAuto.setAttribute("aria-pressed", "false"); bAuto.textContent = "▶ 자동 재생(해설 자막)"; }
+const bAuto = document.getElementById("bAuto");
+bAuto.onclick = () => auto ? stopAuto() : startAuto();
+document.getElementById("bPrev").onclick = () => { stopAuto(); go(cur - 1); };
+document.getElementById("bNext").onclick = () => { stopAuto(); go(cur + 1); };
+document.getElementById("bReplay").onclick = () => play(layer.querySelector(".slide:not(.leave)"));
+function toggleFull() { try { if (document.fullscreenElement) document.exitFullscreen(); else deck.requestFullscreen().catch(() => {}); } catch (e) {} }
+document.getElementById("bFull").onclick = toggleFull;
+function fit() {
+  const full = document.fullscreenElement === deck;
+  const aw = full ? innerWidth : deck.clientWidth, ah = full ? innerHeight : Math.max(200, innerHeight - 90);
+  const k = Math.min(aw / 1280, ah / 720);
+  stage.style.width = 1280 * k + "px"; stage.style.height = 720 * k + "px"; canvas.style.transform = `scale(${k})`;
+}
+addEventListener("resize", fit); document.addEventListener("fullscreenchange", fit);
+if (window.ResizeObserver) new ResizeObserver(fit).observe(deck);
+document.addEventListener("keydown", (e) => {
+  if (e.target.closest && e.target.closest("button, a") && (e.key === "Enter" || e.key === " ")) return;
+  const k = e.key;
+  if (k === "ArrowRight" || k === "PageDown" || k === "Enter") { e.preventDefault(); stopAuto(); go(cur + 1); }
+  else if (k === "ArrowLeft" || k === "PageUp" || k === "Backspace") { e.preventDefault(); stopAuto(); go(cur - 1); }
+  else if (k === "Home") { stopAuto(); go(0); } else if (k === "End") { stopAuto(); go(S.length - 1); }
+  else if (k === " " || k === "a" || k === "A") { e.preventDefault(); auto ? stopAuto() : startAuto(); }
+  else if (k === "f" || k === "F") toggleFull();
+  else if (k === "r" || k === "R") play(layer.querySelector(".slide:not(.leave)"));
+  else if (k === "Escape" && auto) stopAuto();
+});
+document.addEventListener("visibilitychange", () => { if (document.hidden) { const sl = layer.querySelector(".slide"); if (sl) sl.classList.remove("play"); } });
+function fromHash() { const m = /^#s(\d+)$/.exec(location.hash); return m ? +m[1] - 1 : 0; }
+addEventListener("hashchange", () => { const i = fromHash(); if (i !== cur) go(i); });
+fit(); go(fromHash());
+</script>
+</body>
+</html>
