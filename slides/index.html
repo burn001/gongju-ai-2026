@@ -291,6 +291,10 @@ body.sb .page { padding-right: calc(max(30vw, 320px) + 12px); }
 .lvside { position: absolute; left: 880px; right: 60px; top: 116px; display: flex; flex-direction: column; gap: 12px; }
 .lvqr { width: 236px; height: 236px; padding: 10px; background: #fff; border-radius: 10px; box-shadow: 0 0 26px rgba(79,209,232,.25); align-self: center; }
 .lvqr svg { display: block; width: 100%; height: 100%; }
+/* 11.10. 화면에 보이는 주소는 https:// 까지 전체 · 눌리는 링크(새 창). 장 넘기기 클릭과 겹치지 않게 JS에서 전파 막음 */
+a.lk { color: inherit; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .18em; cursor: pointer; pointer-events: auto; }
+a.lk:hover { filter: brightness(1.25); }
+a.lk .hs { font-size: .62em; opacity: .75; }
 .lvurl { font-family: var(--f-mono); font-weight: 700; line-height: 1.25; text-align: center; }
 .lvurl .h { font-size: 15px; color: var(--mu2); letter-spacing: -.01em; }
 .lvurl .p { font-size: 33px; color: var(--cy); text-shadow: 0 0 16px rgba(79,209,232,.55); margin-top: 2px; white-space: nowrap; }
@@ -435,7 +439,9 @@ body.follow #gateBar { display: none !important; }
    발표자 주소(#key=…&a4d=…)로 열면 강의실 투표 · AI 팀 실시간 화면과 연동(아래 '강의실 연동' 참고).
    ════════════════════════════════════════════════════════════ */
 const DAY = "2026. 11. 10.·11. 17.(화)";
-const ROOM = "ai-agent-gongju.pages.dev/room";
+const ROOM = "https://ai-agent-gongju.pages.dev/room/";
+/* 화면 주소 = 눌리는 링크(전체 주소, 새 창). t를 주면 그 글로 보임 */
+const lk = (u, t, st) => `<a class="lk" href="${u}" target="_blank" rel="noopener"${st ? ` style="${st}"` : ""}>${t || u}</a>`;
 /* 결과 공개(11.09. 밤): 실습 결과는 고정 공개 주소 live/<MMDD>/<step>/ 로 올라감(발표자 [⬆ 결과 공개] 단추를 눌렀을 때만).
    날짜는 오늘(KST) 월일 — 주소 끝 ?day=1110 으로 바꿀 수 있음. 실습 전에는 '준비 중' 화면(30초마다 스스로 확인) */
 const LIVE_SITE = "https://burn001.github.io/gongju-ai-2026/";
@@ -450,14 +456,14 @@ function qrSvg(text) {
 function liveSlide(s, o) {
   const u = liveUrl(o.st);
   return `<div class="slide${o.big ? " lvbig" : ""}">${hd(s, o.title)}
-  <div class="lvbox a-rise" ${d(.15)}><div class="ph">${u.replace("https://", "")} 불러오는 중…</div><iframe class="lvf" data-live="${o.st}" src="${u}?v=${Date.now()}" title="${o.what} — 공개 화면" tabindex="-1" referrerpolicy="no-referrer" loading="eager"></iframe></div>
+  <div class="lvbox a-rise" ${d(.15)}><div class="ph">${u} 불러오는 중…</div><iframe class="lvf" data-live="${o.st}" src="${u}?v=${Date.now()}" title="${o.what} — 공개 화면" tabindex="-1" referrerpolicy="no-referrer" loading="eager"></iframe></div>
   <div class="lvside">
     <div class="lab a-fade" ${d(.2)} style="text-align:center">${o.big ? "휴대폰 카메라로 QR을 찍어 가져가세요" : "내 화면에서 열어 보세요"}</div>
     <div class="lvqr a-pop" ${d(.3)}>${qrSvg(u)}</div>
-    <div class="lvurl a-rise" ${d(.45)}><div class="h">burn001.github.io/gongju-ai-2026/</div><div class="p">${liveRel(o.st)}</div></div>
+    <a class="lvurl lk a-rise" ${d(.45)} href="${u}" target="_blank" rel="noopener" style="text-decoration:none"><div class="h" style="font-size:13px">${LIVE_SITE}</div><div class="p" style="text-decoration:underline;text-underline-offset:.15em">${liveRel(o.st)}</div></a>
     <div class="pn rel a-rise" ${d(.6)} style="padding:12px 16px"><div style="font-size:17.5px;line-height:1.5;color:#dfe8f4">${o.note || "실습이 끝나고 강사가 공개하면 1～2분 뒤 이 화면과 여러분 화면에 올라옵니다. 지금 '준비 중'이면 열어 두세요 — 저절로 바뀝니다."}</div></div>
   </div>
-  <div class="note a-fade" ${d(.9)} style="top:640px;font-size:18px"><span class="k">오늘 결과 모음</span><span class="mono cy">burn001.github.io/gongju-ai-2026/${liveRel("")}</span><span class="mu2" style="font-size:16px">AI가 만든 초안 · 이름 · 연락처는 싣지 않습니다</span></div>
+  <div class="note a-fade" ${d(.9)} style="top:640px;font-size:18px"><span class="k">오늘 결과 모음</span><span class="mono cy">${lk(liveUrl(""))}</span><span class="mu2" style="font-size:16px">AI가 만든 초안 · 이름 · 연락처는 싣지 않습니다</span></div>
   </div>`;
 }
 const CH = ["시작", "강사 소개 · ALRIS", "챗봇과 에이전트", "리서치 → 발표 자료", "공주 일자리 지도", "일하는 엄마 지도", "쉬는 시간", "맞춤 지원서", "설문 · CEO 대시보드", "수강생 의견 분석", "마무리"];
@@ -504,7 +510,7 @@ function sp(s, o) {
   </div>`;
 }
 /* 주소창 모양 */
-function addr(px) { return `<div class="addr"><span class="ic"></span><span class="u" style="font-size:${px}px">${ROOM}</span></div>`; }
+function addr(px) { return `<div class="addr"><span class="ic"></span><span class="u" style="font-size:${px}px">${lk(ROOM, '<span class="hs">https://</span>' + ROOM.replace("https://", ""), "text-decoration-thickness:2px")}</span></div>`; }
 /* 함께 보기 — 강사가 실행, 수강생은 내 화면(PC 또는 휴대폰) 가상 강의실 'AI 작업 화면'에서 지켜보며 채팅 */
 function watch(s, o) {
   return `<div class="slide">${hd(s, o.title)}
@@ -515,7 +521,7 @@ function watch(s, o) {
         <span class="mono" style="width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--cy);color:var(--cy);font-size:20px;font-weight:700">${r[0]}</span>
         <div><div style="font-size:24px;font-weight:900">${r[1]}</div><div style="font-size:20px;line-height:1.45;color:var(--mu);margin-top:2px">${r[2]}</div></div></div>`).join("")}
     </div>
-    <div class="a-fade" ${d(.9)} style="position:absolute;left:26px;right:26px;bottom:18px;font-size:19px;color:var(--mu2)">강의실 주소 <b class="mono cy" style="font-size:20px">${ROOM}</b></div>
+    <div class="a-fade" ${d(.9)} style="position:absolute;left:26px;right:26px;bottom:18px;font-size:19px;color:var(--mu2)">강의실 <b class="mono cy" style="font-size:16px">${lk(ROOM)}</b></div>
   </div>
   <div style="position:absolute;left:610px;right:60px;top:126px;display:flex;flex-direction:column;gap:16px">
     <div class="pn rel a-rise" ${d(.4)} style="padding:18px 22px"><div class="lab">화면에서 눈여겨볼 것</div>
@@ -555,8 +561,8 @@ add({ ch: 0, sub: ["먼저 가상 강의실에 들어와 주세요. 인터넷 �
   html: (s) => `<div class="slide">${hd(s, "가상 강의실에 들어오세요")}
   <div class="pn a-rise" ${d(.15)} style="left:60px;top:122px;width:880px;height:250px;padding:22px 28px;border-color:var(--cy);box-shadow:0 0 30px rgba(79,209,232,.18)">
     <div class="lab" style="font-size:22px">주소창에 이렇게 입력하세요</div>
-    <div class="a-pop" ${d(.4)} style="margin-top:22px">${addr(42)}</div>
-    <div style="font-size:20px;color:var(--mu);margin-top:20px;line-height:1.5">입력하고 <b class="cy">Enter</b> · 맨 앞의 <span class="mono">https://</span> 는 쓰지 않아도 됩니다 · 영어 소문자, 점(.)과 빗금(/)까지 그대로</div>
+    <div class="a-pop" ${d(.4)} style="margin-top:22px">${addr(33)}</div>
+    <div style="font-size:20px;color:var(--mu);margin-top:20px;line-height:1.5">입력하고 <b class="cy">Enter</b> · 맨 앞의 <span class="mono">https://</span> 는 빼고 입력해도 열립니다 · 영어 소문자, 점(.)과 빗금(/)까지 그대로</div>
   </div>
   <div class="pn a-rise" ${d(.3)} style="left:970px;right:60px;top:122px;height:250px;padding:16px 18px;text-align:center">
     <div style="font-size:17px;color:var(--mu);font-weight:700">휴대폰은 QR로</div>
@@ -586,23 +592,23 @@ add({ ch: 1, sub: ["건축공간연구원에서 스마트시티, 녹색건축과
       <span class="mu2">2021～2022</span><span>건축공간연구원 기획조정실장</span>
       <span class="mu2">2019～2021</span><span>건축공간연구원 스마트·녹색 연구단장</span>
       <span class="mu2">학력</span><span>서울대학교 건축학과 · 도시설계 협동과정 도시계획학 박사</span></div>
-    <div class="a-fade" ${d(.8)} style="margin-top:14px;font-size:19px;color:var(--mu2)">더 보기 <b class="mono cy">burn001.github.io</b> · <b class="mono cy">github.com/burn001</b></div>
+    <div class="a-fade" ${d(.8)} style="margin-top:14px;font-size:19px;color:var(--mu2)">더 보기 <b class="mono cy" style="font-size:17px">${lk("https://burn001.github.io/")}</b> · <b class="mono cy" style="font-size:17px">${lk("https://github.com/burn001")}</b></div>
   </div>
   </div>` });
 
 add({ ch: 1, sub: ["제가 만들고 있는 것은 두 가지입니다. 연구원의 인공지능 건축법령 서비스 ALRIS와, 개인 프로젝트인 Agent4D입니다.", "에이전트는 일하고 저는 그걸 3D로 구경합니다. 방금 아바타도 이 프로젝트 출신입니다."],
   html: (s) => `<div class="slide">${hd(s, "요즘 만들고 있는 것 두 가지")}
-  ${[["연구 시스템 · 건축공간연구원", "ALRIS", "assets/alris_home.jpg", "건축법령을 물으면 조문 번호부터 내밀어서, 믿어 달라고 조를 일이 없습니다. 법령과 자치법규 15만여 건을 야근 수당 안 받는 에이전트들이 나눠 읽습니다.", "alris.auri.re.kr"],
-     ["개인 프로젝트 · 오픈소스", "Agent4D", "assets/agent4d.jpg", "에이전트는 일하고 저는 그걸 3D로 구경합니다. 실시간으로도, 다시 보기로도요. 앞 장의 아바타도 이 프로젝트 출신입니다.", "github.com/burn001/agent4d"]].map((c, i) => `<div class="pn a-rise" ${d(.2 + i * .2)} style="left:${60 + i * 590}px;top:120px;width:570px;height:530px;overflow:hidden">
+  ${[["연구 시스템 · 건축공간연구원", "ALRIS", "assets/alris_home.jpg", "건축법령을 물으면 조문 번호부터 내밀어서, 믿어 달라고 조를 일이 없습니다. 법령과 자치법규 15만여 건을 야근 수당 안 받는 에이전트들이 나눠 읽습니다.", "https://alris.auri.re.kr/"],
+     ["개인 프로젝트 · 오픈소스", "Agent4D", "assets/agent4d.jpg", "에이전트는 일하고 저는 그걸 3D로 구경합니다. 실시간으로도, 다시 보기로도요. 앞 장의 아바타도 이 프로젝트 출신입니다.", "https://github.com/burn001/agent4d"]].map((c, i) => `<div class="pn a-rise" ${d(.2 + i * .2)} style="left:${60 + i * 590}px;top:120px;width:570px;height:530px;overflow:hidden">
     <div style="height:268px;overflow:hidden;border-bottom:1px solid var(--line);background:#fff"><img src="${c[2]}" alt="${c[1]} 화면" style="width:100%;display:block"></div>
     <div style="padding:16px 22px">
       <div style="font-size:17px;color:var(--cy);font-weight:700">${c[0]}</div>
       <div style="font-size:34px;font-weight:900;margin-top:2px">${c[1]}</div>
       <div style="font-size:20px;line-height:1.55;color:#dbe5f2;margin-top:6px">${c[3]}</div>
-      <div class="mono cy" style="font-size:17px;margin-top:10px">${c[4]} →</div></div></div>`).join("")}
+      <div class="mono cy" style="font-size:17px;margin-top:10px">${lk(c[4], c[4] + " ↗")}</div></div></div>`).join("")}
   </div>` });
 
-add({ ch: 1, eb: "제가 AI로 만든 것", sub: ["먼저 제가 AI로 만든 시스템부터 보여 드리겠습니다. 건축법령 질문에 근거 조문과 함께 답하는 ALRIS입니다.", "서울 제2종일반주거지역의 건폐율을 물으면, 60%라는 답과 함께 법률과 서울시 조례 조문을 붙여 줍니다.", "누구나 로그인 없이 alris.auri.re.kr에서 써 보실 수 있습니다."],
+add({ ch: 1, eb: "제가 AI로 만든 것", sub: ["먼저 제가 AI로 만든 시스템부터 보여 드리겠습니다. 건축법령 질문에 근거 조문과 함께 답하는 ALRIS입니다.", "서울 제2종일반주거지역의 건폐율을 물으면, 60%라는 답과 함께 법률과 서울시 조례 조문을 붙여 줍니다.", "누구나 로그인 없이 https://alris.auri.re.kr 에서 써 보실 수 있습니다."],
   html: (s) => `<div class="slide">${hd(s, "ALRIS — 건축법령을 물으면 근거 조문과 함께 답하는 AI")}
   <div class="shot a-rise" ${d(.2)} style="position:absolute;left:60px;top:126px;width:720px">
     <img src="assets/alris_answer.jpg" alt="ALRIS 답변 화면: 서울특별시 제2종일반주거지역 건폐율 60퍼센트, 용적률 200퍼센트와 근거 조문"></div>
@@ -913,7 +919,7 @@ add({ ch: 4, ref: "어제 처음 만든 지도 · 2026. 11. 9.", sub: ["어제 �
   html: (s) => `<div class="slide">${hd(s, "결과 — 공주 일자리 지도")}
   <div class="a-rise" ${d(.2)} style="position:absolute;left:60px;top:116px;width:700px">
     <div class="shot" style="background:#0a1424"><img src="assets/s4_map.jpg" alt="공주시 일자리 지도 화면: 한 줄 결론, 표본 자료 안내 띠, 숫자 카드, 지도"></div>
-    <div class="cap">지도 화면 — 점을 누르면 원문 공고 · <span class="mono cy">burn001.github.io/gongju-ai-2026/jobs</span></div></div>
+    <div class="cap">지도 화면 — 점을 누르면 원문 공고 · <span class="mono cy">${lk(LIVE_SITE + "jobs/")}</span></div></div>
   <div style="position:absolute;left:790px;right:60px;top:118px;display:flex;flex-direction:column;gap:12px">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
       <div class="pn rel a-rise" ${d(.3)} style="padding:12px 16px"><div style="font-size:16px;color:var(--mu)">모은 공고(묶은 뒤)</div><span class="mono glow" style="font-size:40px;font-weight:700">238</span><span class="cy" style="font-size:19px"> 건</span></div>
@@ -952,7 +958,7 @@ add({ ch: 5, ref: "리허설 결과 · 2026. 11. 9.", cut: CUT3, sub: ["일자�
   html: (s) => `<div class="slide">${hd(s, "결과 — 아이 맡길 곳이 가까운 일자리")}
   <div class="a-rise" ${d(.2)} style="position:absolute;left:60px;top:116px;width:680px">
     <div class="shot" style="background:#0a1424"><img src="assets/s9_caremap.jpg" alt="일하는 엄마 지도: 일자리 점을 누르면 1km 원과 그 안의 어린이집, 오른쪽에 추천 순위"></div>
-    <div class="cap">일자리 점을 누르면 1km 원과 그 안의 돌봄시설 · <span class="mono cy">burn001.github.io/gongju-ai-2026/caremap</span></div></div>
+    <div class="cap">일자리 점을 누르면 1km 원과 그 안의 돌봄시설 · <span class="mono cy">${lk(LIVE_SITE + "caremap/")}</span></div></div>
   <div style="position:absolute;left:770px;right:60px;top:118px;display:flex;flex-direction:column;gap:12px">
     <div class="pn rel a-rise" ${d(.3)} style="padding:12px 18px"><div class="lab">겹쳐 보니</div>
       ${[["143 × 101", "일자리 × 돌봄시설"], ["121", "돌봄시설이 가까운 일자리"], ["73", "낮 시간 근무까지 맞음"], ["9", "등 · 하원 시간 안에 끝남"]].map((r, i) => `<div style="display:flex;align-items:baseline;gap:10px;margin-top:4px"><span class="mono ${i === 3 ? "glow" : ""}" style="font-size:${i === 3 ? 30 : 24}px;font-weight:700;min-width:120px;${i === 3 ? "" : "color:var(--ink)"}">${r[0]}</span><span style="font-size:18px;color:var(--mu)">${r[1]}</span></div>`).join("")}</div>
@@ -1163,7 +1169,7 @@ add({ ch: 10, sub: ["오늘 바로 무언가를 하실 필요는 없습니다. �
       ${[["재취업", "\"이 자기소개서 문단을 더 짧고 자신 있게 고쳐 주세요.\""], ["업무", "\"이 안내문을 어르신도 읽기 쉽게 고쳐 주세요.\""], ["정리", "\"이 회의 메모를 할 일 목록으로 정리해 주세요.\""]].map((r) => `<div><span class="tag">${r[0]}</span><div style="font-size:21px;line-height:1.45;margin-top:6px">${r[1]}</div></div>`).join("")}
     </div></div>
   <div class="pn a-rise" ${d(.8)} style="left:740px;right:60px;top:476px;height:116px;padding:14px 20px"><div style="font-size:18px;color:var(--mu)">폴더 · 지시서 틀과 오늘 쓴 도구 안내</div>
-    <div class="mono cy" style="font-size:20px;font-weight:700;margin-top:6px">github.com/burn001/<br>ai_workflow_toolkit</div></div>
+    <div class="mono cy" style="font-size:20px;font-weight:700;margin-top:6px">${lk("https://github.com/burn001/ai_workflow_toolkit", "https://github.com/burn001/<br>ai_workflow_toolkit")}</div></div>
   </div>` });
 
 add({ ch: 10, sub: ["마지막으로 꼭 지킬 네 가지입니다. AI는 숫자를 틀립니다. 개인정보는 넣지 않습니다.", "삭제, 발송, 결재 같은 위험한 일은 먼저 묻게 하고, 내부 자료를 올려도 되는지는 기관 지침을 먼저 확인합니다."],
@@ -1186,9 +1192,9 @@ add({ ch: 10, sub: ["오늘 강의 자료와 AI가 만든 결과물을 한 페�
   <div class="lvside" style="left:760px;top:116px;gap:10px">
     <div class="lab a-fade" ${d(.5)} style="text-align:center">오늘 수업 정리 페이지</div>
     <div class="lvqr a-pop" ${d(.6)} style="width:320px;height:320px;padding:12px">${qrSvg(liveUrl("wrap"))}</div>
-    <div class="lvurl a-rise" ${d(.75)}><div class="h" style="font-size:18px;color:var(--ink)">burn001.github.io/gongju-ai-2026/</div><div class="p" style="font-size:38px">${liveRel("wrap")}</div></div>
+    <a class="lvurl lk a-rise" ${d(.75)} href="${liveUrl("wrap")}" target="_blank" rel="noopener" style="text-decoration:none"><div class="h" style="font-size:16px;color:var(--ink)">${LIVE_SITE}</div><div class="p" style="font-size:38px;text-decoration:underline;text-underline-offset:.15em">${liveRel("wrap")}</div></a>
   </div>
-  <div class="note a-fade" ${d(1)} style="top:612px;font-size:19px"><span class="k">결과 모음</span><span>실습별 결과는 <b class="mono cy">burn001.github.io/gongju-ai-2026/${liveRel("")}</b> 에서도 볼 수 있습니다.</span></div>
+  <div class="note a-fade" ${d(1)} style="top:612px;font-size:19px"><span class="k">결과 모음</span><span>실습별 결과는 <b class="mono cy">${lk(liveUrl(""))}</b> 에서도 볼 수 있습니다.</span></div>
   </div>` });
 
 add({ ch: 10, eb: "END", cr: { poll: "wish" }, sub: ["감사합니다. 궁금한 점을 받겠습니다. 채팅창에 질문으로 남긴 글을 공감 많은 순서로 보겠습니다."], html: () => `<div class="slide ch">
@@ -1197,8 +1203,8 @@ add({ ch: 10, eb: "END", cr: { poll: "wish" }, sub: ["감사합니다. 궁금한
   <div class="a-grow" ${d(.7)} style="position:absolute;left:544px;top:290px;width:220px;height:4px;background:var(--cy);box-shadow:0 0 12px var(--cy)"></div>
   <div class="a-rise" ${d(.9)} style="position:absolute;left:544px;top:318px;font-size:32px;font-weight:700">질문 받겠습니다</div>
   <div class="a-rise" ${d(1)} style="position:absolute;left:544px;top:370px;font-size:22px;color:var(--mu);line-height:1.55">채팅창에서 <b class="cy">'질문'</b>으로 남긴 글을 공감 많은 순서로 봅니다.<br>오늘 만든 결과물은 강의실 채팅창에 그대로 남아 있습니다.</div>
-  <div class="a-rise" ${d(1.1)} style="position:absolute;left:544px;top:470px;font-size:21px;color:var(--mu2)">조상규 · 건축공간연구원 선임연구위원 · <span class="mono cy">burn001.github.io</span></div>
-  <div class="a-pop" ${d(1.2)} style="position:absolute;right:60px;top:36px;display:flex;align-items:center;gap:12px"><div style="text-align:right;font-size:15px;line-height:1.4;color:var(--mu)">오늘 수업 정리<br><span class="mono cy" style="font-size:16px">${liveRel("wrap")}</span></div><div style="width:120px;height:120px;padding:6px;background:#fff;border-radius:8px">${qrSvg(liveUrl("wrap")).replace("<svg ", '<svg style="display:block;width:100%;height:100%" ')}</div></div>
+  <div class="a-rise" ${d(1.1)} style="position:absolute;left:544px;top:470px;font-size:21px;color:var(--mu2)">조상규 · 건축공간연구원 선임연구위원 · <span class="mono cy">${lk("https://burn001.github.io/")}</span></div>
+  <div class="a-pop" ${d(1.2)} style="position:absolute;right:60px;top:36px;display:flex;align-items:center;gap:12px"><div style="text-align:right;font-size:15px;line-height:1.4;color:var(--mu)">오늘 수업 정리<br><span class="mono cy" style="font-size:13px">${lk(liveUrl("wrap"), LIVE_SITE + "<br>" + liveRel("wrap"))}</span></div><div style="width:120px;height:120px;padding:6px;background:#fff;border-radius:8px">${qrSvg(liveUrl("wrap")).replace("<svg ", '<svg style="display:block;width:100%;height:100%" ')}</div></div>
   <div class="a-rise" ${d(1.3)} style="position:absolute;left:544px;top:530px;font-size:22px;padding:8px 16px;border:1px solid rgba(244,183,64,.7);border-radius:8px;background:rgba(40,30,8,.55)"><b class="warn">마지막 투표</b> — 내일 바로 맡겨 보고 싶은 일은? <span class="mu2" style="font-size:18px">가상 강의실 채팅창에서</span></div>
   </div>` });
 
@@ -1475,6 +1481,8 @@ function fit() {
 }
 addEventListener("resize", fit); document.addEventListener("fullscreenchange", fit);
 if (window.ResizeObserver) new ResizeObserver(fit).observe(deck);
+/* 11.10. 주소 링크(a.lk) 클릭은 새 창으로만 — 허브 카드 · 장 넘기기 등 다른 클릭 처리로 번지지 않게 */
+document.addEventListener("click", (e) => { if (e.target.closest && e.target.closest("a.lk")) e.stopPropagation(); }, true);
 document.addEventListener("keydown", (e) => {
   if (FOLLOW) return;
   if (e.target.closest && e.target.closest("input, textarea, select, [contenteditable]")) return; // 사이드바 글쓰기 칸
