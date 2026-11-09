@@ -36,6 +36,11 @@ body { background: var(--void); color: var(--ink); font-family: var(--f-ui); mar
 .ctl .pos { font-family: var(--f-mono); min-width: 74px; text-align: center; }
 .ctl .hint { color: var(--dim); font-size: 12px; }
 @media (max-width: 600px) { .ctl .hint { display: none; } }
+/* 따라가기 모드(?follow) — 수강생 강의실(/room/) iframe: 조작 줄·발표자 표시 없이 화면 가득, 장 넘김은 강의실이 #sN·postMessage로만 */
+body.follow .page { padding: 0; gap: 0; }
+body.follow .ctl, body.follow #crChip, body.follow #a4d, body.follow #a4x, body.follow #tt, body.follow .cutmark { display: none !important; }
+body.follow #stage { border-radius: 0; box-shadow: none; }
+body.follow #prog { pointer-events: none; }
 
 /* ── 장면 공통 ── */
 .slide { position: absolute; inset: 0; width: 1280px; height: 720px; overflow: hidden; box-sizing: border-box;
@@ -957,8 +962,11 @@ const chCount = CH.map((_, c) => S.filter((x) => x.ch === c).length);
 prog.innerHTML = CH.map((c, i) => `<div class="seg" data-ch="${i}" title="${c}" style="flex:${chCount[i]}"><i></i></div>`).join("");
 prog.addEventListener("click", (e) => { const sg = e.target.closest(".seg"); if (sg) { stopAuto(); go(chStart[+sg.dataset.ch]); } });
 ttEl.innerHTML = buildTT();
-let pres = /[?&]p(=|&|$)/.test(location.search);
-try { if (!pres && localStorage.getItem("gongjuDeckPres") === "1") pres = true; } catch (e) {}
+/* 따라가기 모드: 주소에 ?follow — 수강생 강의실이 강사 덱의 지금 장을 따라 보여 줌(발표자 표시·키·조작 없음) */
+const FOLLOW = /[?&]follow(=|&|$)/.test(location.search);
+document.body.classList.toggle("follow", FOLLOW);
+let pres = !FOLLOW && /[?&]p(=|&|$)/.test(location.search);
+try { if (!FOLLOW && !pres && localStorage.getItem("gongjuDeckPres") === "1") pres = true; } catch (e) {}
 document.body.classList.toggle("pres", pres);
 function togglePres() { pres = !pres; document.body.classList.toggle("pres", pres); try { localStorage.setItem("gongjuDeckPres", pres ? "1" : "0"); } catch (e) {} }
 function toggleTT(on) { const v = on === undefined ? !ttEl.classList.contains("on") : on; ttEl.classList.toggle("on", v); ttEl.setAttribute("aria-hidden", v ? "false" : "true"); }
@@ -980,7 +988,7 @@ function go(i) {
   layer.appendChild(sl); prep(sl);
   if (!RM.matches) sl.classList.add("enter");
   play(sl);
-  a4Place(); crEnter(sc);
+  a4Place(); crEnter(sc); crDeck(); followTell();
   document.getElementById("ftc").textContent = CH[sc.ch];
   document.getElementById("ftn").textContent = String(i + 1).padStart(2, "0") + " / " + S.length;
   document.getElementById("pos").textContent = (i + 1) + " / " + S.length;
@@ -1008,7 +1016,7 @@ document.getElementById("bReplay").onclick = () => play(layer.querySelector(".sl
 function toggleFull() { try { if (document.fullscreenElement) document.exitFullscreen(); else deck.requestFullscreen().catch(() => {}); } catch (e) {} }
 document.getElementById("bFull").onclick = toggleFull;
 function fit() {
-  const full = document.fullscreenElement === deck;
+  const full = document.fullscreenElement === deck || FOLLOW;
   const aw = full ? innerWidth : deck.clientWidth, ah = full ? innerHeight : Math.max(200, innerHeight - 90);
   const k = Math.min(aw / 1280, ah / 720);
   stage.style.width = 1280 * k + "px"; stage.style.height = 720 * k + "px"; canvas.style.transform = `scale(${k})`;
@@ -1016,6 +1024,7 @@ function fit() {
 addEventListener("resize", fit); document.addEventListener("fullscreenchange", fit);
 if (window.ResizeObserver) new ResizeObserver(fit).observe(deck);
 document.addEventListener("keydown", (e) => {
+  if (FOLLOW) return;
   if (e.target.closest && e.target.closest("button, a") && (e.key === "Enter" || e.key === " ")) return;
   const k = e.key;
   if (k === "t" || k === "T") { toggleTT(); return; }
@@ -1055,7 +1064,7 @@ function lsSet(k, v) { try { if (v === null) localStorage.removeItem(k); else lo
   });
   try { history.replaceState(null, "", location.pathname + location.search + (keep.length ? "#" + keep.join("&") : "")); } catch (e) { location.hash = keep.join("&"); }
 })();
-const crKey = lsGet("gongjuDeck.pkey"), a4dUrl = crKey ? lsGet("gongjuDeck.a4d") : null;
+const crKey = FOLLOW ? null : lsGet("gongjuDeck.pkey"), a4dUrl = crKey ? lsGet("gongjuDeck.a4d") : null;
 const CR_POLLS = {
   warmup: { id: "warmup", name: "설문", question: "AI를 어디에 써 보셨나요?", options: ["검색·질문", "문서 작성", "번역", "아직 안 써 봤어요"], multi: true },
   "s8-job": { id: "s8-job", name: "공고 투표", question: "김○○ 씨(가상 인물)가 지원해 볼 공고, 어느 것이 좋을까요?", options: ["세무회계사무원 (사무)", "어린이집 보육도우미 (돌봄)", "마트 즉석반찬코너 사원 (음식·판매)"], multi: false },
@@ -1141,7 +1150,22 @@ function a4Place() {
 }
 function a4Toggle(on) { a4Over = on === undefined ? !a4Over : on; a4Place(); if (!a4Over) { try { a4f.blur(); window.focus(); } catch (e) {} } }
 
+/* 강의실 따라가기 — 발표자 키가 있으면 장을 넘길 때마다(0.3초 몰아서) 지금 장을 강의실에 올림: POST /api/deck {slide, total, prompt?}.
+   prompt는 그 장의 '강사 질문'(cr.screen) — 수강생 강의실 채팅 위에 띠로 보임. 따라가기 모드(?follow)에서는 올리지 않고,
+   부모 창(강의실)에 {type:'deck-ready'|'deck-at', slide, total}를 알리고 {type:'deck-goto', slide}를 받아 그 장으로 감. */
+let crDeckT = null;
+function crDeck() {
+  if (FOLLOW || !crKey) return;
+  clearTimeout(crDeckT);
+  crDeckT = setTimeout(() => {
+    const sc = S[cur], scr = sc && sc.cr && sc.cr.screen;
+    crApi("/deck", { slide: cur + 1, total: S.length, prompt: scr ? { kicker: scr.kicker || "", title: scr.title || "", lines: scr.lines || [] } : null }).catch(() => {});
+  }, 300);
+}
+function followTell(kind) { if (FOLLOW && window.parent !== window) { try { window.parent.postMessage({ type: kind || "deck-at", slide: cur + 1, total: S.length }, "*"); } catch (e) {} } }
+if (FOLLOW) addEventListener("message", (e) => { const m = e.data; if (m && m.type === "deck-goto" && Number.isInteger(m.slide)) go(m.slide - 1); });
 fit(); go(fromHash());
+followTell("deck-ready");
 </script>
 </body>
 </html>
