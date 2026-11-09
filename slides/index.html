@@ -623,7 +623,7 @@ add({ ch: 3, ref: "리허설 결과 · 2026. 11. 9.", sub: ["리허설 때 만�
 /* ── 공주 일자리 지도 공개 (S4) ── */
 add({ ch: 4, chap: true, dur: 4.5, sub: ["처음에 맡겨 둔 공주 일자리 지도, 이제 결과를 볼 차례입니다."], html: chCard("04", "S4 결과 공개", "공주 일자리 지도", ["투표 — 먼저 맞혀 보세요", "58분 → 6분", "지도와 숫자"]) });
 
-add({ ch: 4, ref: "시나리오 S4", sub: ["결과를 열기 전에 맞혀 보겠습니다. 공주에서 가장 많이 올라온 일자리는 무엇일까요?", "그리고 모은 공고 가운데 몇 퍼센트가 경력단절여성에게 맞을까요? 투표가 끝나면 진행 화면에서 정답을 함께 봅니다."],
+add({ ch: 4, ref: "시나리오 S4", cr: { poll: "s4-most", next: { poll: "s4-fit", label: "② 투표 열기" } }, sub: ["결과를 열기 전에 맞혀 보겠습니다. 공주에서 가장 많이 올라온 일자리는 무엇일까요?", "그리고 모은 공고 가운데 몇 퍼센트가 경력단절여성에게 맞을까요? 투표가 끝나면 진행 화면에서 정답을 함께 봅니다."],
   html: (s) => `<div class="slide">${hd(s, "투표 — 결과를 열기 전에 맞혀 보세요")}
   ${[["1", "공주에서 가장 많이 올라온 일자리는?", ["돌봄 · 요양", "사무 · 회계", "음식 · 카페", "제조 · 생산"]], ["2", "이 중 몇 %가 경력단절여성에게 맞을까?", ["10%", "25%", "40%", "60% 이상"]]].map((q, i) => `<div class="pn a-rise" ${d(.2 + i * .25)} style="left:${60 + i * 590}px;top:122px;width:570px;height:440px;padding:24px 28px">
     <div style="display:flex;align-items:center;gap:14px"><span class="mono" style="display:inline-flex;width:48px;height:48px;border-radius:50%;align-items:center;justify-content:center;background:var(--warn);color:#1a1204;font-size:24px;font-weight:700">${q[0]}</span><span style="font-size:17px;color:var(--warn);font-weight:700">투표 ${q[0]}</span></div>
@@ -1029,6 +1029,7 @@ document.addEventListener("keydown", (e) => {
   const k = e.key;
   if (k === "t" || k === "T") { toggleTT(); return; }
   if (k === "p" || k === "P") { togglePres(); return; }
+  if (k === "2" && crKey && S[cur] && S[cur].cr && S[cur].cr.next) { crNext(); return; }
   if ((k === "g" || k === "G") && a4f) { a4Toggle(); return; }
   if (k === "Escape" && a4Over) { a4Toggle(false); return; }
   if (ttEl.classList.contains("on") && k === "Escape") { toggleTT(false); return; }
@@ -1068,6 +1069,8 @@ const crKey = FOLLOW ? null : lsGet("gongjuDeck.pkey"), a4dUrl = crKey ? lsGet("
 const CR_POLLS = {
   warmup: { id: "warmup", name: "설문", question: "AI를 어디에 써 보셨나요?", options: ["검색·질문", "문서 작성", "번역", "아직 안 써 봤어요"], multi: true },
   "s8-job": { id: "s8-job", name: "공고 투표", question: "김○○ 씨(가상 인물)가 지원해 볼 공고, 어느 것이 좋을까요?", options: ["세무회계사무원 (사무)", "어린이집 보육도우미 (돌봄)", "마트 즉석반찬코너 사원 (음식·판매)"], multi: false },
+  "s4-most": { id: "s4-most", name: "투표 ①", question: "공주에서 가장 많이 올라온 일자리는?", options: ["돌봄 · 요양", "사무 · 회계", "음식 · 카페", "제조 · 생산"], multi: false },
+  "s4-fit": { id: "s4-fit", name: "투표 ②", question: "모은 공고 중 몇 %가 경력단절여성에게 맞을까요?", options: ["10%", "25%", "40%", "60% 이상"], multi: false },
   wish: { id: "wish", name: "마지막 투표", question: "내일 바로 맡겨 보고 싶은 일은?", options: ["자료 조사", "문서 작성", "설문 만들기", "리포트·대시보드"], multi: false } };
 let crOK = false, crPending = null, crNote = "", crEnterT = null;
 const chip = crKey ? document.createElement("div") : null;
@@ -1099,9 +1102,20 @@ function showPoll(p) {
     txt += ` · ${nm} ${cur.closed ? "마감" : "열림"} · ${p.total}명`;
     if (!cur.closed) btns.push(["마감", () => crApi("/poll/close", {}).then(refreshPoll, crFail)]);
   }
+  const nx = crNextOf();
+  if (nx && !cur_is(p, nx.poll)) btns.push([nx.label, crNext]);
   if (crPending) { const def = crPending; txt += ` · ${def.name}: 전에 연 투표`; btns.push(["다시 열기", () => { if (confirm(`${def.name}를 다시 열면 그 투표의 응답이 지워집니다. 다시 열까요?`)) openPoll(def); }]); }
   if (crNote) txt += " · " + crNote;
   chipSet("ok", txt, btns);
+}
+function cur_is(p, id) { return !!(p && p.poll && p.poll.id === id && !p.poll.closed); }
+function curSlide() { return cur; }
+function crNextOf() { const sc = S[curSlide()]; return sc && sc.cr && sc.cr.next; }
+function crNext() {   // 발표자 전용: 이 장의 다음 투표(② 투표 열기) — 열린 투표를 마감하고 다음 투표를 엶
+  const sc = S[cur], nx = sc && sc.cr && sc.cr.next; if (!crOK || !nx) return;
+  const def = CR_POLLS[nx.poll]; chipSet("busy", `${def.name} 여는 중…`);
+  crApi("/poll").then((p) => (p && p.poll && !p.poll.closed && p.poll.id !== def.id) ? crApi("/poll/close", {}) : null)
+    .then(() => openPoll(def), crFail);
 }
 function refreshPoll() { if (!crOK) return Promise.resolve(); return crApi("/poll").then(showPoll, crFail); }
 function openPoll(def) {
