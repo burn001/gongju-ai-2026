@@ -1772,6 +1772,9 @@ function stepView(e) {   // 단추 글 · 상태
     return { dis: true, cls: "run", txt: "● 실행 중 · " + (ids.length > 1 ? (c.short || c.title) + " · " : "") + cdFmt(cdNow() - c.sentAt) };
   const hs = (CD.history || []).filter((h) => ids.indexOf(h.id) >= 0), h = hs[hs.length - 1];
   const done = h && h.id === last && h.status === "done";
+  const rit = ITEMS.find((x) => x.repeat && x.steps.indexOf(e.step) >= 0);   // 회차 실습(요청): 한 회차가 끝났으면 새 회차 — "다시 실행" 확인 없이(11.10.)
+  if (rit && h) { const rr = (CD.history || []).filter((x) => x.id === rit.steps[rit.steps.length - 1] && x.status === "done"), at = rr.reduce((m, x) => Math.max(m, x.doneAt || 0), 0);
+    if (at && at > (h.doneAt || h.sentAt || 0) && !(b === "offline" || b)) return { txt: "▶ 실행: " + e.label + " (" + (rr.length + 1) + "회차)", again: false }; }
   const v = done ? { cls: "done", txt: "✓ 완료 · " + cdFmt(h.durationMs) + " — 다시 실행", again: true } : { txt: "▶ 실행: " + e.label + (h ? " (다시)" : ""), again: !!h };
   if (b === "offline") return Object.assign(v, { dis: true, note: "AI 세션 꺼짐 — 바탕화면 AI_temp_proj_리터러시" });
   if (b) return Object.assign(v, { dis: true, note: "앞 작업 진행 중 — 끝나면 누르세요" });
