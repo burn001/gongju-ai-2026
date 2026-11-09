@@ -1673,7 +1673,27 @@ function cdPost(path, body) {   // 러너 POST → {ok, status, j}
   return rnFetch(path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body || {}) })
     .then((r) => r.json().catch(() => ({})).then((j) => ({ ok: r.ok, status: r.status, j })));
 }
-window.__cdRunner = () => ({ base: rn.base, remote: rn.remote, why: rn.why });
+window.__cdRunner = () => ({ base: rn.base, remote: rn.remote, why: rn.why, tok: !!rn.tok });
+/* 원격(터널) 파일 링크(11.10.): 러너 15분 토큰을 경로에 넣음(/t/<토큰>/conduct/files/…) — iframe 안 상대 경로 자료도 같은 토큰으로 받음.
+   5분마다·만료 4분 전에 새로 받음. 이미 불러온 iframe 은 토큰이 다시 필요 없음 */
+let rnTokP = null;
+function rnTok(force) {
+  if (!rn.remote) return Promise.resolve("");
+  if (!force && rn.tok && rn.tok.base === rn.base && rn.tok.exp - Date.now() > 240000) return Promise.resolve(rn.tok.t);
+  if (rnTokP) return rnTokP;
+  rnTokP = rnFetch("/auth/token", { method: "POST" }).then((r) => r.ok ? r.json() : null).then((j) => {
+    if (j && j.token) rn.tok = { t: j.token, exp: Date.now() + (j.ttlMs || 900000), base: rn.base };
+    return rn.tok ? rn.tok.t : "";
+  }, () => "").finally(() => { rnTokP = null; });
+  return rnTokP;
+}
+setInterval(() => { if (rn.remote && !document.hidden) rnTok(); }, 300000);
+function rnFile(folder, rel) {   // 러너 파일 주소 — 원격이면 토큰이 있을 때만(없으면 "" 를 돌려주고 토큰을 받으러 감)
+  const p = "/conduct/files/" + [folder].concat(String(rel).split("/")).map(encodeURIComponent).join("/");
+  if (!rn.remote) return rn.base + p;
+  if (!rn.tok || rn.tok.base !== rn.base || rn.tok.exp < Date.now() + 30000) { rnTok(); return ""; }
+  return rn.base + "/t/" + rn.tok.t + p;
+}
 
 /* 시나리오 장 → 진행기 단계(단추만 띄움). group = 이 단추가 대표하는 단계들(S4 ①②③④는 러너가 저절로 이어 보냄) */
 const CD_STEPS = [
@@ -2143,8 +2163,8 @@ layer.addEventListener("click", (e) => { const c = e.target.closest && e.target.
 const dynCache = {};
 const esc = (v) => String(v == null ? "" : v).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 function dynFrameUrl(d, frame) {
-  if (!frame || rn.remote || !d.folder) return "";
-  return rn.base + "/conduct/files/" + [d.folder].concat(String(frame).split("/")).map(encodeURIComponent).join("/");
+  if (!frame || !d.folder) return "";
+  return rnFile(d.folder, frame);
 }
 function dynHtml(d) {
   const CC = ["#4fd1e8", "#5fe0a0", "#f4b740"];
@@ -2369,8 +2389,11 @@ function revLocal(sc, r) {   // 수정본을 칸에(공개가 수정보다 새�
   const last = histOf(it.steps).filter((h) => h.status === "done" && h.result).pop();
   const rel = last && last.result;
   const lab = document.createElement("div"); lab.className = "loc";
-  if (rel && /\.(html|mp4)$/i.test(rel) && !rn.remote) {
-    const f = box.querySelector("iframe"); if (f) { f.setAttribute("sandbox", "allow-scripts allow-popups allow-downloads"); f.src = rn.base + "/conduct/files/" + [last.folder].concat(rel.split("/")).map(encodeURIComponent).join("/") + "?v=" + r.doneAt; }
+  const fu = rel && /\.(html|mp4)$/i.test(rel) ? rnFile(last.folder, rel) : "";
+  if (!fu && rel && rn.remote && !revLocal._retry) { revLocal._retry = 1; rnTok(true).then(() => { revLocal._retry = 0; if (S[cur] === sc) revLocal(sc, r); }); return; }
+  revLocal._retry = 0;
+  if (fu) {
+    const f = box.querySelector("iframe"); if (f) { f.setAttribute("sandbox", "allow-scripts allow-popups allow-downloads"); f.src = fu + "?v=" + r.doneAt; }
     lab.textContent = "수정본(공개 전) — [⬆ 다시 공개]를 누르면 공개 주소도 바뀝니다";
   } else lab.textContent = "수정 끝 — [⬆ 다시 공개]를 누르면 수정본이 이 칸에 뜹니다";
   box.appendChild(lab);
