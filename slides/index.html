@@ -189,6 +189,79 @@ body.pres .cutmark { display: block; }
 #a4x { position: absolute; right: 14px; top: 14px; z-index: 10; display: none; font: 700 14px var(--f-ui); padding: 6px 12px; border-radius: 6px; border: 1px solid var(--cy); background: rgba(5,9,15,.85); color: var(--cy); cursor: pointer; }
 #a4x.on { display: block; }
 </style>
+<style>
+/* 11.09. 밤: 발표자 단추 줄(#pAct — 슬라이드 아래, 슬라이드를 가리지 않음) · 진행기 표시 · 단계 고르기(#cdPick) · 발표자 사이드바(#psb)
+   모두 발표자 키로 열었을 때만 만들어짐. 장을 넘기는 것만으로는 세션 실행 · 투표 열기 · 질문 띄우기를 하지 않고, 단추를 눌러야만 함 */
+#pAct { position: relative; width: 100%; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; font: 600 13px var(--f-ui); color: var(--mu); min-height: 38px; }
+#pAct .acts { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; }
+#pAct .ab { font: 700 15px var(--f-ui); padding: 8px 16px; border-radius: 8px; border: 1.5px solid var(--cy); background: #0f3a4a; color: var(--ink); cursor: pointer; white-space: nowrap; }
+#pAct .ab:hover:not(:disabled) { background: #14536a; }
+#pAct .ab:disabled { opacity: .55; cursor: default; }
+#pAct .ab.run { border-color: var(--cy); background: #0d2c3a; color: var(--cy); }
+#pAct .ab.done { border-color: var(--gr); background: #0e2a22; color: var(--gr); }
+#pAct .ab.sub { border-color: #2b3f60; background: #111c2e; font-weight: 600; }
+#pAct .an { color: var(--warn); font-size: 13px; }
+#cdChip { display: flex; align-items: center; gap: 6px; max-width: 100%; font: 600 12px var(--f-ui); color: var(--mu); background: #0a1322; border: 1px solid #2b3f60; border-radius: 999px; padding: 4px 6px 4px 10px; }
+#cdChip i { width: 8px; height: 8px; border-radius: 50%; background: var(--dim); flex: none; }
+#cdChip.on i { background: var(--gr); box-shadow: 0 0 6px var(--gr); }
+#cdChip.busy i { background: var(--cy); box-shadow: 0 0 6px var(--cy); animation: cdb 1s infinite; }
+#cdChip.off i { background: var(--bad); }
+@keyframes cdb { 50% { opacity: .3; } }
+#cdChip .t { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 460px; }
+#cdChip button { font: 600 11px var(--f-ui); padding: 1px 8px; border-radius: 999px; border: 1px solid #2b3f60; background: transparent; color: var(--mu2); cursor: pointer; flex: none; }
+#cdChip button:hover { border-color: var(--cy); color: var(--ink); }
+#deck:fullscreen #pAct { position: absolute; left: 0; right: 0; bottom: 8px; width: auto; z-index: 20; opacity: .3; transition: opacity .2s; }
+#deck:fullscreen #pAct:hover { opacity: 1; }
+#cdPick { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(100% + 6px); z-index: 50; width: 380px; max-width: 92vw; max-height: 60vh; overflow: auto; display: none; background: rgba(8,16,28,.98); border: 1px solid #2b3f60; border-radius: 10px; padding: 8px; font: 500 13px var(--f-ui); color: var(--ink); box-shadow: 0 10px 30px rgba(0,0,0,.5); }
+#cdPick.on { display: block; }
+#cdPick .h { font-size: 12px; color: var(--mu2); margin: 0 4px 6px; }
+#cdPick button { display: block; width: 100%; text-align: left; font: inherit; color: inherit; background: transparent; border: 1px solid transparent; border-radius: 6px; padding: 5px 8px; cursor: pointer; }
+#cdPick button:hover { background: #142238; border-color: #2b3f60; }
+#cdPick button.cur { border-color: var(--cy); }
+#cdPick button small { color: var(--mu2); margin-left: 6px; }
+#cdPick button em { font-style: normal; color: var(--dim); margin-right: 6px; font-family: var(--f-mono); }
+/* 발표자 사이드바(한 칸, 세션 · 채팅 탭): 슬라이드는 왼쪽에서 16:9 그대로 줄어듦. 프로젝터에 슬라이드만 크게 → ` 또는 S 로 끔(F 전체 화면도 슬라이드만) */
+#psb { display: none; position: fixed; top: 0; right: 0; bottom: 0; width: 30vw; min-width: 320px; z-index: 40; background: #070d17; border-left: 1px solid #22385a; flex-direction: column; font-family: var(--f-ui); color: var(--ink); }
+body.sb #psb { display: flex; }
+body.sb .page { padding-right: calc(max(30vw, 320px) + 12px); }
+#psb .tabs { display: flex; align-items: stretch; border-bottom: 1px solid #1b2c46; flex: none; }
+#psb .tab { flex: 1; font: 700 14px var(--f-ui); color: var(--mu2); background: transparent; border: 0; border-bottom: 3px solid transparent; padding: 9px 8px 7px; cursor: pointer; }
+#psb .tab.on { color: var(--cy); border-bottom-color: var(--cy); background: #0b1626; }
+#psb .tab .bd { display: inline-block; margin-left: 6px; font: 700 10.5px var(--f-ui); color: #04121e; background: var(--gr); border-radius: 999px; padding: 1px 6px; vertical-align: 1px; }
+#psb .tab .bd:empty { display: none; }
+#psb .x { flex: none; font: 600 12px var(--f-ui); background: transparent; color: var(--dim); border: 0; padding: 0 10px; cursor: pointer; }
+#psb .x:hover { color: var(--ink); }
+#psb .pane { flex: 1 1 auto; min-height: 0; display: none; flex-direction: column; }
+#psb .pane.on { display: flex; }
+#psb iframe { flex: 1 1 auto; min-height: 0; width: 100%; border: 0; background: #0b1220; }
+#psb .say { display: flex; gap: 6px; padding: 6px 8px; border-top: 1px solid #1b2c46; align-items: flex-end; flex: none; }
+#psb textarea, #psb input[type=text] { flex: 1; min-width: 0; font: 400 13px var(--f-ui); color: var(--ink); background: #0d1828; border: 1px solid #2b3f60; border-radius: 6px; padding: 6px 8px; resize: vertical; }
+#psb textarea:focus, #psb input[type=text]:focus { outline: none; border-color: var(--cy); }
+#psb .go { font: 700 12px var(--f-ui); background: #12465a; color: var(--ink); border: 1px solid var(--cy); border-radius: 6px; padding: 6px 10px; cursor: pointer; white-space: nowrap; }
+#psb .go:disabled { opacity: .5; cursor: default; }
+#psb .msg { font-size: 11.5px; color: var(--warn); padding: 0 10px 4px; min-height: 1em; flex: none; }
+#psb .pc { flex: none; margin: 8px 10px 4px; padding: 8px 10px; border: 1px solid #2b4a6e; border-radius: 8px; background: #0b1828; font-size: 13px; }
+#psb .pc[hidden] { display: none; }
+#psb .pc .pq { font-weight: 700; margin-bottom: 6px; }
+#psb .pc .pq small { font-weight: 600; color: var(--mu2); margin-left: 6px; }
+#psb .pc .po { display: grid; grid-template-columns: minmax(0, 1fr) 90px 34px; gap: 6px; align-items: center; margin: 3px 0; }
+#psb .pc .po span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #d5e1f0; }
+#psb .pc .po s { display: block; height: 8px; border-radius: 4px; background: var(--cy); text-decoration: none; min-width: 2px; }
+#psb .pc .po b { font-family: var(--f-mono); text-align: right; color: var(--mu); }
+#psb .cl { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 6px 10px; display: flex; flex-direction: column; gap: 5px; }
+#psb .cm { font-size: 13px; line-height: 1.4; padding: 4px 6px; border-radius: 6px; position: relative; }
+#psb .cm:hover { background: #0f1c2e; }
+#psb .cm b { color: var(--mu); margin-right: 6px; font-weight: 700; }
+#psb .cm.me b { color: var(--warn); }
+#psb .cm .qb { font: 700 10.5px var(--f-ui); color: #04121e; background: var(--warn); border-radius: 4px; padding: 0 5px; margin-right: 5px; }
+#psb .cm.done .qb { background: var(--dim); }
+#psb .cm time { color: var(--dim); font-size: 11px; margin-left: 6px; font-family: var(--f-mono); }
+#psb .cm .act { display: none; position: absolute; right: 4px; top: 3px; gap: 4px; }
+#psb .cm:hover .act { display: flex; }
+#psb .cm .act button { font: 600 11px var(--f-ui); background: #111c2e; color: var(--mu); border: 1px solid #2b3f60; border-radius: 5px; padding: 0 6px; cursor: pointer; }
+#psb .cm .act button:hover { color: var(--ink); border-color: var(--cy); }
+#psb .empty { color: var(--dim); font-size: 12.5px; padding: 8px 2px; }
+</style>
 </head>
 <body>
 <div class="page">
@@ -217,7 +290,8 @@ body.pres .cutmark { display: block; }
    시나리오마다 상황 → 발표용 지시 → 일하는 순서 → 결과 화면 → 함께 보기·투표.
    결과물 그림은 recordings/와 실험 폴더의 리허설 화면(2026. 11. 7.～9.)에서 가져옴.
    ALRIS 수치는 최종연구심의회 발표(보고서 v13, 2026. 11. 8.)에서 가져옴.
-   발표자 전용: P 줄임 표시(⏱) 켜기·끄기, T 시간표, G AI 팀 실시간 화면. 주소 끝 ?p 로 열면 줄임 표시가 켜진 채 시작.
+   발표자 전용: P 줄임 표시(⏱) 켜기·끄기, T 시간표, G AI 팀 실시간 화면, ` 또는 S 오른쪽 사이드바(세션 · 채팅), Shift+N 진행기 단계 고르기. 주소 끝 ?p 로 열면 줄임 표시가 켜진 채 시작.
+   발표자 키로 열면 슬라이드 아래 단추 줄: 세션 실행 · 투표 열기/마감 · 질문 띄우기는 단추를 눌러야만 함(장을 넘기는 것만으로는 장 번호 따라가기만).
    11. 10. 순서 조정: 표지 → 입장 → 강사 · ALRIS → 설문(첫 투표) → 챗봇 vs 에이전트 → 팀으로 일하는 AI → 실시간 화면 → 오늘의 흐름 …
    발표자 주소(#key=…&a4d=…)로 열면 강의실 투표 · 극장 스크린 · AI 팀 실시간 화면과 연동(아래 '강의실 연동' 참고).
    ════════════════════════════════════════════════════════════ */
@@ -1017,7 +1091,8 @@ function toggleFull() { try { if (document.fullscreenElement) document.exitFulls
 document.getElementById("bFull").onclick = toggleFull;
 function fit() {
   const full = document.fullscreenElement === deck || FOLLOW;
-  const aw = full ? innerWidth : deck.clientWidth, ah = full ? innerHeight : Math.max(200, innerHeight - 90);
+  const pa = document.getElementById("pAct"), paH = pa && pa.parentNode !== deck ? pa.offsetHeight + 12 : 0; // 발표자 단추 줄
+  const aw = full ? innerWidth : deck.clientWidth, ah = full ? innerHeight : Math.max(200, innerHeight - 90 - paH);
   const k = Math.min(aw / 1280, ah / 720);
   stage.style.width = 1280 * k + "px"; stage.style.height = 720 * k + "px"; canvas.style.transform = `scale(${k})`;
 }
@@ -1025,11 +1100,11 @@ addEventListener("resize", fit); document.addEventListener("fullscreenchange", f
 if (window.ResizeObserver) new ResizeObserver(fit).observe(deck);
 document.addEventListener("keydown", (e) => {
   if (FOLLOW) return;
+  if (e.target.closest && e.target.closest("input, textarea, select, [contenteditable]")) return; // 사이드바 글쓰기 칸
   if (e.target.closest && e.target.closest("button, a") && (e.key === "Enter" || e.key === " ")) return;
   const k = e.key;
   if (k === "t" || k === "T") { toggleTT(); return; }
   if (k === "p" || k === "P") { togglePres(); return; }
-  if (k === "2" && crKey && S[cur] && S[cur].cr && S[cur].cr.next) { crNext(); return; }
   if ((k === "g" || k === "G") && a4f) { a4Toggle(); return; }
   if (k === "Escape" && a4Over) { a4Toggle(false); return; }
   if (ttEl.classList.contains("on") && k === "Escape") { toggleTT(false); return; }
@@ -1046,10 +1121,12 @@ function fromHash() { const m = /^#s(\d+)$/.exec(location.hash); return m ? +m[1
 addEventListener("hashchange", () => { const i = fromHash(); if (i !== cur) go(i); });
 /* ════════════ 강의실 연동(발표자 키) · AI 팀 실시간 화면 ════════════
    발표자 주소 …/slides/#key=<발표자 키>&a4d=<URL 인코딩한 Agent4D 공유 주소> 로 한 번 열면 이 브라우저에 저장하고 주소창에서 지움.
-   키가 있으면: 설문 장 → 강의실 투표 'warmup', S8 투표 장 → 's8-job', 마지막 장 → 'wish'(강의 사이트와 같은 정의)를
-   그 장에 1.2초 머물면 자동으로 엶. 이미 열린 같은 투표는 그대로, 이 창에서 전에 연 투표(응답이 있을 수 있음)는 자동으로 다시 열지 않음.
-   닫기는 사이트처럼 손으로(오른쪽 위 표시의 [마감]). S5 장은 질문을 극장 스크린(/api/screen)에 띄움. 키 · 링크는 화면에 찍지 않음.
-   지우기: #key=off · #a4d=off */
+   11.09. 밤 원칙: 장을 넘기는 것만으로는 아무 일도 하지 않음(장 번호 올리기 = 수강생 따라가기만 자동).
+   투표 · 설문 · 강사 질문 띄우기 · 세션 실행은 슬라이드 아래 발표자 단추 줄(#pAct)의 단추를 눌러야만 함.
+     설문 장 → [▶ 설문 열기]·[■ 마감] (warmup) · S4 투표 장 → [▶ ① 투표 열기]·[▶ ② 투표 열기](①을 마감하고 엶)·[■ 마감]
+     S8 투표 장 → 's8-job' · 마지막 장 → 'wish' · S5 첫 장 → [질문 띄우기]/[질문 내리기](강의실 채팅 위 띠 + 극장 스크린)
+   이미 응답이 있을 수 있는 투표(이 창에서 전에 연 투표 · 응답 있는 같은 투표)를 다시 열 때는 확인(응답이 지워짐).
+   오른쪽 위 표시는 연동 상태 · 지금 투표만 보여 줌. 키 · 링크는 화면에 찍지 않음. 지우기: #key=off · #a4d=off */
 const CR_API = "https://ai-agent-gongju.pages.dev/api";
 function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
 function lsSet(k, v) { try { if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
@@ -1066,23 +1143,26 @@ function lsSet(k, v) { try { if (v === null) localStorage.removeItem(k); else lo
   try { history.replaceState(null, "", location.pathname + location.search + (keep.length ? "#" + keep.join("&") : "")); } catch (e) { location.hash = keep.join("&"); }
 })();
 const crKey = FOLLOW ? null : lsGet("gongjuDeck.pkey"), a4dUrl = crKey ? lsGet("gongjuDeck.a4d") : null;
+/* 시험용 ?dry: 강의실 · 러너로 가는 POST(투표 · 장 번호 · 질문 · 채팅 · 진행기 · 직접 지시 · 초기화)를 보내지 않고 콘솔과 window.__cdDry 에 남김 */
+const CR_DRY = !!crKey && /[?&]dry(=|&|$)/.test(location.search);
+function cdDryLog(what, body) { console.log("[dry]", what, JSON.stringify(body || {})); (window.__cdDry = window.__cdDry || []).push({ what, body, at: Date.now() }); }
 const CR_POLLS = {
   warmup: { id: "warmup", name: "설문", question: "AI를 어디에 써 보셨나요?", options: ["검색·질문", "문서 작성", "번역", "아직 안 써 봤어요"], multi: true },
   "s8-job": { id: "s8-job", name: "공고 투표", question: "김○○ 씨(가상 인물)가 지원해 볼 공고, 어느 것이 좋을까요?", options: ["세무회계사무원 (사무)", "어린이집 보육도우미 (돌봄)", "마트 즉석반찬코너 사원 (음식·판매)"], multi: false },
   "s4-most": { id: "s4-most", name: "투표 ①", question: "공주에서 가장 많이 올라온 일자리는?", options: ["돌봄 · 요양", "사무 · 회계", "음식 · 카페", "제조 · 생산"], multi: false },
   "s4-fit": { id: "s4-fit", name: "투표 ②", question: "모은 공고 중 몇 %가 경력단절여성에게 맞을까요?", options: ["10%", "25%", "40%", "60% 이상"], multi: false },
   wish: { id: "wish", name: "마지막 투표", question: "내일 바로 맡겨 보고 싶은 일은?", options: ["자료 조사", "문서 작성", "설문 만들기", "리포트·대시보드"], multi: false } };
-let crOK = false, crPending = null, crNote = "", crEnterT = null;
+let crOK = false, crPoll = null, crPromptAt = -1, crActBusy = false;
 const chip = crKey ? document.createElement("div") : null;
 if (chip) { chip.id = "crChip"; stage.appendChild(chip); }
-function chipSet(cls, txt, btns) {
+function chipSet(cls, txt) {
   if (!chip) return;
   chip.className = cls; chip.textContent = ""; chip.appendChild(document.createElement("i"));
   const sp = document.createElement("span"); sp.textContent = txt; chip.appendChild(sp);
-  (btns || []).forEach((b) => { const el = document.createElement("button"); el.type = "button"; el.textContent = b[0]; el.onclick = (e) => { e.stopPropagation(); el.blur(); b[1](); }; chip.appendChild(el); });
 }
 chipSet("busy", "강의실 연동 확인 중…");
 function crApi(path, body) {
+  if (CR_DRY && body !== undefined) { cdDryLog("classroom " + path, body); return Promise.resolve({ ok: true, dry: true }); }
   const h = {}; if (body !== undefined) h["Content-Type"] = "application/json";
   if (body !== undefined || path === "/presenter") h["X-Presenter-Key"] = crKey;
   return fetch(CR_API + path, { method: body !== undefined ? "POST" : "GET", headers: h, body: body !== undefined ? JSON.stringify(body) : undefined, cache: "no-store" })
@@ -1094,56 +1174,46 @@ function opened(id, add) {
   if (add && a.indexOf(id) < 0) { a.push(id); try { sessionStorage.setItem("gongjuDeck.opened", JSON.stringify(a)); } catch (e) {} }
   return a.indexOf(id) >= 0;
 }
-function showPoll(p) {
-  const btns = [], cur = p && p.poll;
+const pollName = (id) => (Object.keys(CR_POLLS).map((k) => CR_POLLS[k]).find((x) => x.id === id) || {}).name || "투표";
+function showPoll(p) {   // 상태만 표시(여는 일은 단추로만)
+  if (p !== undefined) crPoll = p || null;
+  const c = crPoll && crPoll.poll;
   let txt = "강의실 연동 ✓";
-  if (cur) {
-    const nm = (Object.keys(CR_POLLS).map((k) => CR_POLLS[k]).find((x) => x.id === cur.id) || {}).name || "투표";
-    txt += ` · ${nm} ${cur.closed ? "마감" : "열림"} · ${p.total}명`;
-    if (!cur.closed) btns.push(["마감", () => crApi("/poll/close", {}).then(refreshPoll, crFail)]);
-  }
-  const nx = crNextOf();
-  if (nx && !cur_is(p, nx.poll)) btns.push([nx.label, crNext]);
-  if (crPending) { const def = crPending; txt += ` · ${def.name}: 전에 연 투표`; btns.push(["다시 열기", () => { if (confirm(`${def.name}를 다시 열면 그 투표의 응답이 지워집니다. 다시 열까요?`)) openPoll(def); }]); }
-  if (crNote) txt += " · " + crNote;
-  chipSet("ok", txt, btns);
-}
-function cur_is(p, id) { return !!(p && p.poll && p.poll.id === id && !p.poll.closed); }
-function curSlide() { return cur; }
-function crNextOf() { const sc = S[curSlide()]; return sc && sc.cr && sc.cr.next; }
-function crNext() {   // 발표자 전용: 이 장의 다음 투표(② 투표 열기) — 열린 투표를 마감하고 다음 투표를 엶
-  const sc = S[cur], nx = sc && sc.cr && sc.cr.next; if (!crOK || !nx) return;
-  const def = CR_POLLS[nx.poll]; chipSet("busy", `${def.name} 여는 중…`);
-  crApi("/poll").then((p) => (p && p.poll && !p.poll.closed && p.poll.id !== def.id) ? crApi("/poll/close", {}) : null)
-    .then(() => openPoll(def), crFail);
+  if (c) txt += ` · ${pollName(c.id)} ${c.closed ? "마감" : "열림"} · ${crPoll.total}명`;
+  if (crPromptAt >= 0 && crPromptAt === cur) txt += " · 질문 띄움";
+  chipSet("ok", txt);
+  if (typeof actPaint === "function") actPaint();
+  if (typeof psbPollPaint === "function") psbPollPaint();
 }
 function refreshPoll() { if (!crOK) return Promise.resolve(); return crApi("/poll").then(showPoll, crFail); }
-function openPoll(def) {
-  crPending = null; chipSet("busy", `${def.name} 여는 중…`);
-  return crApi("/poll", { id: def.id, question: def.question, options: def.options, multi: def.multi }).then(() => { opened(def.id, true); return refreshPoll(); }, crFail);
+async function pollOpen(def) {   // [▶ … 열기] — 다른 투표가 열려 있으면 먼저 마감. 응답이 있을 수 있는 투표를 다시 열면 확인
+  if (!crOK || crActBusy) return;
+  crActBusy = true; actPaint();
+  try {
+    const p = await crApi("/poll"), c = p && p.poll;
+    if (c && c.id === def.id && !c.closed) { showPoll(p); return; }
+    if (((c && c.id === def.id && p.total) || opened(def.id)) && !confirm(`${def.name}를 다시 열면 그 투표의 응답이 지워집니다. 다시 열까요?`)) { showPoll(p); return; }
+    if (c && !c.closed) await crApi("/poll/close", {});
+    await crApi("/poll", { id: def.id, question: def.question, options: def.options, multi: def.multi });
+    opened(def.id, true);
+  } catch (e) { crFail(e); } finally { crActBusy = false; await refreshPoll(); }
 }
-function crDo(c) {
-  if (c.screen) crApi("/screen", c.screen).then(() => { crNote = "극장 스크린에 질문"; return refreshPoll(); }, crFail);
-  if (c.poll) {
-    const def = CR_POLLS[c.poll];
-    crApi("/poll").then((p) => {
-      const cur = p && p.poll, same = !!cur && cur.id === def.id;
-      if (same && !cur.closed) return showPoll(p);                      // 이미 열려 있음 — 그대로
-      if (!cur || (same && !p.total) || (!same && !opened(def.id))) return openPoll(def);
-      crPending = def; showPoll(p);                                       // 응답이 있을 수 있는 옛 투표 — 손으로만
-    }, crFail);
-  }
+async function pollClose() {
+  if (!crOK || crActBusy) return;
+  crActBusy = true; actPaint();
+  try { await crApi("/poll/close", {}); } catch (e) { crFail(e); } finally { crActBusy = false; await refreshPoll(); }
 }
-function crEnter(sc) {
-  clearTimeout(crEnterT); crPending = null; crNote = "";
-  if (!crOK) return;
-  if (!sc.cr) { refreshPoll(); return; }
-  crEnterT = setTimeout(() => crDo(sc.cr), 1200);
+function promptSet(on) {   // [질문 띄우기]/[질문 내리기] — 그 장의 cr.screen 을 강의실 채팅 위 띠(/api/deck prompt) · 극장 스크린에
+  const sc = S[cur], scr = sc && sc.cr && sc.cr.screen; if (!scr || !crOK) return;
+  crPromptAt = on ? cur : -1;
+  if (on) crApi("/screen", scr).catch(crFail);
+  crDeck(true); showPoll();
 }
+function crEnter() { crPromptAt = -1; if (crOK) refreshPoll(); else if (typeof actPaint === "function") actPaint(); }
 if (crKey) {
   crApi("/presenter").then(() => {
-    crOK = true; crEnter(S[cur]);
-    setInterval(() => { if (!document.hidden) refreshPoll(); }, 15000);
+    crOK = true; refreshPoll();
+    setInterval(() => { if (!document.hidden) refreshPoll(); }, 5000);
   }, (e) => chipSet("bad", e && /presenter/.test(e.message) ? "강의실 연동 ✕ 발표자 키가 맞지 않습니다" : "강의실 연동 ✕ 연결 안 됨"));
 }
 /* AI 팀 실시간 화면: iframe 하나를 계속 살려 두고, 칸이 있는 장에서만 그 자리로 옮겨 보임 */
@@ -1165,19 +1235,393 @@ function a4Place() {
 function a4Toggle(on) { a4Over = on === undefined ? !a4Over : on; a4Place(); if (!a4Over) { try { a4f.blur(); window.focus(); } catch (e) {} } }
 
 /* 강의실 따라가기 — 발표자 키가 있으면 장을 넘길 때마다(0.3초 몰아서) 지금 장을 강의실에 올림: POST /api/deck {slide, total, prompt?}.
-   prompt는 그 장의 '강사 질문'(cr.screen) — 수강생 강의실 채팅 위에 띠로 보임. 따라가기 모드(?follow)에서는 올리지 않고,
+   prompt는 그 장의 '강사 질문'(cr.screen) — [질문 띄우기]를 눌렀을 때만 수강생 강의실 채팅 위에 띠로 보임(장 번호는 늘 자동). 따라가기 모드(?follow)에서는 올리지 않고,
    부모 창(강의실)에 {type:'deck-ready'|'deck-at', slide, total}를 알리고 {type:'deck-goto', slide}를 받아 그 장으로 감. */
 let crDeckT = null;
-function crDeck() {
+function crDeck(now) {
   if (FOLLOW || !crKey) return;
   clearTimeout(crDeckT);
   crDeckT = setTimeout(() => {
-    const sc = S[cur], scr = sc && sc.cr && sc.cr.screen;
+    const sc = S[cur], scr = sc && sc.cr && sc.cr.screen && crPromptAt === cur ? sc.cr.screen : null; // 질문 띠는 [질문 띄우기]를 눌렀을 때만
     crApi("/deck", { slide: cur + 1, total: S.length, prompt: scr ? { kicker: scr.kicker || "", title: scr.title || "", lines: scr.lines || [] } : null }).catch(() => {});
-  }, 300);
+  }, now ? 0 : 300);
 }
 function followTell(kind) { if (FOLLOW && window.parent !== window) { try { window.parent.postMessage({ type: kind || "deck-at", slide: cur + 1, total: S.length }, "*"); } catch (e) {} } }
 if (FOLLOW) addEventListener("message", (e) => { const m = e.data; if (m && m.type === "deck-goto" && Number.isInteger(m.slide)) go(m.slide - 1); });
+/* ════════════ 강의 진행기(러너 /conduct/*) · 발표자 단추 줄 · 발표자 사이드바 — 11.09. 밤 추가 ════════════
+   발표자 키로 연 덱에서만(따라가기 ?follow · 키 없는 공개 덱에서는 아무것도 만들지 않음). 덱 하나로 강의 전체를 진행하기 위함.
+   ① 러너 연결: 이 PC의 http://localhost:8790/health → 안 되면 강의실 GET /api/runner-url(발표자 키)의 터널 주소 + X-Presenter-Key
+      (강의 사이트 발표 화면 assets/runner.js 와 같은 순서 · 러너는 원격 출처로 burn001.github.io 를 허용)
+   ② 장을 넘기는 것만으로는 세션에 아무것도 보내지 않음. 시나리오 장(CD_STEPS — 장 번호는 내용으로 찾음) 아래 단추 줄에
+      [▶ 실행: S1 리서치]가 뜨고, 눌러야만 POST /conduct/goto {step, send:true}. 보내는 동안 막고, 뒤에는 '● 실행 중 · 1:23' / '✓ 완료'.
+      AI가 앞 작업 중이면 줄 세우지 않고 '앞 작업 진행 중 — 끝나면 누르세요'(S4 ①→②→③④ 자동 이어짐 틈도 기다림). S8은 누르는 순간의 공고 투표 1등.
+   ③ 단추 줄 왼쪽 진행기 표시: 세션 점(초록 대기 · 파랑 작업 중 · 주황 꺼짐/연결 안 됨) · 지금 단계와 걸린 시간 · [단계▾](Shift+N, 고른 뒤 확인을 눌러야 보냄)
+      · [⟲ 초기화](러너 /lecture/reset — 할 일 확인 후 실행, 강의실 데이터는 그대로). N 한 키로 보내는 단축키는 없음(실수 방지).
+   ④ ` 또는 S: 오른쪽 사이드바 켜고 끄기(상태 기억). 한 칸에 탭 둘 — 세션(AI 작업 화면 + 세션에 직접 지시, [보내기] 또는 Ctrl+Enter 로만)
+      · 채팅(지금 투표 결과 카드 + 강의실 채팅, 숨기기 · 답변 완료 · 강사로 쓰기). 세션 단추를 누르면 세션 탭, 강의실 단추를 누르면 채팅 탭으로
+      저절로 바뀜(손으로 고른 탭은 다음 단추까지 그대로, 마지막 탭 기억). 채팅 탭에 있는 동안 단계가 끝나면 세션 탭에 '완료' 표시.
+   시험용: ?dry(위 CR_DRY) · ?runnerRemote → localhost 를 건너뛰고 터널로 */
+const CD_ON = !!crKey && !FOLLOW;
+const CD_SKIP_LOCAL = /[?&]runnerRemote(=|&|$)/.test(location.search);
+const RN_LOCAL = "http://localhost:8790";
+const rn = { base: RN_LOCAL, remote: false, ready: null, why: "" };
+function cdT(url, opt, ms) {
+  const c = window.AbortController ? new AbortController() : null, t = c ? setTimeout(() => c.abort(), ms || 4000) : null;
+  opt = Object.assign({ cache: "no-store" }, opt || {}); if (c) opt.signal = c.signal;
+  return fetch(url, opt).finally(() => { if (t) clearTimeout(t); });
+}
+function rnProbe(base, remote) { return cdT(base + "/health", { headers: remote ? { "X-Presenter-Key": crKey } : {} }, remote ? 9000 : 2500).then((r) => r.ok, () => false); }
+function rnSet(base, remote, why) { rn.base = base; rn.remote = remote; rn.why = why || ""; return rn; }
+function rnResolve() {
+  if (rn.ready) return rn.ready;
+  const p = (CD_SKIP_LOCAL ? Promise.resolve(false) : rnProbe(RN_LOCAL, false)).then((ok) => {
+    if (ok) return rnSet(RN_LOCAL, false);
+    return cdT(CR_API + "/runner-url", { headers: { "X-Presenter-Key": crKey } }, 6000).then((r) => r.ok ? r.json() : null)
+      .then((j) => (j && j.runner && j.runner.url) || "", () => "")
+      .then((u) => u ? rnProbe(u, true).then((ok2) => ok2 ? rnSet(u, true) : rnSet(RN_LOCAL, false, "remote-down")) : rnSet(RN_LOCAL, false, "no-remote"));
+  });
+  rn.ready = p;
+  p.then(() => { if (rn.why) setTimeout(() => { if (rn.ready === p) rn.ready = null; }, 20000); }); // 러너 · 터널을 나중에 켠 경우 20초 뒤 다시 찾음
+  return p;
+}
+function rnFetch(path, opt) {
+  return rnResolve().then(() => {
+    const o = Object.assign({}, opt || {});
+    if (rn.remote) o.headers = Object.assign({}, o.headers || {}, { "X-Presenter-Key": crKey });
+    return cdT(rn.base + path, o, o.method === "POST" ? 30000 : 9000).then((r) => {
+      if (rn.remote && (r.status === 530 || r.status === 502 || r.status === 1033)) rn.ready = null; // 터널 주소가 바뀌었거나 끊김
+      return r;
+    }, (e) => { rn.ready = null; throw e; });
+  });
+}
+function cdPost(path, body) {   // 러너 POST → {ok, status, j}
+  if (CR_DRY) { cdDryLog("runner " + path, body); return Promise.resolve({ ok: true, status: 200, j: { ok: true, dry: true } }); }
+  return rnFetch(path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body || {}) })
+    .then((r) => r.json().catch(() => ({})).then((j) => ({ ok: r.ok, status: r.status, j })));
+}
+window.__cdRunner = () => ({ base: rn.base, remote: rn.remote, why: rn.why });
+
+/* 시나리오 장 → 진행기 단계(단추만 띄움). group = 이 단추가 대표하는 단계들(S4 ①②③④는 러너가 저절로 이어 보냄) */
+const CD_STEPS = [
+  { step: "s4-1", label: "S4 일자리 지도", group: ["s4-1", "s4-2", "s4-3"], at: (s, t) => (s.ref === "시나리오 S4" && /^첫 일은 지금 바로 맡겨/.test(t)) || s.eb === "공주 일자리 지도 · 함께 보기" }, // S4 지시('지금 출발') · 지금 출발 장
+  { step: "s1", label: "S1 리서치", at: (s, t) => (s.ref === "시나리오 S1" && /사업계획서/.test(t)) || s.eb === "리서치 · 함께 보기" },   // S1 상황과 지시 · 함께 보기
+  { step: "s7", label: "S7 발표 슬라이드", at: (s, t) => s.ref === "시나리오 S7" && /^방금 만든 보고서/.test(t) },
+  { step: "s9", label: "S9 일하는 엄마 지도", at: (s, t) => s.ref === "시나리오 S9" && /^일자리는 찾았는데/.test(t) },
+  { step: "s8", label: "S8 맞춤 지원서", poll: "s8-job", at: (s, t) => s.ref === "시나리오 S8" && /^이 지시 그대로/.test(t) },     // 공고 투표 바로 다음 장
+  { step: "s5", label: "S5 여러분의 목소리", at: (s, t) => s.ref === "시나리오 S5" && /^모인 글을/.test(t) } ];
+const CD_AT = {};
+S.forEach((s, i) => { const t = (s.sub && s.sub[0]) || ""; const e = CD_STEPS.find((x) => x.at(s, t)); if (e) { CD_AT[i] = e; (e.slides = e.slides || []).push(i + 1); } });
+window.__cdMap = CD_STEPS.map((e) => ({ step: e.step, slides: e.slides || [] }));
+const CD_CHAIN = { "s4-1": 1, "s4-2": 1 }; // script.json autoNext — 끝나고 1.5초 뒤 러너가 다음을 저절로 보냄(그 틈에 끼어들지 않음)
+
+let CD = null, cdSkew = 0, cdFail = false, cdPosting = "", cdMsg = "", cdMsgT = null, cdResetting = "", cdLastCur = null;
+const cdFmt = (ms) => { const s = Math.max(0, Math.round((ms || 0) / 1000)); return Math.floor(s / 60) + ":" + ("0" + s % 60).slice(-2); };
+const cdNow = () => Date.now() + cdSkew;
+function cdNote(t) { cdMsg = t; clearTimeout(cdMsgT); cdMsgT = setTimeout(() => { cdMsg = ""; actPaint(); }, 7000); actPaint(); }
+function cdBusy(s) {    // 지금 새 단계를 넣으면 안 되는 까닭
+  if (!s || !s.session || !s.session.online) return "offline";
+  if (s.busy) return "busy";
+  const c = s.current;
+  if (c && CD_CHAIN[c.id] && c.status === "done" && (s.now - (c.doneAt || 0)) < 20000) return "chain";
+  return "";
+}
+function cdLoad() {
+  if (!CD_ON) return Promise.resolve();
+  return rnFetch("/conduct/state", { cache: "no-store" }).then((r) => { if (r.status === 404) throw new Error("nf"); return r.json(); }).then((j) => {
+    const prev = cdLastCur; CD = j; cdSkew = (j.now || Date.now()) - Date.now(); cdFail = false;
+    const c = j.current; cdLastCur = c ? c.id + ":" + c.status : null;
+    if (prev && c && c.status === "done" && prev !== cdLastCur && psbTab !== "ses") psbBadge("완료"); // 채팅 탭에 있는 동안 단계가 끝남
+    actPaint();
+  }, () => { cdFail = true; actPaint(); });
+}
+function cdOption(pollId) {   // 강의실 투표 1등 → 러너 시나리오 option id(같은 순서). 표가 없으면 null(진행기가 기본값)
+  return crApi("/poll").then((p) => {
+    if (!p || !p.poll || p.poll.id !== pollId || !Array.isArray(p.counts)) return null;
+    let best = 0, bi = -1; p.counts.forEach((n, i) => { if (n > best) { best = n; bi = i; } });
+    if (bi < 0) return null;
+    return rnFetch("/scenarios").then((r) => r.json()).then((list) => { const sc = (list || []).find((x) => x.id === "s8"), o = sc && sc.options && sc.options[bi]; return o ? o.id : null; }, () => null);
+  }).catch(() => null);
+}
+async function cdRun(e, force) {   // [▶ 실행: …] — 누를 때만
+  if (!CD || cdPosting) return;
+  psbAuto("ses");
+  cdPosting = e.step; actPaint();
+  try {
+    const body = { step: e.step, send: true }; if (force) body.force = true;
+    if (e.poll) { const o = await cdOption(e.poll); if (o) body.option = o; }
+    const r = await cdPost("/conduct/goto", body);
+    cdNote(r.ok ? e.label + " 보냄" + (r.j.option && r.j.option.label ? " · " + r.j.option.label : "") : (r.j.message || r.j.error || "실패 " + r.status));
+  } catch (err) { cdNote("러너에 연결하지 못했습니다"); }
+  cdPosting = ""; await cdLoad();
+}
+function stepView(e) {   // 단추 글 · 상태
+  const ids = e.group || [e.step], last = ids[ids.length - 1];
+  if (!CD) return { dis: true, txt: "▶ 실행: " + e.label, note: cdFail ? "러너 연결 안 됨" : "러너 확인 중…" };
+  if (cdPosting === e.step) return { dis: true, cls: "run", txt: "보내는 중… " + e.label };
+  const c = CD.current, b = cdBusy(CD);
+  if (c && ids.indexOf(c.id) >= 0 && (c.status === "sent" || c.status === "working" || b === "chain"))
+    return { dis: true, cls: "run", txt: "● 실행 중 · " + (ids.length > 1 ? (c.short || c.title) + " · " : "") + cdFmt(cdNow() - c.sentAt) };
+  const hs = (CD.history || []).filter((h) => ids.indexOf(h.id) >= 0), h = hs[hs.length - 1];
+  const done = h && h.id === last && h.status === "done";
+  const v = done ? { cls: "done", txt: "✓ 완료 · " + cdFmt(h.durationMs) + " — 다시 실행", again: true } : { txt: "▶ 실행: " + e.label + (h ? " (다시)" : ""), again: !!h };
+  if (b === "offline") return Object.assign(v, { dis: true, note: "AI 세션 꺼짐 — 바탕화면 AI_temp_proj_리터러시" });
+  if (b) return Object.assign(v, { dis: true, note: "앞 작업 진행 중 — 끝나면 누르세요" });
+  return v;
+}
+function cdStatus() {
+  if (cdResetting) return { cls: "busy", txt: "⟲ " + cdResetting };
+  if (cdFail || !CD) return { cls: "off", txt: cdFail ? "진행기 ✕ 러너 연결 안 됨" + (rn.why === "no-remote" ? " (이 PC 8790 꺼짐 · 원격 주소 없음)" : "") : "진행기 확인 중…" };
+  const s = CD.session || {}, c = CD.current, wk = CD.busy || s.status === "busy";
+  let txt = rn.remote ? "진행기(원격) · " : "진행기 · ";
+  if (!s.online) txt += "AI 세션 꺼짐 · ";
+  if (c) {
+    const st = { sent: "보내는 중", working: "일하는 중", done: "끝", undelivered: "전달 확인 안 됨" }[c.status] || c.status;
+    txt += (c.short || c.title) + " " + st + " " + cdFmt(c.status === "done" ? c.durationMs : cdNow() - c.sentAt);
+  } else txt += "아직 보낸 단계 없음";
+  return { cls: !s.online ? "off" : wk ? "busy" : "on", txt: txt + (cdMsg ? " · " + cdMsg : "") };
+}
+
+/* ── 발표자 단추 줄(슬라이드 아래). 장이 바뀔 때 단추를 새로 만들고, 상태 글은 제자리에서 고침(누르는 중에 단추가 바뀌지 않게) ── */
+const pAct = CD_ON ? document.createElement("div") : null;
+let actItems = [], actSlide = -1, actH = 0;
+if (pAct) {
+  pAct.id = "pAct"; pAct.setAttribute("role", "toolbar"); pAct.setAttribute("aria-label", "발표자 단추");
+  pAct.innerHTML = '<div id="cdChip" class="off"><i></i><span class="t"></span><button type="button" class="pk" title="단계 고르기 (Shift+N) — 고른 뒤 확인을 눌러야 보냄">단계 ▾</button><button type="button" class="rs" title="강의 초기화 — 세션 새로 띄우기 · AI_temp_proj 비우기(준비자료만 남김) · AI 작업 화면 비우기 · 진행기 처음으로. 강의실 데이터는 그대로">⟲ 초기화</button></div><div class="acts"></div><span class="an"></span><div id="cdPick"></div>';
+  deck.parentNode.insertBefore(pAct, deck.nextSibling);
+  pAct.querySelector(".pk").onclick = (ev) => { ev.stopPropagation(); ev.currentTarget.blur(); cdPickToggle(); };
+  pAct.querySelector(".rs").onclick = (ev) => { ev.stopPropagation(); ev.currentTarget.blur(); cdReset(); };
+  document.addEventListener("fullscreenchange", () => { const inFs = document.fullscreenElement === deck; if (inFs && pAct.parentNode !== deck) deck.appendChild(pAct); else if (!inFs && pAct.parentNode === deck) deck.parentNode.insertBefore(pAct, deck.nextSibling); fit(); });
+}
+function actBtn(cls, onclick) { const b = document.createElement("button"); b.type = "button"; b.className = "ab " + (cls || ""); b.onclick = (ev) => { ev.stopPropagation(); b.blur(); onclick(); }; pAct.querySelector(".acts").appendChild(b); return b; }
+function actBuild() {
+  if (!pAct) return;
+  actSlide = cur; actItems = []; pAct.querySelector(".acts").textContent = "";
+  const sc = S[cur], e = CD_AT[cur], c = sc && sc.cr;
+  if (e) {
+    const b = actBtn("", () => { const v = stepView(e); if (v.dis) return; if (v.again && !confirm(e.label + "을(를) 이미 실행했습니다. 다시 실행할까요?")) return; cdRun(e); });
+    actItems.push(() => { const v = stepView(e); b.textContent = v.txt; b.className = "ab " + (v.cls || ""); b.disabled = !!v.dis; return v.note || ""; });
+  }
+  if (c && c.poll) {
+    const defs = [CR_POLLS[c.poll]].concat(c.next ? [CR_POLLS[c.next.poll]] : []);
+    defs.forEach((def, k) => {
+      const lab = def.id === "warmup" ? "설문 열기" : (defs.length > 1 ? ["①", "②"][k] + " 투표 열기" : def.name + " 열기");
+      const b = actBtn("", () => { psbAuto("chat"); pollOpen(def); });
+      actItems.push(() => { const p = crPoll && crPoll.poll, on = !!p && p.id === def.id && !p.closed, was = !!p && p.id === def.id && p.closed;
+        b.textContent = on ? "● " + lab.replace(" 열기", "") + " 열림 · " + crPoll.total + "명" : (was ? "▶ " + lab.replace("열기", "다시 열기") : "▶ " + lab);
+        b.className = "ab " + (on ? "run" : ""); b.disabled = !crOK || crActBusy || on; return ""; });
+    });
+    const x = actBtn("sub", () => { psbAuto("chat"); pollClose(); });
+    actItems.push(() => { const p = crPoll && crPoll.poll, on = !!p && !p.closed && defs.some((d) => d.id === p.id);
+      x.textContent = "■ 마감"; x.disabled = !crOK || crActBusy || !on; return ""; });
+  }
+  if (c && c.screen) {
+    const b = actBtn("", () => { psbAuto("chat"); promptSet(crPromptAt !== cur); });
+    actItems.push(() => { const on = crPromptAt === cur; b.textContent = on ? "■ 질문 내리기" : "▶ 질문 띄우기"; b.className = "ab " + (on ? "run" : ""); b.disabled = !crOK; return ""; });
+  }
+  actPaint();
+}
+function actPaint() {
+  if (!pAct) return;
+  if (actSlide !== cur) return actBuild();
+  const st = cdStatus(), ch = pAct.querySelector("#cdChip");
+  ch.className = st.cls; ch.querySelector(".t").textContent = st.txt;
+  const notes = actItems.map((f) => f()).filter(Boolean);
+  pAct.querySelector(".an").textContent = notes.join(" · ");
+  if (cdPick.classList.contains("on")) cdPickPaint();
+  if (pAct.offsetHeight !== actH) { actH = pAct.offsetHeight; fit(); }
+}
+/* 단계 고르기(Shift+N 또는 [단계 ▾]) — 고르면 확인 창, 확인을 눌러야 그 단계를 보냄 */
+const cdPick = pAct ? pAct.querySelector("#cdPick") : { classList: { contains: () => false } };
+function cdPickToggle(on) { if (!pAct) return; const v = on === undefined ? !cdPick.classList.contains("on") : on; cdPick.classList.toggle("on", v); if (v) cdPickPaint(); }
+function cdPickPaint() {
+  cdPick.textContent = "";
+  const h = document.createElement("div"); h.className = "h"; h.textContent = "보낼 단계 고르기 — 누르면 확인 뒤 보냄 · Esc 닫기"; cdPick.appendChild(h);
+  ((CD && CD.steps) || []).forEach((x) => {
+    const b = document.createElement("button"); b.type = "button";
+    const done = (CD.history || []).some((hh) => hh.id === x.id && hh.status === "done"), ent = CD_STEPS.find((e) => e.step === x.id);
+    b.innerHTML = "<em>" + (x.i + 1) + "</em>"; b.appendChild(document.createTextNode((done ? "✓ " : "") + x.title));
+    if (ent && ent.slides) { const sm = document.createElement("small"); sm.textContent = ent.slides.join("·") + "장"; b.appendChild(sm); }
+    if (CD.next && CD.next.i === x.i) b.className = "cur";
+    b.onclick = (ev) => {
+      ev.stopPropagation(); cdPickToggle(false);
+      const busy = cdBusy(CD);
+      if (busy === "offline") { cdNote("AI 세션 꺼짐"); return; }
+      if (!confirm("「" + x.title + "」을(를) 지금 AI 세션에 보낼까요?" + (busy ? "\n\n⚠ AI가 아직 앞 작업을 하고 있습니다. 보내면 작업 중간에 끼어듭니다." : ""))) return;
+      cdRun({ step: x.id, label: x.short || x.title, poll: x.id === "s8" ? "s8-job" : null }, !!busy);
+    };
+    cdPick.appendChild(b);
+  });
+  if (!CD) { const e = document.createElement("div"); e.className = "h"; e.textContent = "러너에 연결되지 않았습니다"; cdPick.appendChild(e); }
+}
+/* ⟲ 강의 초기화 — 강의 사이트 진행기 상자와 같은 순서(할 일 확인 → 실행 → 진행 기록), 강의실 데이터는 지우지 않음(classroom:false) */
+function cdReset() {
+  if (cdResetting) return;
+  cdResetting = "할 일 확인 중…"; actPaint();
+  const end = (t) => { cdResetting = ""; if (t) cdNote(t); else actPaint(); };
+  rnFetch("/lecture/reset", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dryRun: true, classroom: false }) }).then((r) => r.json()).then((j) => {
+    if (!j || !j.plan) return end("초기화: " + ((j && (j.message || j.error)) || "러너에 강의 초기화가 없습니다"));
+    const p = j.plan, del = ((p.folder && p.folder.delete) || []).map((d) => d.name + (d.kind === "dir" ? "\\" : "") + " (파일 " + d.files + "개)");
+    const L = ["강의 초기화 — 아래를 합니다", ""];
+    if (p.busy && p.busy.length) L.push("⚠ 진행 중: " + p.busy.join(" / "), "");
+    L.push("① AI 세션 끄고 새로 띄우기 (claude PID " + (((p.session && p.session.claudePids) || []).join(", ") || "없음") + ")");
+    L.push("② AI_temp_proj 비우기 — 남김: " + ((p.folder && p.folder.keep) || []).join(", ") + (del.length ? "\n   지움: " + del.join(", ") : "\n   지울 것 없음"));
+    L.push("③ AI 작업 화면 비우기", "④ 진행기 처음으로", "⑤ 강의실 데이터(입장 · 채팅 · 투표 · 이메일)는 그대로", "", "세션을 다시 띄우는 데 30초쯤 걸립니다. 진행할까요?");
+    if (!confirm(L.join("\n"))) return end();
+    let force = false;
+    if (p.busy && p.busy.length) { if (!confirm("진행 중인 작업이 있습니다. 그래도 멈추고 초기화할까요?")) return end(); force = true; }
+    if (CR_DRY) { cdDryLog("runner /lecture/reset", { classroom: false, force }); return end("초기화(dry)"); }
+    return rnFetch("/lecture/reset", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ classroom: false, force }) }).then((r) => r.json()).then((s) => {
+      if (!s.ok && !s.job) return end("초기화: " + (s.message || s.error || "실패"));
+      cdResetting = "초기화 중…"; actPaint();
+      const tm = setInterval(() => {
+        rnFetch("/lecture/reset/status").then((r) => r.json()).then((x) => {
+          const jb = x.job; if (!jb) return;
+          const last = (jb.log || [])[jb.log.length - 1]; cdResetting = "초기화 " + (last ? last.step + ": " + last.text : "중…"); actPaint();
+          if (!jb.running) { clearInterval(tm); end(jb.ok ? "초기화 끝" : "초기화에 문제(러너 기록 확인)"); cdLoad(); }
+        }, () => {});
+      }, 1000);
+    });
+  }).catch((e) => end("초기화: " + e.message));
+}
+
+/* ── 발표자 사이드바(한 칸 · 탭 '세션' / '채팅') ── */
+const PSB = CD_ON ? document.createElement("aside") : null;
+let psbBuilt = false, psbWS = null, psbLast = 0, psbPollT = null, psbVerT = null;
+let psbTab = lsGet("gongjuDeck.sbTab") === "chat" ? "chat" : "ses";
+const psbMsgs = new Map();
+const psbCid = (() => { let c = lsGet("gongjuDeck.cid"); if (!c) { c = "deck-" + Math.random().toString(36).slice(2, 10); lsSet("gongjuDeck.cid", c); } return c; })();
+function psbBuild() {
+  if (psbBuilt || !PSB) return; psbBuilt = true;
+  PSB.id = "psb"; PSB.setAttribute("aria-label", "발표자 사이드바");
+  PSB.innerHTML = '<div class="tabs"><button type="button" class="tab" data-t="ses">세션<span class="bd"></span></button><button type="button" class="tab" data-t="chat">채팅<span class="bd"></span></button><button type="button" class="x" title="사이드바 닫기 (` 또는 S)">✕</button></div>'
+    + '<div class="pane" data-p="ses"><iframe title="AI 작업 화면" referrerpolicy="no-referrer"></iframe>'
+    + '<div class="say"><textarea rows="3" maxlength="2000" placeholder="세션에 직접 지시 — [보내기] 또는 Ctrl+Enter (Enter는 줄바꿈)"></textarea><button type="button" class="go">보내기</button></div><div class="msg sm"></div></div>'
+    + '<div class="pane" data-p="chat"><div class="pc" hidden></div><div class="cl" aria-live="polite"></div>'
+    + '<div class="say"><input type="text" maxlength="200" placeholder="강사로 채팅 쓰기(200자) — Enter 보내기"><button type="button" class="go">보내기</button></div><div class="msg cmg"></div></div>';
+  document.body.appendChild(PSB);
+  PSB.querySelector(".x").onclick = () => psbToggle(false);
+  PSB.querySelectorAll(".tab").forEach((t) => { t.onclick = () => psbSetTab(t.dataset.t); });
+  PSB.querySelector("iframe").src = "https://ai-agent-gongju.pages.dev/ai/?embed&small";
+  const ta = PSB.querySelector("textarea"), sb = PSB.querySelector('[data-p="ses"] .go'), sm = PSB.querySelector(".sm");
+  const say = () => {   // [보내기] 또는 Ctrl+Enter 로만
+    const t = ta.value.trim(); if (!t || sb.disabled) return;
+    psbAuto("ses");
+    sb.disabled = true; sm.textContent = "보내는 중…";
+    cdPost("/conduct/say", { text: t }).then((r) => {
+      if (r.ok) { ta.value = ""; sm.textContent = r.j.dry ? "(dry) 보낸 셈" : r.j.queued ? "보냄 — AI가 하던 일을 마치면 이어서 읽습니다" : "보냄"; }
+      else sm.textContent = r.status === 404 ? "러너가 아직 직접 지시를 모릅니다(러너 다시 켜기 필요)" : (r.j.message || r.j.error || "실패");
+    }, () => { sm.textContent = "러너에 연결하지 못했습니다"; }).then(() => { sb.disabled = false; });
+  };
+  sb.onclick = say;
+  ta.addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey) && !e.isComposing) { e.preventDefault(); say(); } });
+  const ci = PSB.querySelector('[data-p="chat"] input'), cb = PSB.querySelector('[data-p="chat"] .go'), cm = PSB.querySelector(".cmg");
+  const post = () => {
+    const t = ci.value.trim(); if (!t || cb.disabled) return;
+    cb.disabled = true; cm.textContent = "";
+    crApi("/chat", { cid: psbCid, nick: "강사", text: t }).then((j) => {
+      if (j && j.dry) { ci.value = ""; cm.textContent = "(dry) 보낸 셈"; }
+      else if (j && j.ok) { ci.value = ""; if (j.msg) psbAdd(j.msg); }
+      else cm.textContent = (j && j.message) || "보내지 못했습니다";
+    }, (e) => { cm.textContent = /rate/.test(e.message) ? "5초 뒤 다시 보내 주세요" : "보내지 못했습니다: " + e.message; }).then(() => { cb.disabled = false; });
+  };
+  cb.onclick = post;
+  ci.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); post(); } });
+  psbSetTab(psbTab, true); psbPollPaint(); psbChatLoad(true); psbConnect();
+}
+function psbSetTab(t, quiet) {
+  psbTab = t === "chat" ? "chat" : "ses"; lsSet("gongjuDeck.sbTab", psbTab);
+  if (!psbBuilt) return;
+  PSB.querySelectorAll(".tab").forEach((x) => x.classList.toggle("on", x.dataset.t === psbTab));
+  PSB.querySelectorAll(".pane").forEach((x) => x.classList.toggle("on", x.dataset.p === psbTab));
+  const bd = PSB.querySelector('.tab[data-t="' + psbTab + '"] .bd'); if (bd) bd.textContent = "";
+  if (psbTab === "chat" && !quiet) { const cl = PSB.querySelector(".cl"); cl.scrollTop = cl.scrollHeight; }
+}
+function psbAuto(t) { psbSetTab(t); }   // 단추를 누를 때: 세션 단추 → 세션, 강의실 단추 → 채팅(손으로 고른 탭은 다음 단추까지 그대로)
+function psbBadge(txt) { if (!psbBuilt) return; const bd = PSB.querySelector('.tab[data-t="ses"] .bd'); if (bd) bd.textContent = txt; }
+function psbToggle(on) {
+  const v = on === undefined ? !document.body.classList.contains("sb") : on;
+  if (v) psbBuild();
+  document.body.classList.toggle("sb", v); lsSet("gongjuDeck.sb", v ? "1" : "0");
+  if (!v) try { document.activeElement && document.activeElement.blur(); } catch (e) {}
+  setTimeout(fit, 0);
+}
+function psbPollPaint() {   // 채팅 탭 위: 지금 투표 결과 카드
+  if (!psbBuilt) return;
+  const pc = PSB.querySelector(".pc"), p = crPoll && crPoll.poll;
+  if (!p) { pc.hidden = true; return; }
+  pc.hidden = false; pc.textContent = "";
+  const q = document.createElement("div"); q.className = "pq"; q.textContent = p.question;
+  const sm = document.createElement("small"); sm.textContent = (p.closed ? "마감" : "열림") + " · " + crPoll.total + "명"; q.appendChild(sm); pc.appendChild(q);
+  const counts = crPoll.counts || [], max = Math.max(1, ...counts);
+  (p.options || []).forEach((o, i) => {
+    const row = document.createElement("div"); row.className = "po";
+    const a = document.createElement("span"); a.textContent = o; const bar = document.createElement("s"); bar.style.width = Math.round((counts[i] || 0) / max * 90) + "px";
+    const n = document.createElement("b"); n.textContent = counts[i] || 0;
+    const wrap = document.createElement("span"); wrap.appendChild(bar);
+    row.append(a, wrap, n); pc.appendChild(row);
+  });
+}
+function psbTime(ts) { const d = new Date(ts); return ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2); }
+function psbAdd(m) {
+  if (!m || !m.id || !psbBuilt) return;
+  psbLast = Math.max(psbLast, m.ts || 0);
+  if (psbMsgs.has(m.id)) return;
+  const cl = PSB.querySelector(".cl"), stick = cl.scrollHeight - cl.scrollTop - cl.clientHeight < 40;
+  const el = document.createElement("div"); el.className = "cm" + (m.nick === "강사" ? " me" : ""); el.dataset.id = m.id;
+  if (m.q) { const qb = document.createElement("span"); qb.className = "qb"; qb.textContent = "질문"; el.appendChild(qb); }
+  const b = document.createElement("b"); b.textContent = m.nick || "익명"; el.appendChild(b);
+  el.appendChild(document.createTextNode(m.text || ""));
+  const tm = document.createElement("time"); tm.textContent = psbTime(m.ts); el.appendChild(tm);
+  const act = document.createElement("span"); act.className = "act";
+  if (m.q) { const d = document.createElement("button"); d.type = "button"; d.textContent = "답변 완료"; d.onclick = () => crApi("/questions/" + encodeURIComponent(m.id) + "/done", { done: true }).then(() => { el.classList.add("done"); d.remove(); }, (e) => alert("답변 완료 표시 실패: " + e.message)); act.appendChild(d); }
+  const h = document.createElement("button"); h.type = "button"; h.textContent = "숨기기"; h.title = "모든 화면에서 이 글을 숨김(강의 사이트 검수 화면에서 되살릴 수 있음)";
+  h.onclick = () => crApi("/chat/" + encodeURIComponent(m.id) + "/hide", { hidden: true }).then(() => psbHide(m.id), (e) => alert("숨기기 실패: " + e.message));
+  act.appendChild(h); el.appendChild(act);
+  psbMsgs.set(m.id, el); cl.appendChild(el);
+  while (psbMsgs.size > 300) { const k = psbMsgs.keys().next().value; psbMsgs.get(k).remove(); psbMsgs.delete(k); }
+  const em = cl.querySelector(".empty"); if (em) em.remove();
+  if (stick) cl.scrollTop = cl.scrollHeight;
+}
+function psbHide(id) { const el = psbMsgs.get(id); if (el) { el.remove(); psbMsgs.delete(id); } }
+function psbChatLoad(first) {
+  return crApi("/chat?limit=" + (first ? 120 : 200) + (first ? "" : "&since=" + psbLast)).then((j) => {
+    (j.messages || []).forEach(psbAdd);
+    if (first && !psbMsgs.size) PSB.querySelector(".cl").innerHTML = '<div class="empty">아직 채팅이 없습니다</div>';
+  }, () => {});
+}
+function psbConnect() {
+  try {
+    const ws = new WebSocket("wss://ai-agent-gongju.pages.dev/api/rt?role=viewer"); psbWS = ws;
+    let ping = null;
+    ws.onopen = () => { ping = setInterval(() => { try { ws.send("ping"); } catch (e) {} }, 25000); psbChatLoad(false); };
+    ws.onmessage = (ev) => {
+      let m; try { m = JSON.parse(ev.data); } catch (e) { return; }
+      if (m.type === "chat") psbAdd(m.msg);
+      else if (m.type === "hide") psbHide(m.id);
+      else if (m.type === "ver") { clearTimeout(psbVerT); psbVerT = setTimeout(refreshPoll, 400); }   // 투표 수가 바뀜
+      else if (m.type === "reset") { psbMsgs.forEach((el) => el.remove()); psbMsgs.clear(); psbLast = 0; psbChatLoad(true); refreshPoll(); }
+    };
+    ws.onclose = () => { clearInterval(ping); if (psbWS === ws) { psbWS = null; setTimeout(psbConnect, 4000); } };
+  } catch (e) { setTimeout(psbConnect, 8000); }
+  if (!psbPollT) psbPollT = setInterval(() => { if (!document.hidden && (!psbWS || psbWS.readyState !== 1)) psbChatLoad(false); }, 4000); // 웹소켓이 끊긴 동안만
+}
+
+/* 키: Shift+N 단계 고르기(확인 창을 거쳐야 보냄) · ` 또는 S 사이드바 · Esc 고르기 닫기. 글 쓰는 칸에서는 안 먹음 */
+if (CD_ON) {
+  document.addEventListener("keydown", (e) => {
+    if (e.ctrlKey || e.metaKey || e.altKey || e.isComposing) return;
+    if (e.target.closest && e.target.closest("input, textarea, select, [contenteditable]")) return;
+    if (e.code === "KeyN" && e.shiftKey) { e.preventDefault(); e.stopImmediatePropagation(); cdPickToggle(); }
+    else if (e.code === "Backquote" || (e.code === "KeyS" && !e.shiftKey)) { e.preventDefault(); e.stopImmediatePropagation(); psbToggle(); }
+    else if (e.key === "Escape" && cdPick.classList.contains("on")) { e.stopImmediatePropagation(); cdPickToggle(false); }
+  }, true);
+  document.addEventListener("click", (e) => { if (cdPick.classList.contains("on") && !cdPick.contains(e.target)) cdPickToggle(false); });
+  if (lsGet("gongjuDeck.sb") === "1") psbToggle(true);
+  console.log("[진행기] 장 → 단계", window.__cdMap.map((x) => x.step + ": " + x.slides.join("·") + "장").join(" | ") + (CR_DRY ? " · dry" : ""));
+  cdLoad();
+  setInterval(() => { if (!document.hidden) cdLoad(); }, 3000);
+  setInterval(() => { if (CD && !document.hidden) actPaint(); }, 1000);
+}
 fit(); go(fromHash());
 followTell("deck-ready");
 </script>
