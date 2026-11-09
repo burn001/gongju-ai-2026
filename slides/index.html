@@ -60,7 +60,9 @@ body.follow #prog { pointer-events: none; }
 .hd .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--cy); box-shadow: 0 0 12px var(--cy); flex: none; }
 .hd .eb { font: 700 16px var(--f-ui); color: var(--cy); letter-spacing: .06em; }
 .hd .t { font-size: 36px; font-weight: 900; line-height: 1.25; margin-top: 2px; letter-spacing: -.015em; }
-.hd .ref { margin-left: auto; align-self: flex-start; margin-top: 4px; font: 700 15px var(--f-ui); color: var(--mu2); white-space: nowrap; }
+.hd .ref { margin-left: auto; align-self: flex-start; margin-top: 4px; }
+body.crc .hd .ref { margin-top: 34px; }
+.hd .ref { font: 700 15px var(--f-ui); color: var(--mu2); white-space: nowrap; }
 .lab { font: 700 17px var(--f-ui); color: var(--cy); letter-spacing: .04em; }
 .note { position: absolute; left: 60px; right: 60px; display: flex; gap: 16px; align-items: baseline; border-top: 1px dashed #335789; padding-top: 12px; font-size: 21px; line-height: 1.5; color: #d2deee; }
 .note .k { font: 700 16px var(--f-ui); color: var(--cy); letter-spacing: .04em; flex: none; }
@@ -312,7 +314,7 @@ body.follow .hub-top { display: none; }
 #psb.ins .cm, #psb.ins textarea, #psb.ins input[type=text] { font-size: 15px; }
 #gateBar { position: absolute; left: 40px; right: 40px; top: 636px; z-index: 7; display: none; align-items: center; gap: 12px; padding: 9px 18px; border-radius: 10px; font: 700 19px var(--f-ui); background: rgba(13,44,58,.94); border: 1.5px solid var(--cy); color: var(--ink); }
 #gateBar.on { display: flex; }
-#gateBar.top { top: 70px; left: auto; right: 40px; width: 600px; font-size: 15px; padding: 6px 14px; }
+#gateBar.top { top: 646px; left: auto; right: 40px; width: 600px; font-size: 15px; padding: 6px 14px; }
 .slide.rv .lvbox, .slide.rv .lvside, .slide.rv .note { visibility: hidden; }
 .rvn { position: absolute; right: 40px; top: 96px; z-index: 5; font: 700 14px var(--f-ui); color: var(--warn); background: rgba(40,30,8,.8); border: 1px solid rgba(244,183,64,.6); border-radius: 999px; padding: 2px 10px; }
 .lvbox .loc { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; font: 700 14px var(--f-ui); color: #1a1204; background: var(--warn); padding: 4px 12px; }
@@ -1507,7 +1509,7 @@ const CR_POLLS = {
   wish: { id: "wish", name: "마지막 투표", question: "내일 바로 맡겨 보고 싶은 일은?", options: ["자료 조사", "문서 작성", "설문 만들기", "리포트·대시보드"], multi: false } };
 let crOK = false, crPoll = null, crPromptAt = -1, crActBusy = false;
 const chip = crKey ? document.createElement("div") : null;
-if (chip) { chip.id = "crChip"; stage.appendChild(chip); }
+if (chip) { chip.id = "crChip"; stage.appendChild(chip); document.body.classList.add("crc"); }
 function chipSet(cls, txt) {
   if (!chip) return;
   chip.className = cls; chip.textContent = ""; chip.appendChild(document.createElement("i"));
