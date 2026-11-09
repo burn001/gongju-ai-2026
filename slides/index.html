@@ -265,6 +265,18 @@ body.sb .page { padding-right: calc(max(30vw, 320px) + 12px); }
 #psb .cm .act button:hover { color: var(--ink); border-color: var(--cy); }
 #psb .empty { color: var(--dim); font-size: 12.5px; padding: 8px 2px; }
 </style>
+<style>
+/* 11.09. 밤: 결과 공개 장 — 오늘 실습 결과의 고정 공개 주소(live/<MMDD>/<step>/) · QR · 그 화면(iframe, 공개 덱·따라가기에서도 보임) */
+.lvbox { position: absolute; left: 60px; top: 116px; width: 790px; height: 504px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #0a1424; box-shadow: 0 10px 30px rgba(0,0,0,.45); }
+.lvbox iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; pointer-events: none; background: #0a1424; }
+.lvbox .ph { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--mu2); font-size: 20px; }
+.lvside { position: absolute; left: 880px; right: 60px; top: 116px; display: flex; flex-direction: column; gap: 12px; }
+.lvqr { width: 236px; height: 236px; padding: 10px; background: #fff; border-radius: 10px; box-shadow: 0 0 26px rgba(79,209,232,.25); align-self: center; }
+.lvqr svg { display: block; width: 100%; height: 100%; }
+.lvurl { font-family: var(--f-mono); font-weight: 700; line-height: 1.25; text-align: center; }
+.lvurl .h { font-size: 15px; color: var(--mu2); letter-spacing: -.01em; }
+.lvurl .p { font-size: 33px; color: var(--cy); text-shadow: 0 0 16px rgba(79,209,232,.55); margin-top: 2px; white-space: nowrap; }
+</style>
 </head>
 <body>
 <div class="page">
@@ -285,6 +297,7 @@ body.sb .page { padding-right: calc(max(30vw, 320px) + 12px); }
   </div>
 </div>
 
+<script src="assets/vendor/qrcode-generator-1.4.4.min.js"></script>
 <script>
 /* ════════════════════════════════════════════════════════════
    공주여성새로일하기센터 AI 리터러시 제고교육 · AI 에이전트 활용(2시간)
@@ -300,7 +313,31 @@ body.sb .page { padding-right: calc(max(30vw, 320px) + 12px); }
    ════════════════════════════════════════════════════════════ */
 const DAY = "2026. 11. 10.·11. 17.(화)";
 const ROOM = "ai-agent-gongju.pages.dev/room";
-const CH = ["시작", "강사 소개 · ALRIS", "챗봇과 에이전트", "리서치 → 발표 자료", "공주 일자리 지도", "일하는 엄마 지도", "쉬는 시간", "맞춤 지원서", "설문 · CEO 대시보드", "여러분의 목소리", "마무리"];
+/* 결과 공개(11.09. 밤): 실습 결과는 고정 공개 주소 live/<MMDD>/<step>/ 로 올라감(발표자 [⬆ 결과 공개] 단추를 눌렀을 때만).
+   날짜는 오늘(KST) 월일 — 주소 끝 ?day=1110 으로 바꿀 수 있음. 실습 전에는 '준비 중' 화면(30초마다 스스로 확인) */
+const LIVE_SITE = "https://burn001.github.io/gongju-ai-2026/";
+const LIVE_DAY = (() => { const m = /[?&]day=(\d{4}|test)(?:&|$)/.exec(location.search); if (m) return m[1]; const k = new Date(Date.now() + 9 * 3600e3); return String(k.getUTCMonth() + 1).padStart(2, "0") + String(k.getUTCDate()).padStart(2, "0"); })();
+const liveRel = (st) => "live/" + LIVE_DAY + "/" + (st ? st + "/" : "");
+const liveUrl = (st) => LIVE_SITE + liveRel(st);
+function qrSvg(text) {
+  try { if (typeof qrcode !== "function") throw 0; const q = qrcode(0, "M"); q.addData(text); q.make(); return q.createSvgTag({ cellSize: 6, margin: 2, scalable: true }); }
+  catch (e) { return '<div style="color:#333;font-size:16px;text-align:center;padding-top:90px">QR 없음<br>주소를 입력하세요</div>'; }
+}
+/* 결과 공개 장: 왼쪽 = 그 공개 화면(iframe, 눌리지 않음), 오른쪽 = QR + 주소 크게 */
+function liveSlide(s, o) {
+  const u = liveUrl(o.st);
+  return `<div class="slide">${hd(s, o.title)}
+  <div class="lvbox a-rise" ${d(.15)}><div class="ph">${u.replace("https://", "")} 불러오는 중…</div><iframe class="lvf" data-live="${o.st}" src="${u}?v=${Date.now()}" title="${o.what} — 공개 화면" tabindex="-1" referrerpolicy="no-referrer" loading="eager"></iframe></div>
+  <div class="lvside">
+    <div class="lab a-fade" ${d(.2)} style="text-align:center">내 화면에서 열어 보세요</div>
+    <div class="lvqr a-pop" ${d(.3)}>${qrSvg(u)}</div>
+    <div class="lvurl a-rise" ${d(.45)}><div class="h">burn001.github.io/gongju-ai-2026/</div><div class="p">${liveRel(o.st)}</div></div>
+    <div class="pn rel a-rise" ${d(.6)} style="padding:12px 16px"><div style="font-size:17.5px;line-height:1.5;color:#dfe8f4">${o.note || "실습이 끝나고 강사가 공개하면 1～2분 뒤 이 화면과 여러분 화면에 올라옵니다. 지금 '준비 중'이면 열어 두세요 — 저절로 바뀝니다."}</div></div>
+  </div>
+  <div class="note a-fade" ${d(.9)} style="top:640px;font-size:18px"><span class="k">오늘 결과 모음</span><span class="mono cy">burn001.github.io/gongju-ai-2026/${liveRel("")}</span><span class="mu2" style="font-size:16px">AI가 만든 초안 · 이름 · 연락처는 싣지 않습니다</span></div>
+  </div>`;
+}
+const CH = ["시작", "강사 소개 · ALRIS", "챗봇과 에이전트", "리서치 → 발표 자료", "공주 일자리 지도", "일하는 엄마 지도", "쉬는 시간", "맞춤 지원서", "설문 · CEO 대시보드", "수강생 의견 분석", "마무리"];
 const CUT1 = "① 늦으면 녹화본 3분 또는 건너뛰기", CUT2 = "② 늦으면 결과 화면만", CUT3 = "③ 늦으면 S4 지도 공개에 합침";
 const d = (s) => `data-d="${(+s).toFixed(2)}"`;
 function hd(s, title) {
@@ -572,7 +609,7 @@ add({ ch: 2, a4d: [60, 112, 1160, 486], sub: ["지금 강사 PC에서 AI 팀이 
 add({ ch: 2, sub: ["오늘은 공주의 일자리 이야기 하나를 따라가며 여덟 가지 일을 에이전트에게 맡깁니다.", "공고를 모으고, 보고서와 발표 자료를 만들고, 지도로 보고, 지원서까지 씁니다. 제가 실행하고, 여러분은 내 화면에서 지켜보며 투표와 채팅으로 함께하시면 됩니다."],
   html: (s) => {
   const N = [["1", "S4", "공고 모으기 출발", "AI 세 명이 동시에 공주 채용공고를 모읍니다"], ["2", "S1", "리서치 보고서", "통계청 숫자로 공주 여성 고용 보고서"], ["3", "S7", "발표 슬라이드", "그 보고서를 센터장 보고용 화면으로"], ["4", "S4", "일자리 지도 공개", "모은 공고를 지도로 · 투표 정답 맞히기"],
-             ["5", "S9", "일하는 엄마 지도", "일자리 + 어린이집 · 유치원 · 초등학교"], ["6", "S8", "맞춤 지원서", "공고 하나를 골라 가상 인물의 지원서 초안"], ["7", "S2 · S3", "설문 · CEO 대시보드", "만족도 조사와 센터장 한 장 리포트"], ["8", "S5", "여러분의 목소리", "채팅으로 모은 의견을 AI가 정리"]];
+             ["5", "S9", "일하는 엄마 지도", "일자리 + 어린이집 · 유치원 · 초등학교"], ["6", "S8", "맞춤 지원서", "공고 하나를 골라 가상 인물의 지원서 초안"], ["7", "S2 · S3", "설문 · CEO 대시보드", "만족도 조사와 센터장 한 장 리포트"], ["8", "S5", "수강생 의견 분석", "채팅으로 모은 의견을 AI가 정리"]];
   const row = (arr, top, off) => `<div style="position:absolute;left:60px;right:60px;top:${top}px;display:flex;align-items:stretch">${arr.map((c, i) => (i ? `<div class="a-fade" ${d(.4 + (off + i) * .1)} style="flex:none;width:30px;display:flex;align-items:center;justify-content:center;color:var(--cy);font-size:22px;font-weight:900">▶</div>` : "") + `<div class="pn rel a-pop" ${d(.25 + (off + i) * .1)} style="flex:1;padding:16px 18px;height:196px;${c[0] === "1" || c[0] === "4" ? "border-color:var(--cy);box-shadow:0 0 18px rgba(79,209,232,.16)" : ""}">
       <div style="display:flex;align-items:center;gap:10px"><span class="mono" style="font-size:34px;font-weight:700;color:var(--cy)">${c[0]}</span><span class="tag">${c[1]}</span></div>
       <div style="font-size:25px;font-weight:900;margin-top:8px;line-height:1.25">${c[2]}</div>
@@ -673,6 +710,9 @@ add({ ch: 3, eb: "리서치 · 함께 보기", sub: ["이제 여러분이 고른
     ask: "여러분이라면 어떤 주제를 조사시키고 싶나요?",
     note: "보고서는 끝나면 강의실 채팅창에 올라옵니다. 바로 이어서 이 보고서를 발표 슬라이드로 바꿉니다. 막히면 리허설 녹화본으로 보여 드립니다." }) });
 
+add({ ch: 3, live: "s1", ref: "오늘 실습 결과 · 공개 주소", sub: ["방금 여러분이 고른 주제로 만든 보고서를 공개 주소에 올렸습니다. QR을 찍거나 주소를 입력하면 내 화면에서 한 쪽씩 넘겨 볼 수 있습니다.","한글 파일은 PDF로 바꿔 올렸습니다. 숫자 옆의 출처를 눈여겨보세요."],
+  html: (s) => liveSlide(s, { st: "s1", what: "리서치 보고서", title: "오늘 만든 리서치 보고서 — 내 화면에서 열어 보세요" }) });
+
 add({ ch: 3, ref: "시나리오 S7", cut: CUT2, sub: ["방금 만든 보고서를 내일 센터장님께 보고해야 합니다. 화면에 띄워 말로 설명할 발표 자료가 필요합니다.", "표를 그래프로 옮기고 숫자를 다시 맞춰 보는 일이 가장 번거롭습니다. 이 일을 화면의 지시 그대로 맡깁니다. 집에서 내 문서로 따라 하셔도 됩니다."],
   html: (s) => sp(s, { title: "그 보고서를 발표 슬라이드로",
     sit: "방금 AI가 만든 한글 보고서를 내일 센터장님께 보고해야 합니다. 표를 그래프로 옮기고 숫자를 다시 맞춰 보는 일이 가장 번거롭습니다.",
@@ -707,6 +747,9 @@ add({ ch: 3, ref: "리허설 결과 · 2026. 11. 9.", sub: ["리허설 때 만�
       { l: "사람이 볼 것", t: "AI 초안입니다. 숫자의 <b>뜻</b>(남성 값을 여성이라 쓰기 같은 것)은 프로그램이 못 잡습니다", c: "var(--bad)" }])}
   </div>
   </div>` });
+
+add({ ch: 3, live: "s7", ref: "오늘 실습 결과 · 공개 주소", cut: CUT2, sub: ["방금 만든 발표 슬라이드도 공개 주소에 올렸습니다. 새 창으로 열면 왼쪽 오른쪽 화살표로 넘겨 볼 수 있습니다."],
+  html: (s) => liveSlide(s, { st: "s7", what: "발표 슬라이드", title: "오늘 만든 발표 슬라이드 — 내 화면에서 넘겨 보세요" }) });
 
 /* ── 공주 일자리 지도 공개 (S4) ── */
 add({ ch: 4, chap: true, dur: 4.5, sub: ["처음에 맡겨 둔 공주 일자리 지도, 이제 결과를 볼 차례입니다."], html: chCard("04", "S4 결과 공개", "공주 일자리 지도", ["투표 — 먼저 맞혀 보세요", "58분 → 6분", "지도와 숫자"]) });
@@ -758,6 +801,9 @@ add({ ch: 4, ref: "어제 처음 만든 지도 · 2026. 11. 9.", sub: ["어제 �
   </div>
   </div>` });
 
+add({ ch: 4, live: "s4", ref: "오늘 실습 결과 · 공개 주소", sub: ["오늘 AI 팀이 모은 공고로 만든 지도입니다. 내 화면에서 점을 누르면 원문 공고로 갑니다.","숫자는 오늘 모은 표본 안에서의 값입니다. 지원 전에는 원문 공고를 꼭 확인하세요."],
+  html: (s) => liveSlide(s, { st: "s4", what: "공주 일자리 지도", title: "오늘 만든 공주 일자리 지도 — 내 화면에서 눌러 보세요" }) });
+
 /* ── 일하는 엄마 지도 (S9) ── */
 add({ ch: 5, ref: "시나리오 S9", cut: CUT3, sub: ["일자리는 찾았는데, 아이는 어디에 맡기지? 재취업에서 가장 먼저 부딪히는 질문입니다.", "방금 만든 일자리 지도에 어린이집·유치원·지역아동센터·초등학교 공식 목록을 겹쳐 보겠습니다."],
   html: (s) => sp(s, { title: "일하는 엄마 지도 — 일자리에 돌봄을 겹칩니다",
@@ -791,6 +837,9 @@ add({ ch: 5, ref: "리허설 결과 · 2026. 11. 9.", cut: CUT3, sub: ["일자�
       { l: "꼭 덧붙일 말", fs: 18.5, c: "var(--bad)", t: "가깝다고 들어갈 수 있는 것은 아닙니다. 정원 · 대기는 전화로 확인하세요." }])}
   </div>
   </div>` });
+
+add({ ch: 5, live: "s9", ref: "오늘 실습 결과 · 공개 주소", cut: CUT3, sub: ["오늘 만든 일하는 엄마 지도입니다. 일자리 점을 누르면 1킬로미터 안의 어린이집과 유치원, 초등학교가 보입니다.","가깝다고 들어갈 수 있는 것은 아닙니다. 정원과 대기는 전화로 확인하세요."],
+  html: (s) => liveSlide(s, { st: "s9", what: "일하는 엄마 지도", title: "오늘 만든 일하는 엄마 지도 — 내 화면에서 눌러 보세요" }) });
 
 /* ── 쉬는 시간 ── */
 add({ ch: 6, chap: true, dur: 5, sub: ["5분 쉬겠습니다. 쉬는 동안 화면에는 AI 에이전트가 만든 센터 홍보 영상이 나옵니다."],
@@ -851,6 +900,9 @@ add({ ch: 7, ref: "리허설 결과 · 2026. 11. 9.", sub: ["리허설 때 만�
   </div>
   </div>` });
 
+add({ ch: 7, live: "s8", ref: "오늘 실습 결과 · 공개 주소", sub: ["여러분이 투표로 고른 공고로 만든 지원서 초안입니다. 가상 인물의 초안이니, 내 이야기로 고쳐 쓰는 연습에 쓰세요."],
+  html: (s) => liveSlide(s, { st: "s8", what: "맞춤 지원서", title: "오늘 만든 맞춤 지원서 — 내 화면에서 읽어 보세요" }) });
+
 /* ── 설문 · CEO 대시보드 (S2 · S2b · S3) — 늦으면 줄임 ① ── */
 add({ ch: 8, ref: "시나리오 S2 · S2b · S3", cut: CUT1, sub: ["교육이 끝나면 만족도 조사를 하고, 센터장님께는 1분 안에 읽을 한 장으로 보고해야 합니다.", "설문 설계, 응답 분석, 센터장 리포트를 세 번에 나눠 맡깁니다. 숫자는 집계 결과에 있는 값만 쓰게 했습니다."],
   html: (s) => sp(s, { title: "설문을 만들고, 분석하고, 한 장으로 보고합니다",
@@ -896,8 +948,8 @@ add({ ch: 8, ref: "리허설 결과 · 2026. 11. 8.", cut: CUT1, sub: ["센터�
     <div class="cap"><b class="cy">사업 대시보드</b> — 사업별 진행률 · 예산 집행률 72% · 월별 취업 연계(가상 자료)</div></div>
   </div>` });
 
-/* ── 여러분의 목소리 (S5) ── */
-add({ ch: 9, cr: { screen: { kind: "slide", kicker: "S5 · 여러분의 목소리", title: "AI에게 맡기고 싶은 일, 가장 번거로운 일을 한 줄로 적어 주세요", lines: ["일 · 구직 · 집안일 무엇이든 좋습니다", "가상 강의실 채팅창에 한 줄", "대화명은 빼고 글만 AI에게 넘깁니다"] } }, sub: ["오늘 마지막 실습은 여러분이 재료입니다. 채팅창에 한 줄씩 적어 주세요.", "AI에게 맡기고 싶은 일, 가장 번거로운 일입니다. 일, 구직, 집안일 무엇이든 좋습니다. 대화명은 빼고 글만 AI에게 넘깁니다."],
+/* ── 수강생 의견 분석 (S5) ── */
+add({ ch: 9, cr: { screen: { kind: "slide", kicker: "S5 · 수강생 의견 분석", title: "AI에게 맡기고 싶은 일, 가장 번거로운 일을 한 줄로 적어 주세요", lines: ["일 · 구직 · 집안일 무엇이든 좋습니다", "가상 강의실 채팅창에 한 줄", "대화명은 빼고 글만 AI에게 넘깁니다"] } }, sub: ["오늘 마지막 실습은 여러분이 재료입니다. 채팅창에 한 줄씩 적어 주세요.", "AI에게 맡기고 싶은 일, 가장 번거로운 일입니다. 일, 구직, 집안일 무엇이든 좋습니다. 대화명은 빼고 글만 AI에게 넘깁니다."],
   html: (s) => `<div class="slide">${hd(s, "채팅창에 한 줄 적어 주세요")}
   <div class="pn a-rise" ${d(.15)} style="left:60px;right:60px;top:126px;height:260px;padding:30px 36px;border-color:var(--warn);background:rgba(40,30,8,.55);box-shadow:0 0 30px rgba(244,183,64,.15)">
     <div class="lab" style="color:var(--warn);font-size:19px">여러분께 묻습니다</div>
@@ -926,19 +978,22 @@ add({ ch: 9, ref: "시나리오 S5", sub: ["채팅을 가져오면서 대화명�
       { t: "묶기 · 고르기", who: "ai", w: 1.3, d: "비슷한 의견 묶기 · 많이 나온 말 · 세 칸 나누기 · 첫 한 줄 쓰기" },
       { t: "세기 · 그리기", who: "prog", d: "묶음별 건수를 원문에서 직접 셈 → 그림 · 한 장 화면" },
       { t: "강의실로", who: "run", d: "결과 카드가 여러분 화면에" }],
-    outputs: ["<b class=\"gr\">여러분의 목소리 분석</b>(한 장 화면)", "세 칸 표 — 지금 바로 / 조금 배우면 / 아직 어려운 일", "따라 칠 첫 한 줄"] })}
+    outputs: ["<b class=\"gr\">수강생 의견 분석</b>(한 장 화면)", "세 칸 표 — 지금 바로 / 조금 배우면 / 아직 어려운 일", "따라 칠 첫 한 줄"] })}
   </div>` });
 
 add({ ch: 9, ref: "리허설 화면 · 예시 의견(가상) 25건", sub: ["리허설 때 만든 화면입니다. 그때는 채팅이 적어서 예시 의견 25건으로 만들었고, 화면에 예시라고 붙어 있습니다. 오늘은 여러분의 글로 만듭니다.", "세 칸 표의 '첫 한 줄'은 집에서 그대로 따라 쳐 보시면 됩니다."],
-  html: (s) => `<div class="slide">${hd(s, "결과 — 여러분의 목소리 분석")}
+  html: (s) => `<div class="slide">${hd(s, "결과 — 수강생 의견 분석")}
   <div class="a-rise" ${d(.2)} style="position:absolute;left:60px;top:116px;width:660px">
-    <div class="shot" style="background:#0a1424"><img src="assets/s5_voice.jpg" alt="여러분의 목소리 분석 화면: 분석한 의견 23건, 많이 나온 말, 비슷한 의견끼리 묶은 막대"></div></div>
+    <div class="shot" style="background:#0a1424"><img src="assets/s5_voice.jpg" alt="수강생 의견 분석 화면: 분석한 의견 23건, 많이 나온 말, 비슷한 의견끼리 묶은 막대"></div></div>
   <div style="position:absolute;left:750px;right:60px;top:118px;display:flex;flex-direction:column;gap:12px">
     ${side([{ l: "이 화면은", c: "var(--warn)", bg: "rgba(40,30,8,.55)", t: "리허설 때 <b class=\"warn\">예시 의견(가상) 25건</b>으로 만든 화면입니다. 오늘은 여러분의 글로 만듭니다." },
       { l: "걸린 시간", t: "약 <b class=\"cy\">1분</b> — 묶기와 추천은 AI, 건수는 프로그램" },
       { l: "집에서", t: "아래쪽 세 칸 표의 <b class=\"cy\">'첫 한 줄'</b>을 무료 AI 챗봇에 그대로 따라 쳐 보세요" }])}
   </div>
   </div>` });
+
+add({ ch: 9, live: "s5", ref: "오늘 실습 결과 · 공개 주소", sub: ["여러분이 채팅에 남긴 글을 정리한 결과입니다. 채팅 글 원문은 싣지 않고, 묶음과 건수, 세 칸 표만 공개합니다.","세 칸 표의 '첫 한 줄'은 집에서 그대로 따라 쳐 보세요."],
+  html: (s) => liveSlide(s, { st: "s5", what: "수강생 의견 분석", title: "오늘의 수강생 의견 분석 — 내 화면에서 보세요" }) });
 
 /* ── 마무리 ── */
 add({ ch: 10, sub: ["오늘 본 장면 가운데 AI가 틀린 곳이 네 군데 있었습니다. 일자리 지도, 엄마 지도, 발표 슬라이드, 지원서입니다.", "그래서 검사 담당을 따로 둡니다. 다른 AI든 프로그램이든, 그리고 마지막은 사람이 봅니다."],
@@ -1006,11 +1061,11 @@ add({ ch: 10, sub: ["오늘 강의 자료와 AI가 만든 결과물을 한 페�
       <span class="mono" style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--cy);color:#04121e;font-size:20px;font-weight:700">${r[0]}</span>
       <div><div style="font-size:24px;font-weight:900">${r[1]}</div><div style="font-size:19px;color:var(--mu);margin-top:4px">${r[2]}</div></div></div>`).join("")}
   <div class="pn a-rise" ${d(.6)} style="left:740px;right:60px;top:122px;height:330px;padding:18px 24px;border-color:rgba(95,224,160,.7)"><div class="lab" style="color:var(--gr)">받으시는 것</div>
-    <ul class="li" style="margin-top:12px;gap:9px">${["오늘 슬라이드", "공주 일자리 지도 · 일하는 엄마 지도", "리서치 보고서 · 발표 슬라이드", "맞춤 지원서 예시", "설문 분석 · 센터장 리포트", "여러분의 목소리 분석"].map((x) => `<li style="font-size:20px">${x}</li>`).join("")}</ul>
+    <ul class="li" style="margin-top:12px;gap:9px">${["오늘 슬라이드", "공주 일자리 지도 · 일하는 엄마 지도", "리서치 보고서 · 발표 슬라이드", "맞춤 지원서 예시", "설문 분석 · 센터장 리포트", "수강생 의견 분석"].map((x) => `<li style="font-size:20px">${x}</li>`).join("")}</ul>
     <div style="position:absolute;left:24px;right:24px;bottom:14px;font-size:16px;color:var(--mu2)">웹 페이지 한 장 · PC와 휴대폰 어디서나 열림</div></div>
   <div class="pn a-rise" ${d(.8)} style="left:740px;right:60px;top:466px;height:118px;padding:14px 24px;border-color:rgba(244,183,64,.7);background:rgba(40,30,8,.55)"><div class="lab" style="color:var(--warn)">개인정보 안내</div>
     <div style="font-size:20px;line-height:1.5;margin-top:6px">이메일 주소는 <b>자료 발송 목적에만</b> 쓰고, <b>발송 후 파기</b>합니다.</div></div>
-  <div class="note a-fade" ${d(1)} style="top:612px;font-size:19px"><span class="k">선택</span><span>남기지 않으셔도 괜찮습니다. 결과물은 강의실 채팅창에서도 볼 수 있습니다.</span></div>
+  <div class="note a-fade" ${d(1)} style="top:612px;font-size:19px"><span class="k">바로 보기</span><span>오늘 결과 모음 <b class="mono cy">burn001.github.io/gongju-ai-2026/${liveRel("")}</b> — 이메일을 남기지 않으셔도 여기서 볼 수 있습니다.</span></div>
   </div>` });
 
 add({ ch: 10, eb: "END", cr: { poll: "wish" }, sub: ["감사합니다. 궁금한 점을 받겠습니다. 채팅창에 질문으로 남긴 글을 공감 많은 순서로 보겠습니다."], html: () => `<div class="slide ch">
@@ -1024,7 +1079,7 @@ add({ ch: 10, eb: "END", cr: { poll: "wish" }, sub: ["감사합니다. 궁금한
   </div>` });
 
 /* ════════════ 발표자 시간표(T 키) ════════════ */
-const TT = [["0:00", "입장(주소창 · QR, 채팅 인사)", 10, 0], ["0:10", "강사 소개, ALRIS(개발 세션 리플레이)", 10, 1], ["0:20", "설문 \"AI를 어디에 써 보셨나요?\" → 챗봇 vs 에이전트 → 팀으로 일하는 AI(실시간 화면) + <b>S4 출발</b>", 12, 2], ["0:32", "S1 리서치 → S7 발표 슬라이드 <b>②</b>", 15, 3, 1], ["0:47", "S4 분석 · 지도 공개(투표: 가장 많은 일자리? 몇 %?)", 12, 4], ["0:59", "S9 일하는 엄마 지도 <b>③</b>", 7, 5, 1], ["1:06", "쉬는 시간(S6 홍보영상 틀어 두기)", 5, 6], ["1:11", "S8 공고 투표 → 맞춤 지원서", 10, 7], ["1:21", "S2 · S3 설문 · CEO 대시보드 <b>①</b>", 12, 8, 1], ["1:33", "S5 여러분의 목소리(채팅 → 분석)", 10, 9], ["1:43", "마무리 레슨, 자료 받기(이메일), 질문", 15, 10]];
+const TT = [["0:00", "입장(주소창 · QR, 채팅 인사)", 10, 0], ["0:10", "강사 소개, ALRIS(개발 세션 리플레이)", 10, 1], ["0:20", "설문 \"AI를 어디에 써 보셨나요?\" → 챗봇 vs 에이전트 → 팀으로 일하는 AI(실시간 화면) + <b>S4 출발</b>", 12, 2], ["0:32", "S1 리서치 → S7 발표 슬라이드 <b>②</b>", 15, 3, 1], ["0:47", "S4 분석 · 지도 공개(투표: 가장 많은 일자리? 몇 %?)", 12, 4], ["0:59", "S9 일하는 엄마 지도 <b>③</b>", 7, 5, 1], ["1:06", "쉬는 시간(S6 홍보영상 틀어 두기)", 5, 6], ["1:11", "S8 공고 투표 → 맞춤 지원서", 10, 7], ["1:21", "S2 · S3 설문 · CEO 대시보드 <b>①</b>", 12, 8, 1], ["1:33", "S5 수강생 의견 분석(채팅 → 분석)", 10, 9], ["1:43", "마무리 레슨, 자료 받기(이메일), 질문", 15, 10]];
 function buildTT() {
   const st = CH.map((_, c) => S.findIndex((x) => x.ch === c)), n = CH.map((_, c) => S.filter((x) => x.ch === c).length);
   return `<div style="position:absolute;left:44px;top:26px;font-size:15px;font-weight:700;color:var(--cy);letter-spacing:.06em">발표자 전용 · T 닫기 · P 줄임 표시(⏱) 켜기/끄기 · G AI 팀 실시간 화면</div>
@@ -1342,7 +1397,7 @@ const CD_STEPS = [
   { step: "s7", label: "S7 발표 슬라이드", at: (s, t) => s.ref === "시나리오 S7" && /^방금 만든 보고서/.test(t) },
   { step: "s9", label: "S9 일하는 엄마 지도", at: (s, t) => s.ref === "시나리오 S9" && /^일자리는 찾았는데/.test(t) },
   { step: "s8", label: "S8 맞춤 지원서", poll: "s8-job", at: (s, t) => s.ref === "시나리오 S8" && /^이 지시 그대로/.test(t) },     // 공고 투표 바로 다음 장
-  { step: "s5", label: "S5 여러분의 목소리", at: (s, t) => s.ref === "시나리오 S5" && /^모인 글을/.test(t) } ];
+  { step: "s5", label: "S5 수강생 의견 분석", at: (s, t) => s.ref === "시나리오 S5" && /^모인 글을/.test(t) } ];
 const CD_AT = {};
 S.forEach((s, i) => { const t = (s.sub && s.sub[0]) || ""; const e = CD_STEPS.find((x) => x.at(s, t)); if (e) { CD_AT[i] = e; (e.slides = e.slides || []).push(i + 1); } });
 window.__cdMap = CD_STEPS.map((e) => ({ step: e.step, slides: e.slides || [] }));
@@ -1364,6 +1419,7 @@ function cdLoad() {
   return rnFetch("/conduct/state", { cache: "no-store" }).then((r) => { if (r.status === 404) throw new Error("nf"); return r.json(); }).then((j) => {
     const prev = cdLastCur; CD = j; cdSkew = (j.now || Date.now()) - Date.now(); cdFail = false;
     const c = j.current; cdLastCur = c ? c.id + ":" + c.status : null;
+    liveWatch(j.pub);
     if (prev && c && c.status === "done" && prev !== cdLastCur && psbTab !== "ses") psbBadge("완료"); // 채팅 탭에 있는 동안 단계가 끝남
     actPaint();
   }, () => { cdFail = true; actPaint(); });
@@ -1435,6 +1491,11 @@ function actBuild() {
     const b = actBtn("", () => { const v = stepView(e); if (v.dis) return; if (v.again && !confirm(e.label + "을(를) 이미 실행했습니다. 다시 실행할까요?")) return; cdRun(e); });
     actItems.push(() => { const v = stepView(e); b.textContent = v.txt; b.className = "ab " + (v.cls || ""); b.disabled = !!v.dis; return v.note || ""; });
   }
+  const pst = (e && PUB_IDS[e.step]) || (sc && sc.live) || null;   // 결과 공개(11.09. 밤) — 실행이 끝난 뒤에만 누를 수 있음
+  if (pst) {
+    const b = actBtn("", () => { const v = pubView(pst); if (v.dis) return; pubRun(pst, v.again); });
+    actItems.push(() => { const v = pubView(pst); b.textContent = v.txt; b.className = "ab " + (v.cls || ""); b.disabled = !!v.dis; b.title = liveUrl(pst); return v.note || ""; });
+  }
   if (c && c.poll) {
     const defs = [CR_POLLS[c.poll]].concat(c.next ? [CR_POLLS[c.next.poll]] : []);
     defs.forEach((def, k) => {
@@ -1463,6 +1524,46 @@ function actPaint() {
   pAct.querySelector(".an").textContent = notes.join(" · ");
   if (cdPick.classList.contains("on")) cdPickPaint();
   if (pAct.offsetHeight !== actH) { actH = pAct.offsetHeight; fit(); }
+}
+/* ── 결과 공개(11.09. 밤): [⬆ 결과 공개] → 러너 POST /conduct/publish {step, day} → 공개 레포 live/<MMDD>/<step>/ (GitHub Pages, 1～2분).
+   진행기 state 의 pub = {ready{step}, done{day{step:{url,at}}}, job{running, step, last, ok, reason}}. 자동 공개는 없음 ── */
+const PUB_IDS = { "s4-1": "s4", s1: "s1", s7: "s7", s9: "s9", s8: "s8", s5: "s5" };
+const PUB_NAME = { s4: "S4 일자리 지도", s1: "S1 리서치 보고서", s7: "S7 발표 슬라이드", s9: "S9 일하는 엄마 지도", s8: "S8 맞춤 지원서", s5: "S5 수강생 의견 분석" };
+let pubPosting = "";
+const liveSeen = {};
+function pubView(st) {
+  if (!CD) return { dis: true, txt: "⬆ 결과 공개" };
+  const P = CD.pub;
+  if (!P) return { dis: true, txt: "⬆ 결과 공개", note: "러너를 다시 켜야 결과 공개가 됩니다" };
+  const j = P.job, dn = P.done && P.done[LIVE_DAY] && P.done[LIVE_DAY][st];
+  if (pubPosting === st) return { dis: true, cls: "run", txt: "공개 요청 중…" };
+  if (j && j.running && j.step === st) return { dis: true, cls: "run", txt: "공개 중… " + cdFmt(cdNow() - j.startedAt) + (j.last && j.last.phase ? " · " + j.last.phase : "") };
+  if (j && j.running) return { dis: true, txt: "⬆ 결과 공개", note: "다른 결과(" + (PUB_NAME[j.step] || j.step) + ") 공개 중" };
+  if (j && j.step === st && j.day === LIVE_DAY && j.ok === false && (!dn || dn.at < (j.endedAt || 0))) return { txt: "⬆ 결과 공개 (다시)", note: "공개 실패: " + (j.reason || "까닭 모름"), again: !!dn };
+  if (dn) return { cls: "done", txt: "공개됨 ✓ " + liveRel(st), again: true, note: dn.pagesOk ? "" : "곧 열립니다(빌드 확인 전)" };
+  if (!P.ready || !P.ready[st]) return { dis: true, txt: "⬆ 결과 공개", note: "실행이 끝나면 공개할 수 있습니다" };
+  return { txt: "⬆ 결과 공개" };
+}
+async function pubRun(st, again) {
+  if (!CD || pubPosting) return;
+  if (!confirm((again ? "이미 공개했습니다. 지금 결과로 다시 올릴까요?\n\n" : "") + (PUB_NAME[st] || st) + " 결과를 공개 주소에 올릴까요?\n" + liveUrl(st) + "\n\n(누구나 볼 수 있는 주소입니다. 연락처 · 경로 · 채팅 원문은 빼고 올리며, 걸리면 공개하지 않습니다)")) return;
+  pubPosting = st; actPaint();
+  try {
+    const r = await cdPost("/conduct/publish", { step: st, day: LIVE_DAY });
+    cdNote(r.ok ? "결과 공개 시작 · 1～2분" : r.status === 404 ? "러너를 다시 켜야 결과 공개가 됩니다" : (r.j.message || r.j.error || "실패 " + r.status));
+  } catch (err) { cdNote("러너에 연결하지 못했습니다"); }
+  pubPosting = ""; await cdLoad();
+}
+function liveReload(st) {
+  document.querySelectorAll('.lvf[data-live="' + st + '"]').forEach((f) => { f.src = liveUrl(st) + "?v=" + Date.now(); });
+}
+function liveWatch(p) {
+  const m = (p && p.done && p.done[LIVE_DAY]) || {};
+  Object.keys(m).forEach((st) => {
+    const k = String(m[st].at);
+    if (liveSeen[st] && liveSeen[st] !== k) { liveReload(st); setTimeout(() => liveReload(st), 20000); }   // 공개 직후 + 20초 뒤 한 번 더(Pages 캐시)
+    liveSeen[st] = k;
+  });
 }
 /* 단계 고르기(Shift+N 또는 [단계 ▾]) — 고르면 확인 창, 확인을 눌러야 그 단계를 보냄 */
 const cdPick = pAct ? pAct.querySelector("#cdPick") : { classList: { contains: () => false } };
