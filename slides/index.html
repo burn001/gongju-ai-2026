@@ -400,11 +400,11 @@ add({ ch: 0, sub: ["먼저 가상 강의실에 들어와 주세요. 인터넷 �
     <div style="margin:10px auto 0;width:172px;height:172px;background:#fff;border-radius:8px;padding:8px"><img src="assets/qr_room.png" alt="가상 강의실 주소 QR 코드" style="width:100%;height:100%;image-rendering:pixelated"></div>
   </div>
   <div style="position:absolute;left:60px;right:60px;top:398px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
-    ${[["주소창에 입력", "위 주소 그대로 · Enter"], ["바로 입장", "대화명은 자동으로 붙습니다 (예: '부지런한 초록 다람쥐')"], ["화면 구성", "왼쪽 슬라이드 · 오른쪽 위 AI 작업 화면 · 오른쪽 아래 채팅"], ["설문은 카드로", "투표 · 설문이 화면에 카드로 뜹니다"]].map((r, i) => `<div class="pn rel a-rise" ${d(.5 + i * .12)} style="padding:18px 20px;height:160px">
+    ${[["주소창에 입력", "위 주소 그대로 · Enter"], ["바로 입장", "대화명은 자동으로 붙습니다 (예: '부지런한 초록 다람쥐')"], ["화면 구성", "왼쪽 슬라이드 · 오른쪽 위 AI 작업 화면 · 오른쪽 아래 채팅"], ["설문은 카드로", "투표 · 설문이 화면에 카드로 뜹니다"]].map((r, i) => `<div class="pn rel a-rise" ${d(.5 + i * .12)} style="padding:18px 20px;height:186px">
       <span class="mono" style="display:inline-flex;width:42px;height:42px;border-radius:50%;align-items:center;justify-content:center;background:var(--cy);color:#04121e;font-size:21px;font-weight:700">${i + 1}</span>
       <div style="font-size:24px;font-weight:900;margin-top:12px">${r[0]}</div><div style="font-size:19px;color:var(--mu);margin-top:4px">${r[1]}</div></div>`).join("")}
   </div>
-  <div class="note a-fade" ${d(1.1)} style="top:590px;font-size:20px"><span class="k">강의실에서</span><span>슬라이드는 강사를 따라 넘어가고, 오른쪽 위 <b class="cy">'AI 작업 화면'</b>에서 에이전트가 일하는 모습을 보며, 채팅에 글을 남기고, 끝나고 위쪽 <b class="cy">'📩 자료 받기'</b> 아이콘까지 여기서 합니다.</span></div>
+  <div class="note a-fade" ${d(1.1)} style="top:606px;font-size:20px"><span class="k">강의실에서</span><span>슬라이드는 강사를 따라 넘어가고, 오른쪽 위 <b class="cy">'AI 작업 화면'</b>에서 에이전트가 일하는 모습을 보며, 채팅에 글을 남기고, 끝나고 위쪽 <b class="cy">'📩 자료 받기'</b> 아이콘까지 여기서 합니다.</span></div>
   </div>` });
 
 /* ── 강사 소개 · ALRIS ── */
