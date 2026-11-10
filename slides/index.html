@@ -259,6 +259,13 @@ body.sb .page { padding-right: calc(max(30vw, 320px) + 12px); }
 #psb .pc .po.mine span { color: #f4b740; font-weight: 800; }
 #psb .pc .po.mine span::before { content: "✓ "; }
 #psb .pc .ph { margin-top: 4px; font-size: .78em; color: var(--mu); }
+#psb .pc.svc { border-color: #8a6a1f; background: #1d1708; }
+#psb .pc.rsc { max-height: 32%; overflow: auto; }
+#psb .pc .rr { margin: 4px 0 6px; padding-top: 4px; border-top: 1px solid #1d3350; }
+#psb .pc .rr:first-of-type { border-top: 0; }
+#psb .pc .rr b { display: block; color: #e6eef8; }
+#psb .pc .rr p { margin: 2px 0; color: var(--mu); font-size: .9em; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+#psb .pc .rr a { color: var(--cy); margin-right: 8px; font-weight: 700; }
 #psb .cl { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 6px 10px; display: flex; flex-direction: column; gap: 5px; }
 #psb .cm { font-size: 13px; line-height: 1.4; padding: 4px 6px; border-radius: 6px; position: relative; }
 #psb .cm:hover { background: #0f1c2e; }
@@ -2034,7 +2041,7 @@ function psbBuild() {
   PSB.innerHTML = '<div class="tabs"><button type="button" class="tab" data-t="ses">세션<span class="bd"></span></button><button type="button" class="tab" data-t="chat">채팅<span class="olc" title="지금 강의실(/room/)에 접속한 수강생 수 — 실시간"></span><span class="bd"></span></button><button type="button" class="x" title="사이드바 닫기 (` 또는 S)">✕</button></div>'
     + '<div class="pane" data-p="ses"><iframe title="AI 작업 화면" referrerpolicy="no-referrer"></iframe>'
     + '<div class="say"><textarea rows="3" maxlength="2000" placeholder="세션에 직접 지시 — [보내기] 또는 Ctrl+Enter (Enter는 줄바꿈)"></textarea><button type="button" class="go">보내기</button></div><div class="msg sm"></div></div>'
-    + '<div class="pane" data-p="chat"><details class="adh"><summary>즉석 투표</summary><div class="ab"><input type="text" class="aq" maxlength="80" placeholder="질문 한 줄"><textarea class="ao" rows="4" placeholder="보기 2～4줄 — 한 줄에 하나(24자 이내)"></textarea><div class="br"><button type="button" class="go aop">▶ 투표 열기</button><button type="button" class="go acl">■ 마감</button><button type="button" class="go abg">결과 크게 보기</button></div><div class="msg am"></div></div></details><div class="pc" hidden></div><div class="cl" aria-live="polite"></div>'
+    + '<div class="pane" data-p="chat"><details class="adh"><summary>즉석 투표</summary><div class="ab"><input type="text" class="aq" maxlength="80" placeholder="질문 한 줄"><textarea class="ao" rows="4" placeholder="보기 2～4줄 — 한 줄에 하나(24자 이내)"></textarea><div class="br"><button type="button" class="go aop">▶ 투표 열기</button><button type="button" class="go acl">■ 마감</button><button type="button" class="go abg">결과 크게 보기</button></div><div class="msg am"></div></div></details><div class="pc" hidden></div><div class="pc svc" hidden></div><div class="pc rsc" hidden></div><div class="cl" aria-live="polite"></div>'
     + '<div class="say"><input type="text" maxlength="200" placeholder="강사로 채팅 쓰기(200자) — Enter 보내기"><button type="button" class="go">보내기</button></div><div class="msg cmg"></div></div>';
   document.body.appendChild(PSB);
   PSB.querySelector(".x").onclick = () => psbToggle(false);
@@ -2112,6 +2119,34 @@ function psbPollPaint() {   // 채팅 탭 위: 지금 투표 결과 카드
   });
   if (!p.closed) { const h = document.createElement("div"); h.className = "ph"; h.textContent = psbMyVote(p.id) === null ? "보기를 누르면 강사도 투표합니다" : "강사 투표함 · 다른 보기를 누르면 바꿉니다"; pc.appendChild(h); }
 }
+/* 11.10. 강의 중: 채팅 탭에 설문 상태 · 에이전트 결과 카드(수강생 /room/ 과 같은 /api/state) */
+var psbStT = null;
+function psbStateLoad() {
+  if (!psbBuilt || !crOK) return;
+  crApi("/state").then(psbStatePaint, () => {});
+}
+function psbStatePaint(j) {
+  const sv = PSB.querySelector(".svc"), rs = PSB.querySelector(".rsc"); if (!sv || !rs) return;
+  const v = j && j.survey;
+  if (v) { sv.hidden = false; sv.textContent = "";
+    const q = document.createElement("div"); q.className = "pq"; q.textContent = "📝 설문 열림 · " + (v.title || "");
+    const sm = document.createElement("small"); sm.textContent = "응답 " + (j.surveyCount || 0) + "건 · " + ((v.questions || []).length) + "문항"; q.appendChild(sm); sv.appendChild(q);
+    (v.questions || []).forEach((x, i) => { const d = document.createElement("div"); d.className = "ph"; d.textContent = (i + 1) + ". " + (x.label || x.q || ""); sv.appendChild(d); });
+  } else sv.hidden = true;
+  const list = (j && j.results) || [];
+  if (!list.length) { rs.hidden = true; return; }
+  rs.hidden = false; rs.textContent = "";
+  const h = document.createElement("div"); h.className = "pq"; h.textContent = "에이전트가 만든 결과"; rs.appendChild(h);
+  list.slice(0, 6).forEach((r) => {
+    const d = document.createElement("div"); d.className = "rr";
+    const b = document.createElement("b"); b.textContent = (r.title || "") + "  " + (r.ts ? psbTime(r.ts) : ""); d.appendChild(b);
+    if (r.summary) { const pp = document.createElement("p"); pp.textContent = r.summary; d.appendChild(pp); }
+    (r.links || []).forEach((l) => { const a = document.createElement("a"); a.textContent = l.label + " ↗"; a.target = "_blank"; a.rel = "noopener";
+      a.href = /^https?:/.test(l.url) ? l.url : CR_API.replace(/\/api$/, "") + (l.url[0] === "/" ? "" : "/") + l.url; d.appendChild(a); });
+    rs.appendChild(d);
+  });
+}
+if (CD_ON) setInterval(() => { if (!document.hidden && document.body.classList.contains("sb")) psbStateLoad(); }, 4000);
 function psbMyVote(id) { try { const v = localStorage.getItem("gongjuDeck.vote." + id); return v === null ? null : Number(v); } catch (e) { return null; } }
 /* ── 즉석 투표(11.10.): 강사가 아무 장에서나 질문 + 보기 2～4줄 → 강의실 투표(id adhoc-<시각>). 다른 투표가 열려 있으면 pollOpen 이 먼저 마감 ── */
 function adhBind() {
@@ -2189,7 +2224,7 @@ function psbConnect() {
       if (m.type === "chat") psbAdd(m.msg);
       else if (m.type === "presence") psbOnline(m.online);   // 11.10. 입장 수(실시간 허브 방송 — 새 폴링 없음)
       else if (m.type === "hide") psbHide(m.id);
-      else if (m.type === "ver") { clearTimeout(psbVerT); psbVerT = setTimeout(refreshPoll, 400); }   // 투표 수가 바뀜
+      else if (m.type === "ver") { clearTimeout(psbVerT); psbVerT = setTimeout(() => { refreshPoll(); psbStateLoad(); }, 400); }   // 투표 수가 바뀜
       else if (m.type === "reset") { psbMsgs.forEach((el) => el.remove()); psbMsgs.clear(); psbLast = 0; psbChatLoad(true); refreshPoll(); }
     };
     ws.onclose = () => { clearInterval(ping); psbOnline(null); if (psbWS === ws) { psbWS = null; setTimeout(psbConnect, 4000); } };
