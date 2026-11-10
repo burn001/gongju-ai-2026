@@ -2038,9 +2038,10 @@ const psbCid = (() => { let c = lsGet("gongjuDeck.cid"); if (!c) { c = "deck-" +
 function psbBuild() {
   if (psbBuilt || !PSB) return; psbBuilt = true;
   PSB.id = "psb"; PSB.setAttribute("aria-label", "발표자 사이드바");
-  PSB.innerHTML = '<div class="tabs"><button type="button" class="tab" data-t="ses">세션<span class="bd"></span></button><button type="button" class="tab" data-t="chat">채팅<span class="olc" title="지금 강의실(/room/)에 접속한 수강생 수 — 실시간"></span><span class="bd"></span></button><button type="button" class="x" title="사이드바 닫기 (` 또는 S)">✕</button></div>'
+  PSB.innerHTML = '<div class="tabs"><button type="button" class="tab" data-t="ses">세션<span class="bd"></span></button><button type="button" class="tab" data-t="chat">채팅<span class="olc" title="지금 강의실(/room/)에 접속한 수강생 수 — 실시간"></span><span class="bd"></span></button><button type="button" class="tab" data-t="room" title="수강생이 보는 /room/ 화면 그대로">수강생 화면</button><button type="button" class="x" title="사이드바 닫기 (` 또는 S)">✕</button></div>'
     + '<div class="pane" data-p="ses"><iframe title="AI 작업 화면" referrerpolicy="no-referrer"></iframe>'
     + '<div class="say"><textarea rows="3" maxlength="2000" placeholder="세션에 직접 지시 — [보내기] 또는 Ctrl+Enter (Enter는 줄바꿈)"></textarea><button type="button" class="go">보내기</button></div><div class="msg sm"></div></div>'
+    + '<div class="pane" data-p="room"><iframe class="rmf" title="수강생 화면" referrerpolicy="no-referrer" style="flex:1 1 auto;width:100%;border:0;background:#081222"></iframe></div>'
     + '<div class="pane" data-p="chat"><details class="adh"><summary>즉석 투표</summary><div class="ab"><input type="text" class="aq" maxlength="80" placeholder="질문 한 줄"><textarea class="ao" rows="4" placeholder="보기 2～4줄 — 한 줄에 하나(24자 이내)"></textarea><div class="br"><button type="button" class="go aop">▶ 투표 열기</button><button type="button" class="go acl">■ 마감</button><button type="button" class="go abg">결과 크게 보기</button></div><div class="msg am"></div></div></details><div class="pc" hidden></div><div class="pc svc" hidden></div><div class="pc rsc" hidden></div><div class="cl" aria-live="polite"></div>'
     + '<div class="say"><input type="text" maxlength="200" placeholder="강사로 채팅 쓰기(200자) — Enter 보내기"><button type="button" class="go">보내기</button></div><div class="msg cmg"></div></div>';
   document.body.appendChild(PSB);
@@ -2075,7 +2076,8 @@ function psbBuild() {
   psbSetTab(psbTab, true); psbPollPaint(); psbChatLoad(true); psbConnect();
 }
 function psbSetTab(t, quiet) {
-  psbTab = t === "chat" ? "chat" : "ses"; lsSet("gongjuDeck.sbTab", psbTab);
+  psbTab = t === "chat" || t === "room" ? t : "ses";
+  if (psbTab === "room" && psbBuilt) { const f = PSB.querySelector(".rmf"); if (f && !f.src) f.src = "https://ai-agent-gongju.pages.dev/room/"; } lsSet("gongjuDeck.sbTab", psbTab);
   if (!psbBuilt) return;
   PSB.querySelectorAll(".tab").forEach((x) => x.classList.toggle("on", x.dataset.t === psbTab));
   PSB.querySelectorAll(".pane").forEach((x) => x.classList.toggle("on", x.dataset.p === psbTab));
