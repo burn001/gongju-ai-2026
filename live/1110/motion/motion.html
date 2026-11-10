@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>경력을 잇다, 다시 시작</title>
+<style>
+/* 글꼴: 나눔스퀘어라운드(NAVER, SIL OFL 1.1) — 이 PC에 깔려 있으면 그것, 없으면 공개 레포 사본(woff, GitHub Pages는 CORS 허용) */
+@font-face{font-family:NSR;font-weight:800;font-display:swap;src:local("NanumSquareRound ExtraBold"),local("NanumSquareRoundEB"),url("https://burn001.github.io/gongju-ai-2026/assets/fonts/NanumSquareRoundEB.woff") format("woff");}
+@font-face{font-family:NSR;font-weight:700;font-display:swap;src:local("NanumSquareRound Bold"),local("NanumSquareRoundB"),url("https://burn001.github.io/gongju-ai-2026/assets/fonts/NanumSquareRoundB.woff") format("woff");}
+@font-face{font-family:NSR;font-weight:400;font-display:swap;src:local("NanumSquareRound Regular"),local("NanumSquareRoundR"),url("https://burn001.github.io/gongju-ai-2026/assets/fonts/NanumSquareRoundR.woff") format("woff");}
+:root{--bg1:#FFFBF6;--bg2:#FFF6EC;--bg3:#FCE9DA;--ink:#3B2A48;--ink2:#6A5578;--c1:#EF6A55;--c2:#2A9D8F;--c3:#F2B33D;--b1:#FFD3BE;--b2:#CDEDE6;--b3:#FFE6A8}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:#111;overflow:hidden}
+body{font-family:NSR,"Noto Sans KR","Malgun Gothic",sans-serif;color:var(--ink);word-break:keep-all}
+#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden;transform-origin:0 0;
+  background:radial-gradient(1400px 900px at 20% 10%,var(--bg1) 0%,var(--bg2) 55%,var(--bg3) 100%)}
+.blob{position:absolute;border-radius:50%;opacity:.55}
+.scene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;text-align:center;padding:0 90px}
+.a{display:inline-block;opacity:0}
+.split .ch{display:inline-block;opacity:0;white-space:pre}
+svg .draw{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.hl{color:var(--c1)}
+/* 공감 질문 */
+.q1{font-weight:700;color:var(--ink2);letter-spacing:-1px}
+.q2{font-weight:800;margin-top:14px;letter-spacing:-2px;line-height:1.15}
+.chips{display:flex;gap:22px;margin-top:50px;align-items:center;flex-wrap:wrap;justify-content:center}
+.chip{font-size:44px;font-weight:700;padding:16px 34px;border-radius:999px;background:#fff;color:var(--ink2);box-shadow:0 8px 24px rgba(60,40,30,.10)}
+.tail{font-size:44px;font-weight:700;color:var(--ink2);margin-left:14px}
+/* 센터 소개 */
+.eyebrow{font-size:50px;font-weight:700;color:var(--c1)}
+.name{font-weight:800;letter-spacing:-3px;margin-top:20px}
+.desc{font-weight:700}
+.pill{margin-top:44px;font-size:42px;font-weight:700;padding:14px 40px;border-radius:999px;border:4px solid var(--c2);color:var(--c2);background:#fff}
+/* 카드 */
+.h{font-size:84px;font-weight:800;letter-spacing:-1px}
+.cards{display:flex;gap:30px;margin-top:60px;justify-content:center}
+.card{height:410px;border-radius:36px;background:#fff;box-shadow:0 18px 40px rgba(60,40,30,.12);display:flex !important;flex-direction:column;align-items:center;padding:46px 20px 0}
+.card .t{font-size:42px;font-weight:800;margin-top:30px;line-height:1.2}
+.card .s{font-size:30px;font-weight:700;color:var(--ink2);margin-top:16px;line-height:1.3}
+.more{margin-top:54px;font-size:46px;font-weight:700;color:var(--ink2)}
+/* 사실 하나 */
+.fsmall{font-size:52px;font-weight:700;color:var(--ink2);margin-top:26px}
+.fbig{font-weight:800;color:var(--c1);letter-spacing:-2px;margin-top:6px}
+.fbottom{font-size:52px;font-weight:700;margin-top:24px}
+/* 수강생 한마디 */
+.bubbles{position:relative;width:100%;height:470px;margin-top:40px}
+.bubble{position:absolute;translate:-50% 0;white-space:nowrap;background:#fff;border-radius:48px;padding:30px 50px;font-weight:800;line-height:1.3;
+  box-shadow:0 18px 40px rgba(60,40,30,.12);border:5px solid var(--c1)}
+.bubble.alt{border-color:var(--c2)}
+/* 찾아오는 길 */
+.loc{display:flex;gap:70px;align-items:center;margin-top:60px;text-align:left}
+.locr{width:1050px}
+.l1{font-size:70px;font-weight:800;display:block}
+.l2{font-size:46px;font-weight:700;color:var(--ink2);margin-top:14px;display:block}
+.phone{display:flex !important;align-items:center;gap:26px;margin-top:50px}
+.num{font-size:96px;font-weight:800;color:var(--c1);letter-spacing:-1px}
+.rep{font-size:42px;font-weight:700;color:var(--ink2);margin-top:18px;display:block}
+/* 마무리 */
+.c1{font-weight:700;color:var(--ink2)}
+.c2{font-weight:800;margin-top:24px;letter-spacing:-2px}
+.c3{margin-top:56px;font-size:54px;font-weight:800;color:#fff;background:var(--c1);border-radius:999px;padding:20px 56px;box-shadow:0 16px 36px rgba(0,0,0,.18)}
+.c4{margin-top:30px;font-size:44px;font-weight:700;color:var(--ink2)}
+.glow{position:absolute;left:50%;bottom:-300px;width:700px;height:700px;margin-left:-350px;border-radius:50%;
+  background:radial-gradient(circle,var(--b3) 0%,var(--b1) 45%,rgba(255,255,255,0) 70%)}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="blob" id="b1" style="width:760px;height:760px;background:radial-gradient(circle,var(--b1) 0%,rgba(255,255,255,0) 70%)"></div>
+  <div class="blob" id="b2" style="width:680px;height:680px;background:radial-gradient(circle,var(--b2) 0%,rgba(255,255,255,0) 70%)"></div>
+  <div class="blob" id="b3" style="width:560px;height:560px;background:radial-gradient(circle,var(--b3) 0%,rgba(255,255,255,0) 70%)"></div>
+<section class="scene sc-question" data-s="0.00" data-e="4.70"><div class="q1 split" data-in="0.30" data-st="0.05" style="font-size:92px">경력은 멈춰도,</div><div class="q2 split" data-in="1.10" data-st="0.05" style="font-size:108px"><span class="hl">다시 시작</span>해도 괜찮을까요?</div><svg width="1300" height="70" viewBox="0 0 1300 70" style="margin-top:14px"><path class="draw" data-in="1.90" data-dur="1.2" pathLength="1" d="M20 46 C 250 6, 420 66, 650 34 S 1050 10, 1270 40" stroke="var(--c1)" stroke-width="8"/></svg><div class="chips"><div class="chip a" data-in="2.20" data-fx="pop">결혼</div><div class="chip a" data-in="2.34" data-fx="pop">출산</div><div class="chip a" data-in="2.48" data-fx="pop">육아</div><div class="tail a" data-in="2.72" data-fx="left">으로 쉬었던 시간</div></div></section>
+<section class="scene sc-quote" data-s="4.30" data-e="9.70"><div class="eyebrow a" data-in="4.95" data-fx="up">오늘 수강생이 남긴 말</div><div class="bubbles"><div class="bubble a" data-in="5.45" data-fx="pop" style="left:calc(50% + -300px);top:0px;font-size:50px">“경력이 있다, 경력을 잇다”</div><div class="bubble alt a" data-in="6.05" data-fx="pop" style="left:calc(50% + 260px);top:160px;font-size:58px">“다시 시작!”</div><div class="bubble a" data-in="6.65" data-fx="pop" style="left:calc(50% + -140px);top:320px;font-size:58px">“포근한 분위기”</div></div></section>
+<section class="scene sc-title" data-s="9.30" data-e="13.70"><div class="eyebrow a" data-in="10.05" data-fx="up">그 시작을 함께하는 곳</div><div class="name split" data-in="10.45" data-st="0.05" style="font-size:132px">공주여성새로일하기센터</div><svg width="900" height="30" viewBox="0 0 900 30" style="margin:26px 0 30px"><path class="draw" data-in="11.25" data-dur="0.8" pathLength="1" d="M10 15 H890" stroke="var(--c1)" stroke-width="14"/></svg><div class="desc a" data-in="11.65" data-fx="up" style="font-size:58px">경력 끊긴 여성의 재취업 지원기관</div><div class="pill a" data-in="12.25" data-fx="pop">국립공주대학교 운영</div></section>
+<section class="scene sc-cards" data-s="13.30" data-e="18.70"><div class="h a" data-in="13.95" data-fx="up">상담부터 <span class="hl">취업 후까지</span></div><div class="cards"><div class="card a" data-in="14.45" data-fx="up" style="width:340px"><svg viewBox="0 0 136 136" width="136" height="136"><path class="draw" data-in="14.65" data-dur="0.8" pathLength="1" d="M18 30 h70 a12 12 0 0 1 12 12 v34 a12 12 0 0 1 -12 12 h-40 l-18 16 v-16 h-12 a12 12 0 0 1 -12 -12 v-34 a12 12 0 0 1 12 -12z" stroke="var(--c1)" stroke-width="7"/><path class="draw" data-in="14.80" data-dur="0.8" pathLength="1" d="M108 54 h6 a10 10 0 0 1 10 10 v28 a10 10 0 0 1 -10 10 h-8 v14 l-16 -14 h-26" stroke="var(--c2)" stroke-width="7"/></svg><div class="t">취업상담·알선</div><div class="s">1:1 맞춤 상담</div></div><div class="card a" data-in="14.70" data-fx="up" style="width:340px"><svg viewBox="0 0 136 136" width="136" height="136"><path class="draw" data-in="14.90" data-dur="0.8" pathLength="1" d="M68 30 L124 54 L68 78 L12 54 Z" stroke="var(--c1)" stroke-width="7"/><path class="draw" data-in="15.05" data-dur="0.8" pathLength="1" d="M34 66 v26 c0 14 68 14 68 0 v-26" stroke="var(--c1)" stroke-width="7"/><path class="draw" data-in="15.20" data-dur="0.8" pathLength="1" d="M118 58 v34" stroke="var(--c2)" stroke-width="7"/></svg><div class="t">직업교육훈련</div><div class="s">국비 지원 교육</div></div><div class="card a" data-in="14.95" data-fx="up" style="width:340px"><svg viewBox="0 0 136 136" width="136" height="136"><path class="draw" data-in="15.15" data-dur="0.8" pathLength="1" d="M28 44 h80 a14 14 0 0 1 14 14 v44 a14 14 0 0 1 -14 14 h-80 a14 14 0 0 1 -14 -14 v-44 a14 14 0 0 1 14 -14z" stroke="var(--c1)" stroke-width="7"/><path class="draw" data-in="15.30" data-dur="0.8" pathLength="1" d="M48 44 v-10 a8 8 0 0 1 8 -8 h24 a8 8 0 0 1 8 8 v10" stroke="var(--c1)" stroke-width="7"/><path class="draw" data-in="15.45" data-dur="0.8" pathLength="1" d="M14 74 h108" stroke="var(--c2)" stroke-width="7"/></svg><div class="t">새일여성인턴</div><div class="s">현장에서 쌓는 일 경험</div></div><div class="card a" data-in="15.20" data-fx="up" style="width:340px"><svg viewBox="0 0 136 136" width="136" height="136"><path class="draw" data-in="15.40" data-dur="0.8" pathLength="1" d="M68 118 C 30 92, 12 70, 12 48 a26 26 0 0 1 56 -12 a26 26 0 0 1 56 12 c0 22 -18 44 -56 70z" stroke="var(--c1)" stroke-width="7"/><path class="draw" data-in="15.55" data-dur="0.8" pathLength="1" d="M44 74 l16 -14 l12 10 l22 -22" stroke="var(--c2)" stroke-width="7"/><path class="draw" data-in="15.70" data-dur="0.8" pathLength="1" d="M80 48 h14 v14" stroke="var(--c2)" stroke-width="7"/></svg><div class="t">사후관리</div><div class="s">경력개발·멘토링</div></div></div></section>
+<section class="scene sc-fact" data-s="18.30" data-e="22.70"><div class=" a" data-in="18.95" data-fx="pop"><svg viewBox="0 0 136 136" width="230" height="230"><path class="draw" data-in="19.05" data-dur="0.8" pathLength="1" d="M34 56 a34 34 0 1 0 68 0 a34 34 0 1 0 -68 0" stroke="var(--c1)" stroke-width="7"/><path class="draw" data-in="19.20" data-dur="0.8" pathLength="1" d="M50 84 L38 122 L56 114 L64 126 L68 92" stroke="var(--c2)" stroke-width="7"/><path class="draw" data-in="19.35" data-dur="0.8" pathLength="1" d="M86 84 L98 122 L80 114 L72 126 L68 92" stroke="var(--c2)" stroke-width="7"/><path class="draw" data-in="19.50" data-dur="0.8" pathLength="1" d="M68 36 l6 12 l13 2 l-10 9 l3 13 l-12 -7 l-12 7 l3 -13 l-10 -9 l13 -2z" stroke="var(--c1)" stroke-width="7"/></svg></div><div class="fsmall a" data-in="19.65" data-fx="up">2024년 여성가족부 평가</div><div class="fbig split" data-in="20.05" data-st="0.07" style="font-size:140px">최우수 등급</div><div class="fbottom a" data-in="20.85" data-fx="up">AI도 배우는 새일센터</div><div class="chips"><div class="chip a" data-in="21.25" data-fx="pop">AI 문서작성 교육</div></div></section>
+<section class="scene sc-closing" data-s="22.30" data-e="32.00"><div class="glow a" data-in="22.85" data-fx="fade"></div><div class="c1 split" data-in="23.15" data-st="0.04" style="font-size:76px">첫걸음을 응원합니다.</div><div class="c2 a" data-in="24.25" data-fx="up" style="font-size:90px">멈춘 경력, <span class="hl">다시</span> 이어 갑니다</div><div class="c3 a" data-in="25.05" data-fx="pop">공주여성새로일하기센터</div><div class="c4 a" data-in="25.55" data-fx="up">041-850-6061～9 · 전국 대표번호 1544-1199</div></section>
+</div>
+<script>
+const DUR = 27.6;
+const FPS = 30;
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const prog=(t,a,d)=>clamp((t-a)/d);
+const eOut=p=>1-Math.pow(1-p,3);
+const eInOut=p=>p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;
+const eBack=p=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(p-1,3)+c1*Math.pow(p-1,2);};
+document.querySelectorAll('.split').forEach(el=>{
+  const walk=node=>{[...node.childNodes].forEach(n=>{
+    if(n.nodeType===3){const f=document.createDocumentFragment();[...n.textContent].forEach(c=>{const s=document.createElement('span');s.className='ch';s.textContent=c;f.appendChild(s);});n.replaceWith(f);}
+    else walk(n);});};
+  walk(el);
+});
+const scenes=[...document.querySelectorAll('.scene')].map(el=>({el,s:+el.dataset.s,e:+el.dataset.e}));
+const anims=[...document.querySelectorAll('.a')].map(el=>({el,in:+el.dataset.in,fx:el.dataset.fx||'up',svg:el instanceof SVGElement}));
+const draws=[...document.querySelectorAll('.draw')].map(el=>({el,in:+el.dataset.in,dur:+(el.dataset.dur||1)}));
+const splits=[...document.querySelectorAll('.split')].map(el=>({el,in:+el.dataset.in,st:+el.dataset.st,chs:[...el.querySelectorAll('.ch')]}));
+const $=id=>document.getElementById(id);
+function fx(el,p,kind,svg){
+  const e=eOut(p);let tr='';
+  if(kind==='up')tr=`translate(0px,${(1-e)*60}px)`;
+  else if(kind==='left')tr=`translate(${-(1-e)*90}px,0px)`;
+  else if(kind==='right')tr=`translate(${(1-e)*90}px,0px)`;
+  else if(kind==='pop')tr=`scale(${0.55+0.45*eBack(p)})`;
+  el.style.opacity=kind==='fade'?eOut(p):clamp(p*1.6);
+  if(svg){el.style.transformBox='fill-box';el.style.transformOrigin='center';}
+  el.style.transform=tr;
+}
+function render(t){
+  $('b1').style.transform=`translate(${-180+Math.sin(t*0.21)*120}px,${-200+Math.cos(t*0.17)*80}px)`;
+  $('b2').style.transform=`translate(${1380+Math.cos(t*0.19)*110}px,${560+Math.sin(t*0.23)*90}px)`;
+  $('b3').style.transform=`translate(${1300+Math.sin(t*0.15+1)*160}px,${-120+Math.cos(t*0.2)*70}px)`;
+  for(const sc of scenes){
+    const fin=sc.s<=0?1:eOut(prog(t,sc.s,0.5)),fout=1-eInOut(prog(t,sc.e-0.5,0.5));
+    const a=Math.min(fin,fout);
+    sc.el.style.opacity=a;sc.el.style.visibility=a<=0.001?'hidden':'visible';
+    sc.el.style.transform=`scale(${1-0.04*(1-fout)}) translateY(${-30*(1-fout)}px)`;
+  }
+  for(const o of anims)fx(o.el,prog(t,o.in,o.fx==='fade'?2.5:0.7),o.fx,o.svg);
+  for(const d of draws){const p=eInOut(prog(t,d.in,d.dur));d.el.style.strokeDasharray='1 1';d.el.style.strokeDashoffset=1-p;}
+  for(const s of splits){s.chs.forEach((c,i)=>{const p=prog(t,s.in+i*s.st,0.55),e=eOut(p);c.style.opacity=clamp(p*1.8);c.style.transform=`translate(0px,${(1-e)*50}px) rotate(${(1-e)*6}deg)`;});}
+}
+window.render=render;window.DUR=DUR;window.FPS=FPS;
+if(!location.search.includes('capture')){
+  // 그냥 열면: 창 크기에 맞춰 줄이고 반복 재생(끝에서 1.5초 쉼)
+  const fit=()=>{const k=Math.min(innerWidth/1920,innerHeight/1080);const st=$('stage');st.style.transform=`scale(${k})`;st.style.left=((innerWidth-1920*k)/2)+'px';st.style.top=((innerHeight-1080*k)/2)+'px';};
+  addEventListener('resize',fit);fit();
+  let t0=performance.now();
+  const loop=()=>{let t=(performance.now()-t0)/1000;if(t>DUR+1.5){t0=performance.now();t=0;}render(Math.min(t,DUR));requestAnimationFrame(loop);};
+  document.fonts.ready.then(loop);
+}else render(0);
+</script>
+</body>
+</html>
