@@ -93,10 +93,13 @@ footer .k{font-weight:700;color:var(--cy);margin-right:8px}
 <div class="box" style="margin-top:12px"><h3>보고서 실습용 도구(선택)</h3>
 <p>없어도 실습은 됩니다. 있으면 리서치 보고서의 통계와 한글 파일이 강의 때처럼 정확해집니다. 스킬·플러그인을 따로 설치할 필요는 없습니다.</p>
 <ul class="ul"><li><b>Node.js</b>(<a href="https://nodejs.org/" target="_blank" rel="noopener">nodejs.org</a>, LTS) — 설치만 해 두면 AI가 공개 도구 <b>kordoc</b>을 <code>npx</code>로 불러 hwpx를 만듭니다. 스킬·플러그인 설치는 필요 없습니다.</li>
-<li><b>KOSIS 통계 도구 korean-stats</b>(공개 오픈소스 <a href="https://github.com/chrisryugj/korean-stats-mcp" target="_blank" rel="noopener">chrisryugj/korean-stats-mcp</a>) — 인증키 없이 공개 서버를 한 번 등록하면 AI가 "공주시 여성 고용률"처럼 말로 KOSIS 통계를 통계표 ID와 함께 가져옵니다. 실습 폴더에서 한 줄 실행 후 AI를 다시 시작하세요.
-<span class="cmd">claude mcp add --transport http korean-stats https://mcp.gomdori.app/stats</span>
-<span class="cmd">codex mcp add korean-stats -- npx -y mcp-remote https://mcp.gomdori.app/stats</span>
-(위는 Claude Code, 아래는 Codex.) Claude Code에서는 <code>/mcp</code> 로 연결됐는지 볼 수 있습니다. 공개 서버가 멈췄을 때는 레포 안내(방법 3)대로 <a href="https://kosis.kr/openapi/" target="_blank" rel="noopener">KOSIS 인증키</a>를 받아 내 PC에 설치해 쓸 수 있습니다.</li></ul></div>
+<li><b>KOSIS 통계 도구 korean-stats</b>(공개 오픈소스 <a href="https://github.com/chrisryugj/korean-stats-mcp" target="_blank" rel="noopener">chrisryugj/korean-stats-mcp</a>) — 내 KOSIS 인증키로 내 PC에서 돌립니다. AI가 "공주시 여성 고용률"처럼 말로 KOSIS 통계를 통계표 ID와 함께 가져옵니다.
+<ol class="steps"><li><a href="https://kosis.kr/openapi/" target="_blank" rel="noopener">KOSIS 공유서비스(OpenAPI)</a>에서 회원가입 → 활용신청 → <b>인증키</b> 발급(무료).</li>
+<li>실습 폴더에서 아래 한 줄의 <code>내키</code>를 발급받은 키로 바꿔 실행하고, AI를 다시 시작합니다(Node.js 필요).</li></ol>
+<span class="cmd">claude mcp add korean-stats -e KOSIS_API_KEY=내키 -- cmd /c npx -y korean-stats-mcp</span>
+<span class="cmd">claude mcp add korean-stats -e KOSIS_API_KEY=내키 -- npx -y korean-stats-mcp</span>
+<span class="cmd">codex mcp add korean-stats --env KOSIS_API_KEY=내키 -- npx -y korean-stats-mcp</span>
+(차례로 Claude Code Windows · Claude Code Mac · Codex.) Claude Code에서는 <code>/mcp</code> 로 연결됐는지 볼 수 있습니다. 키는 내 PC 설정에만 저장되니 남에게 보여 주거나 인터넷에 올리지 마세요.</li></ul></div>
 
 <div class="box" style="margin-top:12px"><div class="lab2">실습할 때마다</div>
 <ol class="steps">
@@ -131,7 +134,7 @@ footer .k{font-weight:700;color:var(--cy);margin-right:8px}
 <div class="lh"><span class="no">1</span><span class="tag">보고서</span><h2>리서치 보고서</h2></div>
 <p class="what">궁금한 주제를 AI 팀이 나눠 조사해, 숫자마다 출처가 달린 개조식 보고서(한글 파일)로 만듭니다.</p>
 <div class="meta2"><span><b>폴더</b> <code>1_보고서</code></span><a class="btn" href="../s1/">오늘 결과 보기 →</a></div>
-<div class="box"><div class="lab2">준비물</div><ul class="ul"><li>알고 싶은 것 메모 4～6줄(오늘은 강의실 채팅으로 모았습니다 — 집에서는 아래 지시문 안의 예시 메모를 내 것으로 바꿔 쓰세요)</li><li>고르는 일은 사람이 합니다. ①에서 후보 3개가 나오면 마음에 드는 글자를 ②에 적어 넣으세요.</li><li>(선택) Node.js — 한글(hwpx) 파일을 깔끔하게 만드는 공개 도구 kordoc을 씁니다. 따로 설치할 것은 없고 AI가 npx로 불러옵니다.</li><li>(선택) KOSIS 통계 도구 korean-stats — 한 번 등록해 두면 통계를 공식 KOSIS에서 통계표 ID와 함께 가져옵니다. 등록 명령은 맨 위 &#x27;준비&#x27;에 있습니다(인증키 필요 없음).</li></ul></div>
+<div class="box"><div class="lab2">준비물</div><ul class="ul"><li>알고 싶은 것 메모 4～6줄(오늘은 강의실 채팅으로 모았습니다 — 집에서는 아래 지시문 안의 예시 메모를 내 것으로 바꿔 쓰세요)</li><li>고르는 일은 사람이 합니다. ①에서 후보 3개가 나오면 마음에 드는 글자를 ②에 적어 넣으세요.</li><li>(선택) Node.js — 한글(hwpx) 파일을 깔끔하게 만드는 공개 도구 kordoc을 씁니다. 따로 설치할 것은 없고 AI가 npx로 불러옵니다.</li><li>(선택) KOSIS 통계 도구 korean-stats — 한 번 등록해 두면 통계를 공식 KOSIS에서 통계표 ID와 함께 가져옵니다. 내 KOSIS 인증키로 등록하는 법은 맨 위 &#x27;준비&#x27;에 있습니다.</li></ul></div>
 <div class="lab2 mt">붙여 넣을 지시문 — 차례로 ①②③</div>
 <p class="hint">하나를 붙여 넣고 AI가 멈출 때까지 기다린 뒤, 결과를 보고 같은 창에 다음 것을 붙여 넣으세요.</p>
 <div class="pr"><div class="prh"><span class="pl">① 주제 정리 — 후보 3개 고르기</span><button type="button" class="cp" data-for="p1" aria-label="① 주제 정리 — 후보 3개 고르기 지시문 복사">복사</button></div><pre id="p1">아래는 제가 보고서로 알고 싶은 것들을 적은 메모입니다(예시 — 내 메모로 바꿔도 됩니다).
