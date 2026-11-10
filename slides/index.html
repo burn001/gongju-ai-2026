@@ -307,6 +307,13 @@ a.lk .hs { font-size: .62em; opacity: .75; }
 .slide.lvbig .lvurl .p { font-size: 40px; }
 .lvbox.on iframe { pointer-events: auto; }
 .lvbox.on { box-shadow: 0 0 0 3px var(--warn); }
+/* 11.10. CEO 대시보드 도입 — 실제 예시(오늘 자 CEO 브리핑) 미리보기: 1120×790 화면을 0.625배로 줄여 칸에 담고, 휠로 스크롤 */
+.exbox { position: absolute; left: 60px; top: 116px; width: 700px; height: 494px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #f2f4f6; box-shadow: 0 10px 30px rgba(0,0,0,.45); }
+.exbox .ph { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #6b7582; font-size: 20px; }
+.exbox iframe { position: absolute; left: 0; top: 0; width: 1120px; height: 790px; border: 0; transform: scale(.625); transform-origin: 0 0; background: transparent; }
+.slide.ex .lvside { left: 790px; }
+.slide.ex .lvqr { width: 210px; height: 210px; }
+.slide.ex .lvurl .p { font-size: 22px; white-space: normal; word-break: break-all; }
 </style>
 <style>
 /* 11.09. 밤 재구성: 실습 대시보드(허브) · 작업 장(설명 → 실행 화면 → 결과) · 동적 장(AI가 쓴 정리 화면) · 막힘 표시 */
@@ -449,6 +456,20 @@ const LIVE_SITE = "https://burn001.github.io/gongju-ai-2026/";
 const LIVE_DAY = (() => { const m = /[?&]day=(\d{4}|test)(?:&|$)/.exec(location.search); if (m) return m[1]; const k = new Date(Date.now() + 9 * 3600e3); return String(k.getUTCMonth() + 1).padStart(2, "0") + String(k.getUTCDate()).padStart(2, "0"); })();
 const liveRel = (st) => "live/" + LIVE_DAY + "/" + (st ? st + "/" : "");
 const liveUrl = (st) => LIVE_SITE + liveRel(st);
+/* 실제 예시(고정 공개 주소) — CEO 대시보드 도입 장 */
+const EX_CEO = LIVE_SITE + "examples/ceo-briefing-20261110/";
+/* 미리보기 iframe 안을 누른 뒤에도 ← → 장 넘김이 되게: 같은 출처면 키를 덱으로 넘기고, 칸을 벗어나면 덱에 초점을 돌림 */
+function exWire(root) {
+  root.querySelectorAll("iframe.exf").forEach((f) => {
+    const box = f.parentNode;
+    box.addEventListener("mouseleave", () => { if (document.activeElement === f) { f.blur(); window.focus(); } });
+    f.addEventListener("load", () => { const ph = box.querySelector(".ph"); if (ph) ph.remove();
+      try { f.contentWindow.addEventListener("keydown", (ev) => {
+        if (!/^(ArrowLeft|ArrowRight|PageUp|PageDown|Home|End)$/.test(ev.key)) return;
+        ev.preventDefault(); f.blur(); window.focus();
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: ev.key, shiftKey: ev.shiftKey, bubbles: true, cancelable: true })); }); } catch (e) {} });
+  });
+}
 function qrSvg(text) {
   try { if (typeof qrcode !== "function") throw 0; const q = qrcode(0, "M"); q.addData(text); q.make(); return q.createSvgTag({ cellSize: 6, margin: 2, scalable: true }); }
   catch (e) { return '<div style="color:#333;font-size:16px;text-align:center;padding-top:90px">QR 없음<br>주소를 입력하세요</div>'; }
@@ -1318,6 +1339,18 @@ if (!OLD_DECK) (function rebuild() {
 
   /* 5. CEO 대시보드 — 키워드 → 팀 계획(설명 장) → 실행 */
   { const it = ITEM.ceo;
+    /* 11.10. 박사님 지시: 도입부에 실제 예시 — 강사가 매일 아침 받는 CEO 브리핑(오늘 자, examples/ 에 공개). 키워드 모으기 → 실행 흐름은 그대로 */
+    put({ ch: C(it.id), item: it.id, ref: it.title, sub: ["먼저 실제 예시입니다. 강사가 매일 아침 07:40에 받는 CEO 브리핑, 오늘 자입니다.", "분야 여섯 개를 AI 에이전트 15명이 나눠 조사하고, 사실을 확인하고, 정리하고, 검수했습니다. 오늘 자는 출처 42개, 오류 0건입니다."],
+      html: (s) => `<div class="slide ex">${hd(s, "5. CEO 대시보드 — 실제 예시부터 봅니다")}
+      <div class="exbox a-rise" ${d(.15)}><div class="ph">${EX_CEO} 불러오는 중…</div><iframe class="exf" src="${EX_CEO}" title="실제 예시 — 오늘 자 CEO 브리핑" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox" loading="lazy" referrerpolicy="no-referrer" tabindex="-1"></iframe></div>
+      <div class="lvside">
+        <div class="lab a-fade" ${d(.2)} style="color:var(--warn)">실제 예시 · 강사가 매일 아침 받는 CEO 브리핑(오늘 자)</div>
+        <div class="pn rel a-rise" ${d(.3)} style="padding:12px 16px"><div style="font-size:17.5px;line-height:1.5;color:#dfe8f4">분야 6개를 <b class="cy">AI 에이전트 15명</b>이 조사 → 사실 확인 → 정리 → 검수해 매일 <b>07:40</b>에 만듭니다. 오늘 자: 에이전트 15명 · 오류 0 · 출처 42</div></div>
+        <div class="lvqr a-pop" ${d(.4)}>${qrSvg(EX_CEO)}</div>
+        <a class="lvurl lk a-rise" ${d(.5)} href="${EX_CEO}" target="_blank" rel="noopener" style="text-decoration:none"><div class="h" style="font-size:13px">${LIVE_SITE}</div><div class="p" style="text-decoration:underline;text-underline-offset:.15em">${EX_CEO.slice(LIVE_SITE.length)}</div></a>
+      </div>
+      <div class="note a-fade" ${d(.8)} style="top:640px;font-size:18px"><span class="k">다음 장</span><span>여러분 키워드로 센터장님 아침 화면을 <b class="cy">같은 방식</b>으로 만듭니다. 미리보기는 마우스 휠로 내려 볼 수 있습니다.</span></div>
+      </div>` });
     collect(it, { title: "5. CEO 대시보드 — 무엇을 보고 싶으세요?", q: "센터장님이 매일 아침 한눈에 보고 싶은 소식은?", lines: ["관심 키워드 한두 개"], ex: ["육아 지원", "공주 일자리", "물가", "디지털 교육"], runLabel: "키워드 정리 · 팀 계획",
       sub: ["센터장님이 아침에 한눈에 볼 화면을 만듭니다. 보고 싶은 소식을 키워드로 적어 주세요.", "AI가 키워드를 묶어 분야를 나누고, 팀원마다 맡길 일을 정합니다."] });
     dyn(it, { title: "AI 팀에게 이렇게 나눠 맡깁니다", src: { step: "ceo-1", file: "out/plan.json", adapt: "ceo" }, step: "ceo-1", gate: ["ceo-1"], run: { step: "ceo-2", label: "대시보드 만들기" }, wait: "AI가 키워드를 묶고 팀을 짜는 중…", sub: ["여러분 키워드를 분야로 묶었습니다. 팀원들이 분야를 나눠 동시에 최근 소식을 찾고, 다른 AI가 출처를 확인합니다.", "실행을 누르면 4분 안팎입니다."] });
@@ -1425,7 +1458,7 @@ function go(i) {
   cur = i; const sc = S[i];
   const w = document.createElement("div"); w.innerHTML = sc.html(sc); const sl = w.firstElementChild;
   if (sc.cut) { const c = document.createElement("div"); c.className = "cutmark"; c.textContent = "⏱ 줄일 수 있음 · " + sc.cut; sl.appendChild(c); }
-  layer.appendChild(sl); prep(sl);
+  layer.appendChild(sl); prep(sl); exWire(sl);
   if (!RM.matches) sl.classList.add("enter");
   play(sl);
   a4Place(); crEnter(sc); crDeck(); followTell();
