@@ -34,7 +34,7 @@ h1{font-size:clamp(26px,4.2vw,40px);font-weight:900;margin:2px 0 0;letter-spacin
 .btn:hover{background:rgba(79,209,232,.25)}
 .btn.sub{border-color:#2b3f60;background:#111c2e;color:var(--ink)}
 .frame{display:block;width:100%;height:78vh;min-height:520px;border:1px solid var(--line);border-radius:10px;background:#0a1424}
-.pdfv{border:1px solid var(--line);border-radius:10px;background:#1b2536;padding:12px;min-height:240px;max-height:88vh;overflow:auto}
+.pdfv{border:1px solid var(--line);border-radius:10px;background:#1b2536;padding:12px;min-height:240px;overflow:visible}
 .pdfv .pg{display:block;width:100%;height:auto;margin:0 auto 12px;background:#fff;border-radius:3px;box-shadow:0 6px 18px rgba(0,0,0,.45)}
 .pdfv .ld{color:var(--mu);padding:30px 10px;text-align:center}
 .pdfv iframe{display:block;width:100%;height:80vh;border:0;background:#fff}
@@ -101,4 +101,4 @@ function t(){var d=new Date();return ("0"+d.getHours()).slice(-2)+":"+("0"+d.get
 if(el)el.textContent=t();
 setInterval(function(){if(document.hidden)return;fetch(location.pathname+"?v="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():"";}).then(function(x){
 if(el)el.textContent=t();if(x&&x.indexOf(M)<0){location.replace(location.pathname+"?v="+Date.now());}}).catch(function(){});},30000);})();
-</script></body></html>
+</script><script>/* flat-scroll: 같은 출처 결과 iframe 을 내용 높이만큼 늘려 바깥 한 줄 스크롤로 (11.10.) */(function(){function fit(f){var n=0;function go(){try{var d=f.contentDocument;if(!d||!d.documentElement)return;var h=Math.max(d.documentElement.scrollHeight,d.body?d.body.scrollHeight:0);var c=f.getBoundingClientRect().height;if(h>c+8&&n<6){n++;f.style.height=h+"px";f.style.maxHeight="none";f.setAttribute("scrolling","no");setTimeout(go,700);}}catch(e){}}f.addEventListener("load",function(){n=0;go();setTimeout(go,1500);setTimeout(go,4000);});go();}[].forEach.call(document.querySelectorAll("iframe.frame"),function(f){f.removeAttribute("loading");fit(f);});})();</script></body></html>
