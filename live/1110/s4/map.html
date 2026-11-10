@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="ko">
 <head>
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -1050,7 +1051,9 @@ const small = matchMedia("(max-width:640px)").matches;
 const map = L.map("map",{scrollWheelZoom:false,zoomControl:!small,zoomSnap:0.25,zoomDelta:0.5}).setView([36.46,127.12],12);
 const ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> 기여자';
 // 바탕 지도: OpenStreetMap 타일을 CSS로 어둡게(남색 틀에 맞춤). CARTO 어두운 지도는 키 없이 'API KEY REQUIRED'가 떠서 쓰지 않음(11.09. 확인)
-const osm = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:ATTR});
+// 바탕 지도: Esri 거리 지도(출처 주소를 요구하지 않아 휴대폰·웹 피드에서도 열림). 실패하면 OpenStreetMap으로 바꿈(11.10. 수정)
+const osm = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",{maxZoom:19,attribution:"Tiles &copy; Esri | "+ATTR});
+let swapped=false; osm.on("tileerror",()=>{ if(swapped||loaded) return; swapped=true; osm.setUrl("https://tile.openstreetmap.org/{z}/{x}/{y}.png"); });
 let errs=0, loaded=0, failed=false;
 document.getElementById("map").classList.add("tiles-dim");
 function noTiles(){ if(failed) return; failed=true; document.getElementById("tilemsg").style.display="block"; areaLabels.addTo(map); }
