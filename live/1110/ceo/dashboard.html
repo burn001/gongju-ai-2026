@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CEO 대시보드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* CEO 대시보드 틀 — 강의 덱(slides/index.html, 관제실 틀)과 같은 남색·청록·Noto Sans KR. 휴대폰 390px에서는 한 줄 칸 */
+:root{color-scheme:dark;
+--void:#05090f;--bg0:#0a1424;--bg1:#17305a;--ink:#eef4fb;--mu:#b4c5de;--mu2:#93a7c6;--dim:#6f83a3;
+--line:#2a4268;--panel:rgba(17,31,54,.86);--panel2:rgba(24,44,76,.75);--cy:#4fd1e8;--cy2:#1e4f7a;
+--warn:#f4b740;--bad:#ff7a66;--gr:#5fe0a0;
+--f-ui:"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",sans-serif;--f-mono:"JetBrains Mono",Consolas,monospace}
+*{box-sizing:border-box}
+html{background:var(--void)}
+body{margin:0;min-height:100vh;color:var(--ink);font-family:var(--f-ui);font-size:17px;line-height:1.55;word-break:keep-all;overflow-wrap:anywhere;
+-webkit-text-size-adjust:100%;background:radial-gradient(ellipse 110% 70% at 72% -8%,var(--bg1) 0%,var(--bg0) 58%,var(--void) 100%) no-repeat,var(--void)}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+background-image:linear-gradient(rgba(79,209,232,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(79,209,232,.045) 1px,transparent 1px);background-size:40px 40px;
+-webkit-mask-image:radial-gradient(ellipse at 50% 30%,#000 30%,transparent 85%);mask-image:radial-gradient(ellipse at 50% 30%,#000 30%,transparent 85%)}
+a{color:var(--cy);text-decoration:none}
+a:hover{text-decoration:underline}
+.mono{font-family:var(--f-mono)}
+/* 맨 위 띠: AI 초안 · 사실 확인 필요 */
+.band{position:sticky;top:0;z-index:5;padding:9px 16px;text-align:center;font-weight:700;font-size:15px;line-height:1.45;
+color:#ffe6b0;background:rgba(58,40,6,.94);border-bottom:1.5px solid var(--warn);box-shadow:0 2px 14px rgba(0,0,0,.35)}
+.band b{color:var(--warn)}
+.band .sm{font-weight:500;color:#f3d79d}
+.band.sample{background:rgba(70,18,12,.94);border-color:var(--bad);color:#ffd9d2}
+.band.sample b{color:var(--bad)}
+.wrap{position:relative;z-index:1;max-width:1280px;margin:0 auto;padding:20px 16px 36px}
+@media(min-width:900px){.wrap{padding:28px 44px 44px}}
+/* 제목 줄 (덱 .hd) */
+.hd{display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap}
+.hd .dot{width:12px;height:12px;border-radius:50%;background:var(--cy);box-shadow:0 0 12px var(--cy);flex:none;margin-top:7px;animation:pulse 2.4s ease-in-out infinite}
+.hd .tt{flex:1 1 auto;min-width:0}
+.hd .eb{font-weight:700;font-size:15px;color:var(--cy);letter-spacing:.06em}
+.hd h1{font-size:clamp(26px,4.2vw,44px);font-weight:900;line-height:1.2;margin:2px 0 0;letter-spacing:-.015em}
+.hd .ref{font-weight:700;font-size:14.5px;color:var(--mu2);margin-top:5px;text-align:right}
+@media(max-width:700px){.hd .ref{flex-basis:100%;text-align:left;margin:0 0 0 26px}}
+@keyframes pulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.5)}}
+@media(prefers-reduced-motion:reduce){.hd .dot{animation:none}}
+.keymsg{margin:16px 0 0;font-size:clamp(19px,2.5vw,27px);font-weight:700;line-height:1.45;border-left:5px solid var(--cy);
+padding:8px 0 8px 18px;background:linear-gradient(90deg,rgba(79,209,232,.14),transparent 75%)}
+.pn{background:var(--panel);border:1px solid var(--line);border-radius:12px}
+.lab{font-weight:700;font-size:17px;color:var(--cy);letter-spacing:.04em;margin:26px 0 10px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.lab small{font-weight:400;font-size:13.5px;color:var(--mu2);letter-spacing:0}
+/* 지표판 */
+.stats{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+@media(min-width:560px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(min-width:1000px){.stats{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.stat{padding:12px 16px}
+.stat .k{font-size:14.5px;color:var(--mu);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.stat .v{font-family:var(--f-mono);font-size:clamp(26px,3.2vw,38px);font-weight:700;line-height:1.15;text-shadow:0 0 16px rgba(79,209,232,.5);margin-top:2px}
+.stat .v small{font-family:var(--f-ui);font-size:17px;font-weight:500;color:var(--cy);margin-left:4px;text-shadow:none}
+.stat .s{font-size:13.5px;color:var(--mu2);margin-top:4px}
+/* 오늘의 핵심 3 */
+.top3{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+@media(min-width:900px){.top3{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.core{padding:14px 18px 12px;border-top:4px solid var(--cy);box-shadow:inset 0 14px 22px -16px var(--cy)}
+.core .no{font-family:var(--f-mono);font-weight:700;color:var(--cy);font-size:14px}
+.core h3{margin:2px 0 6px;font-size:20px;font-weight:900;line-height:1.35}
+.core p{margin:0 0 6px;color:var(--ink);font-size:16px}
+.core .why{color:#cdeff6;font-size:15px;border-left:3px solid var(--cy);padding-left:9px;margin:8px 0}
+/* 분야별 */
+.fields{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+@media(min-width:900px){.fields{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(min-width:900px){.fields.n3{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.field{padding:14px 18px 8px}
+.field h3{margin:0;font-size:19px;font-weight:900;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.field h3 .who{font-size:13px;font-weight:500;color:var(--mu2)}
+.field .line{color:var(--mu);font-size:15px;margin:4px 0 2px}
+.it{padding:10px 0;border-top:1px dashed #335789}
+.it:first-of-type{border-top:0}
+.it .t{font-weight:700;font-size:16.5px}
+.it .d{color:var(--mu);font-size:15px;margin-top:2px}
+.src{font-size:13.5px;color:var(--mu2);margin-top:4px}
+.src a{margin-right:8px}
+.empty{color:var(--dim);font-size:15px;padding:10px 0}
+/* 배지·칩 */
+.gb{display:inline-block;font-size:12.5px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid currentColor;vertical-align:2px;white-space:nowrap}
+.gb.ok{color:var(--gr)}
+.gb.one{color:var(--warn)}
+.gb.pre{color:var(--mu2)}
+.chips{display:flex;flex-wrap:wrap;gap:6px 8px}
+.chip{display:inline-flex;align-items:baseline;gap:4px;padding:3px 11px;border-radius:999px;background:rgba(79,209,232,.1);border:1px solid rgba(79,209,232,.35);font-weight:700;font-size:15px}
+.chip sup{font-family:var(--f-mono);font-size:12px;color:var(--mu2);font-weight:500}
+.chip.big{font-size:clamp(16px,1.9vw,21px);padding:5px 14px}
+/* 오늘 해 볼 일 (덱 .pbox) */
+.tip{border-radius:12px;border:1px solid rgba(79,209,232,.45);background:rgba(8,22,40,.92);box-shadow:0 0 26px rgba(79,209,232,.12);padding:14px 20px 12px}
+.tip ol{margin:4px 0 0;padding-left:22px}
+.tip li{margin:4px 0;font-size:17px}
+/* 사실 확인 노트 */
+.notes{padding:14px 18px;font-size:15px;color:var(--mu)}
+.notes .gbar{display:flex;height:12px;border-radius:4px;overflow:hidden;background:rgba(255,255,255,.06);margin:6px 0 8px}
+.notes .gbar i{display:block;height:100%}
+.notes ul{margin:6px 0 0;padding-left:20px}
+.banner{margin-top:12px;padding:10px 16px;border-radius:10px;border:1.5px solid rgba(244,183,64,.7);background:rgba(244,183,64,.1);color:#ffe6b0;font-weight:700;font-size:15.5px}
+.foot{margin-top:26px;color:var(--dim);font-size:13.5px;line-height:1.6;border-top:1px solid var(--line);padding-top:12px}
+/* 작업 설명(plan) */
+.team{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+@media(min-width:700px){.team{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(min-width:1100px){.team.n4{grid-template-columns:repeat(4,minmax(0,1fr))}.team.n3{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.mem{padding:14px 16px 12px;border-top:4px solid var(--cy)}
+.mem .no{font-family:var(--f-mono);font-weight:700;color:var(--cy);font-size:14px}
+.mem h3{margin:2px 0 4px;font-size:21px;font-weight:900}
+.mem .does{font-size:16.5px;margin-bottom:8px}
+.mem .say{margin-top:8px;font-size:13.5px;color:var(--mu2);background:rgba(8,22,40,.92);border-left:3px solid var(--cy);padding:6px 9px;border-radius:5px}
+.flow{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+@media(min-width:900px){.flow{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.fs{padding:10px 14px;position:relative}
+.fs .n{font-family:var(--f-mono);color:var(--cy);font-weight:700;font-size:13px}
+.fs .w{font-weight:900;font-size:18px}
+.fs .who{color:var(--mu);font-size:14.5px}
+.fs .sec{font-family:var(--f-mono);color:var(--warn);font-size:14px;font-weight:700}
+.fs.par{border-color:rgba(79,209,232,.6);box-shadow:0 0 18px rgba(79,209,232,.15)}
+.total{margin-top:10px;font-weight:700;font-size:17px;color:var(--mu)}
+.total b{font-family:var(--f-mono);color:var(--warn);font-size:20px}
+</style>
+</head>
+<body>
+<div class='band'><b>AI 초안 · 사실 확인 필요</b> <span class='sm'>· AI 팀이 웹에서 모아 정리했습니다 · 중요한 일은 원문(↗)을 꼭 확인하세요</span></div>
+<main class="wrap">
+
+<header class="hd"><span class="dot"></span><div class="tt"><div class="eb">CEO 대시보드 · 2026. 11. 10.(화) 아침</div>
+<h1>오늘 아침 한 장 브리핑</h1></div>
+<div class="ref">우리 반 관심사 4가지 · AI 10명이 만듦</div></header>
+<p class="keymsg">공주에서 일자리·배움 행사가 이어지고, 주가는 크게 흔들렸습니다.</p>
+
+<div class="lab">숫자로 보기 <small>확인 담당이 출처와 맞춰 본 숫자</small></div><div class="stats"><div class='pn stat'><div class='k'>공주시 일자리·취업 · 공주시 일자리박람회 방문자 <span class='gb ok'>확인됨</span></div><div class='v'>1,850<small>여 명</small></div><div class='s'>2026-11-04 기준 · <a href='https://news.google.com/rss/articles/CBMia0FVX3lxTE9LU3p3MThuLVVEMkRhc2J2ZGRDOWF4MVpGX0lHamtyczhnN3NrLS1wLWZUMDNOTlhYME1mLVBCQWdRXzlzVjFnYl9nTGs4ejJqYUxPLVFxOW95eVpZb01qWkJMVnZxTlVPdVJF?oc=5' target='_blank' rel='noopener'>충청시사신문 ↗</a></div></div><div class='pn stat'><div class='k'>교육 참여·만족도 · 공주시 평생학습축제 참여 인원 <span class='gb ok'>확인됨</span></div><div class='v'>2천여<small>명</small></div><div class='s'>2026-10-27 기준 · <a href='https://news.google.com/rss/articles/CBMic0FVX3lxTE9aYjdZVWYyTnM4b01aUU4zT1pLSkloNllKMXVSdlZEbjdURl9Udl9ZakNTcVVSODRzR0xoUlRhYnVjdFpmZG9LRkh5V0w2TU4zLXp6MVZ3LVVZSWFTMVNUUnhyMU9fVHF0Y293N1l2NXk0T0U?oc=5' target='_blank' rel='noopener'>세종시민일보 ↗</a></div></div><div class='pn stat'><div class='k'>성평등가족 정책 · 경력단절여성 재취업 후 1년 안에 그만두는 사람 <span class='gb ok'>확인됨</span></div><div class='v'>10명 중 4<small>명</small></div><div class='s'>2026-10-29 기준 · <a href='https://news.google.com/rss/articles/CBMic0FVX3lxTE5OeE9Qa3d2dkZoUXprb05JTTAyX2pkbEEyQUZVekNvZmRZeERNMGZfOHVXYkR4ZWprNGVWXzJxbnRHTUVXNzctbmpqQm4xRG9Yc3hjYWFhVmp3N3h1QXIzdVN1VDIzV0RYSC0yMHhCMjEtQzDSAXdBVV95cUxPbExsbGdfQ0lSd2NkMWlKSndzOUhjRG55YmN4RFk0V3luRVFNbTFFeUppWDdQbGw3YUtPYVZ6UlBuSGxIcG5JS3VzNnRrNG9iX2R1NW5FQnQ4bGRTVWNXVFlhX1pDUkZNTlJ3MjNLcjBCOXVlQ3NNNA?oc=5' target='_blank' rel='noopener'>스트레이트뉴스 ↗</a></div></div><div class='pn stat'><div class='k'>생활 경제·주가 · 10월 소비자물가 상승률(1년 전 대비) <span class='gb ok'>확인됨</span></div><div class='v'>2.8<small>%</small></div><div class='s'>2026-11-04 기준 · <a href='https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9uSTBvQl9feUY3eTVlVEo3dEYxOENEenhKMDRIdkNST0FCbUZRY2xzbGhFNnZlSkpWc0FSUnlmemRnWWR6QllGVGpjR19EVW9vYlRBRVQ4NlF0aEhvMzZTNkljTDZ6NGc?oc=5' target='_blank' rel='noopener'>자본시장뉴스 ↗</a></div></div></div>
+<div class="lab">오늘의 핵심 3</div>
+<div class="top3"><article class='pn core'><div class='no'>핵심 1 · 공주시 일자리·취업</div><h3>공주시 일자리박람회 1850명 몰려 <span class='gb ok'>확인됨</span></h3><p>공주시가 연 2026 일자리박람회에 구직자와 시민 1,850여 명이 찾았고 33개 기업이 채용에 참여했습니다. 현장에서 바로 면접을 본 사람도 115명이었습니다.</p><div class='why'>33개 기업이 채용에 참여한 만큼, 재취업을 준비하는 공주 여성도 지역 안에서 일할 곳을 찾을 길이 있다는 뜻입니다.</div><div class='src'>2026-11-04 · <a href='https://news.google.com/rss/articles/CBMia0FVX3lxTE9LU3p3MThuLVVEMkRhc2J2ZGRDOWF4MVpGX0lHamtyczhnN3NrLS1wLWZUMDNOTlhYME1mLVBCQWdRXzlzVjFnYl9nTGs4ejJqYUxPLVFxOW95eVpZb01qWkJMVnZxTlVPdVJF?oc=5' target='_blank' rel='noopener'>충청시사신문 ↗</a><a href='https://news.google.com/rss/articles/CBMiX0FVX3lxTFB4N3ZTUU9NRmJKVDd1UEFDb0xtT0FMSDl0TjZDWTkwU3N6clRRakxjTHRDQTZuU2p0VFlPci1pZ1hQMjRqYjZ4RG1GakdRSnFHa3QtaDJKZG81aWZxd0gw?oc=5' target='_blank' rel='noopener'>더팩트 ↗</a></div></article><article class='pn core'><div class='no'>핵심 2 · 성평등가족 정책</div><h3>경력단절 재취업, 10명 중 4명 1년 안 퇴사 <span class='gb ok'>확인됨</span></h3><p>국정감사에서 경력단절여성 취업 지원으로 일자리를 얻어도 1년 뒤 10명 중 4명은 일을 그만둔다는 지적이 나왔습니다. 가장 큰 이유는 근로조건이었고, 취업 숫자보다 오래 일하도록 돕는 쪽으로 정책을 바꿔야 한다는 주문이 있었습니다.</p><div class='why'>다시 일을 얻어도 10명 중 4명이 1년 안에 그만두므로, 오래 다닐 수 있는 일자리인지 미리 따져 봐야 한다는 뜻입니다.</div><div class='src'>2026-10-29 · <a href='https://news.google.com/rss/articles/CBMic0FVX3lxTE5OeE9Qa3d2dkZoUXprb05JTTAyX2pkbEEyQUZVekNvZmRZeERNMGZfOHVXYkR4ZWprNGVWXzJxbnRHTUVXNzctbmpqQm4xRG9Yc3hjYWFhVmp3N3h1QXIzdVN1VDIzV0RYSC0yMHhCMjEtQzDSAXdBVV95cUxPbExsbGdfQ0lSd2NkMWlKSndzOUhjRG55YmN4RFk0V3luRVFNbTFFeUppWDdQbGw3YUtPYVZ6UlBuSGxIcG5JS3VzNnRrNG9iX2R1NW5FQnQ4bGRTVWNXVFlhX1pDUkZNTlJ3MjNLcjBCOXVlQ3NNNA?oc=5' target='_blank' rel='noopener'>스트레이트뉴스 ↗</a><a href='https://news.google.com/rss/articles/CBMiXEFVX3lxTE1nRnYzTktFbDM5bmtCMVpwN1V2UEJiNkdCREtuV1dPLUVjMU80QmdXMUFZU0VGZ0JFSW1LeTNBZkdJcE15OTNfYzJzRGxDeGJIcllfT19sUVZzdHRU?oc=5' target='_blank' rel='noopener'>뉴스핌 ↗</a></div></article><article class='pn core'><div class='no'>핵심 3 · 교육 참여·만족도</div><h3>공주도서관, 11월 2～14일 평생학습주간 운영 <span class='gb ok'>확인됨</span></h3><p>공주도서관이 11월 2일부터 14일까지 평생학습주간을 운영합니다. &#x27;배움은 새롭게, 경험은 특별하게&#x27;라는 이름으로 시민이 참여할 수 있는 배움 프로그램을 엽니다.</p><div class='why'>공주도서관 평생학습주간이 14일까지 열려, 재취업 전에 가까운 곳에서 새로 배우며 준비할 기회가 있다는 뜻입니다.</div><div class='src'>2026-10-28 · <a href='https://news.google.com/rss/articles/CBMiZEFVX3lxTE94NTg5TVRpOTdLOFV6WmVHNnU2Ym42ZXZqQnVQaExUei0zODAtclgxUmdDbElUbUk3NThwUHhtTnF2MUVUa3lzbXVjUWhhVWd0VWIxU0xUR1kwX1lmZVFTRHp6REQ?oc=5' target='_blank' rel='noopener'>중도일보 ↗</a><a href='https://news.google.com/rss/articles/CBMickFVX3lxTE1YWnhpUzE5REhSMmM0SXBmZ0xpM05rOXRsc2k5RE9qUHc5MkZnb0NzeGJjNVBCNk5ScldQR0pEN3FubFNIckR3NFNnOWd3aGNKV2o4aWFKYnNYME5GNlR3RWF4dHExOWFlY0E2OGwtZWJRZw?oc=5' target='_blank' rel='noopener'>특급뉴스 ↗</a></div></article></div>
+<div class="lab">분야별 소식 <small>★ = 핵심 3</small></div>
+<div class="fields n4"><section class='pn field'><h3>공주시 일자리·취업 <span class='who'>팀원 ① 조사 · 확인 담당 점검</span></h3><div class='line'>공주 일자리박람회에 1,850여 명 몰림</div><div class='chips' style='margin:6px 0 2px'><span class=chip>일자리</span><span class=chip>취업율</span><span class=chip>세대별</span></div><div class='it'><div class='t'>공주시 일자리박람회 노인취업 지원 호응 <span class='gb ok'>확인됨</span></div><div class='d'>공주시 일자리박람회에서 어르신 취업을 돕는 상담·지원 창구가 큰 호응을 얻었습니다. 나이가 있어도 일자리를 찾을 수 있는 길이 지역에서 열리고 있습니다.</div><div class='src'>2026-11-05 · <a href='https://news.google.com/rss/articles/CBMickFVX3lxTE1YOEhuX3V5Rm5ZcDZWRGRhLURHZEZaRWs2NEF6YUp1TV9HM3A5VG1MdnQ2dXFkYmpDYVQ5Y3Q2bzFuX1c5dm9teU9TWXZvbU1DSGlnbVAtdEhMNFY3MXZFQkFEeDE0eWVnZkxFNm10WDF5UQ?oc=5' target='_blank' rel='noopener'>특급뉴스 ↗</a></div></div><div class='it'><div class='t'>★ 공주시 일자리박람회 1850명 몰려 <span class='gb ok'>확인됨</span></div><div class='d'>공주시가 연 2026 일자리박람회에 구직자와 시민 1,850여 명이 찾았고 33개 기업이 채용에 참여했습니다. 현장에서 바로 면접을 본 사람도 115명이었습니다.</div><div class='src'>2026-11-04 · <a href='https://news.google.com/rss/articles/CBMia0FVX3lxTE9LU3p3MThuLVVEMkRhc2J2ZGRDOWF4MVpGX0lHamtyczhnN3NrLS1wLWZUMDNOTlhYME1mLVBCQWdRXzlzVjFnYl9nTGs4ejJqYUxPLVFxOW95eVpZb01qWkJMVnZxTlVPdVJF?oc=5' target='_blank' rel='noopener'>충청시사신문 ↗</a><a href='https://news.google.com/rss/articles/CBMiX0FVX3lxTFB4N3ZTUU9NRmJKVDd1UEFDb0xtT0FMSDl0TjZDWTkwU3N6clRRakxjTHRDQTZuU2p0VFlPci1pZ1hQMjRqYjZ4RG1GakdRSnFHa3QtaDJKZG81aWZxd0gw?oc=5' target='_blank' rel='noopener'>더팩트 ↗</a></div></div><div class='it'><div class='t'>취업자 늘었지만 청년 고용률은 하락 <span class='gb ok'>확인됨</span></div><div class='d'>9월 전국 취업자는 1년 전보다 11만 3천 명 늘었습니다. 하지만 청년층의 일하는 사람 비율(고용률)은 29개월째 떨어져 세대별 차이가 커지고 있습니다.</div><div class='src'>2026-11-01 · <a href='https://news.google.com/rss/articles/CBMiY0FVX3lxTE00c2NDX2w0QWFxa05HN1pORU9xRWVpS1Z4eUx0M1JkS1EzV2xUT09RRzN3VkNiWEd3RjIteUFPWUxEdmhENFNZaVFhR2g5eDQ1NEktb0o3R21Fbk1XNUp1Q2R1VQ?oc=5' target='_blank' rel='noopener'>쿠키뉴스 ↗</a></div></div></section><section class='pn field'><h3>교육 참여·만족도 <span class='who'>팀원 ② 조사 · 확인 담당 점검</span></h3><div class='line'>공주도서관 평생학습주간 14일까지</div><div class='chips' style='margin:6px 0 2px'><span class=chip>교육</span><span class=chip>만족도</span><span class=chip>교육참여인원</span></div><div class='it'><div class='t'>대전, 평생교육이용권 우수이용자 445명 추가 지원 <span class='gb ok'>확인됨</span></div><div class='d'>대전시와 대전평생교육진흥원이 평생교육이용권(배움 비용을 지원하는 바우처)을 잘 활용한 우수이용자 445명을 뽑았습니다. 이들에게 교육비를 추가로 지원합니다.</div><div class='src'>2026-11-09 · <a href='https://news.google.com/rss/articles/CBMiVEFVX3lxTE9TY3dxTThZWERoNFVtNlFHUjhGZXg2VDRHcFdGdWRYeVZkRUo4YjZwYTNUNEl0d05sUk9XQ1drc1pSdk1zSjB4TkJzeTdGNG96elJrNw?oc=5' target='_blank' rel='noopener'>타임뉴스 ↗</a><a href='https://news.google.com/rss/articles/CBMia0FVX3lxTE1wUW1NV3RMYWFVdERZaGdtWGc3Rng3UndEZFBSUGY2TzRnVEJ4Sk05TlhZRkJZVnAyVmVUMGRfdTdMYVl4Wm1CemU4Y0k5dHprSHpCYXpTQmVoMzdFRkl1Z2tvNnZ1ZWRLcXRZ?oc=5' target='_blank' rel='noopener'>충청뉴스 ↗</a></div></div><div class='it'><div class='t'>★ 공주도서관, 11월 2～14일 평생학습주간 운영 <span class='gb ok'>확인됨</span></div><div class='d'>공주도서관이 11월 2일부터 14일까지 평생학습주간을 운영합니다. &#x27;배움은 새롭게, 경험은 특별하게&#x27;라는 이름으로 시민이 참여할 수 있는 배움 프로그램을 엽니다.</div><div class='src'>2026-10-28 · <a href='https://news.google.com/rss/articles/CBMiZEFVX3lxTE94NTg5TVRpOTdLOFV6WmVHNnU2Ym42ZXZqQnVQaExUei0zODAtclgxUmdDbElUbUk3NThwUHhtTnF2MUVUa3lzbXVjUWhhVWd0VWIxU0xUR1kwX1lmZVFTRHp6REQ?oc=5' target='_blank' rel='noopener'>중도일보 ↗</a><a href='https://news.google.com/rss/articles/CBMickFVX3lxTE1YWnhpUzE5REhSMmM0SXBmZ0xpM05rOXRsc2k5RE9qUHc5MkZnb0NzeGJjNVBCNk5ScldQR0pEN3FubFNIckR3NFNnOWd3aGNKV2o4aWFKYnNYME5GNlR3RWF4dHExOWFlY0E2OGwtZWJRZw?oc=5' target='_blank' rel='noopener'>특급뉴스 ↗</a></div></div><div class='it'><div class='t'>공주시 평생학습축제에 2천여 명 참여 <span class='gb ok'>확인됨</span></div><div class='d'>공주시가 연 평생학습축제에 시민 2천여 명이 참여했습니다. 지역에서 평생학습(나이와 상관없이 계속 배우는 활동)에 대한 관심이 크다는 것을 보여 줍니다.</div><div class='src'>2026-10-27 · <a href='https://news.google.com/rss/articles/CBMic0FVX3lxTE9aYjdZVWYyTnM4b01aUU4zT1pLSkloNllKMXVSdlZEbjdURl9Udl9ZakNTcVVSODRzR0xoUlRhYnVjdFpmZG9LRkh5V0w2TU4zLXp6MVZ3LVVZSWFTMVNUUnhyMU9fVHF0Y293N1l2NXk0T0U?oc=5' target='_blank' rel='noopener'>세종시민일보 ↗</a></div></div></section><section class='pn field'><h3>성평등가족 정책 <span class='who'>팀원 ③ 조사 · 확인 담당 점검</span></h3><div class='line'>재취업 여성 10명 중 4명 1년 안 퇴사</div><div class='chips' style='margin:6px 0 2px'><span class=chip>성평등가족부</span><span class=chip>정책</span></div><div class='it'><div class='t'>다문화가족 제도 손본다, 내년 실태조사 <span class='gb ok'>확인됨</span></div><div class='d'>대통령이 다문화가족 제도를 보완하자고 말하자 성평등가족부가 내년에 실태조사를 하겠다고 밝혔습니다. 실제 생활 형편을 먼저 살펴보고 제도를 고치겠다는 뜻입니다.</div><div class='src'>2026-11-05 · <a href='https://news.google.com/rss/articles/CBMiYEFVX3lxTE1NVks5V3NRVXVXc3dhUTg2XzFCYXI3bm4teHlKS0kxb3J0ZWNucnhkWWFERzJsSXNsLVo3ODJqQi15LXB5djE2NWZCeEtKRnVLLVB0MHR6eGNweVpBajZTONIBeEFVX3lxTE8zZWN3a2JSMDUxdTRkODhZak4zb3VranJuUUt6cWZwOHFFVE5pRTdEYzBLYlU3dm5wbjJaNEdZeU02b0dXQlQySG9tam1jTHJORDUzem41TVQ2dzBUQUJVMEpVbURFc0RWUF9VNzF0dExhWWxOYkVoNQ?oc=5' target='_blank' rel='noopener'>뉴시스 ↗</a></div></div><div class='it'><div class='t'>&#x27;모두의 생리대&#x27; 누리집 문 열어 <span class='gb ok'>확인됨</span></div><div class='d'>성평등가족부가 &#x27;모두의 생리대&#x27; 사업을 안내하는 공식 누리집(홈페이지)을 운영합니다. 사업 내용은 누리집에서 한곳에 모아 확인할 수 있습니다.</div><div class='src'>2026-10-29 · <a href='https://news.google.com/rss/articles/CBMiaEFVX3lxTE9aVlFiRWxvNTJZQXhZQnpzemdHT2dVOTc0RVEzdmJJZ3oyOGs1c296a1dRWG5fWWJpWEZRaGd0YWljR0pxb1ZQVXVVY0czZVZXSVZzRGpoemhLZHdoc29scGQ4TmlGMUdm?oc=5' target='_blank' rel='noopener'>환경일보 ↗</a></div></div><div class='it'><div class='t'>★ 경력단절 재취업, 10명 중 4명 1년 안 퇴사 <span class='gb ok'>확인됨</span></div><div class='d'>국정감사에서 경력단절여성 취업 지원으로 일자리를 얻어도 1년 뒤 10명 중 4명은 일을 그만둔다는 지적이 나왔습니다. 가장 큰 이유는 근로조건이었고, 취업 숫자보다 오래 일하도록 돕는 쪽으로 정책을 바꿔야 한다는 주문이 있었습니다.</div><div class='src'>2026-10-29 · <a href='https://news.google.com/rss/articles/CBMic0FVX3lxTE5OeE9Qa3d2dkZoUXprb05JTTAyX2pkbEEyQUZVekNvZmRZeERNMGZfOHVXYkR4ZWprNGVWXzJxbnRHTUVXNzctbmpqQm4xRG9Yc3hjYWFhVmp3N3h1QXIzdVN1VDIzV0RYSC0yMHhCMjEtQzDSAXdBVV95cUxPbExsbGdfQ0lSd2NkMWlKSndzOUhjRG55YmN4RFk0V3luRVFNbTFFeUppWDdQbGw3YUtPYVZ6UlBuSGxIcG5JS3VzNnRrNG9iX2R1NW5FQnQ4bGRTVWNXVFlhX1pDUkZNTlJ3MjNLcjBCOXVlQ3NNNA?oc=5' target='_blank' rel='noopener'>스트레이트뉴스 ↗</a><a href='https://news.google.com/rss/articles/CBMiXEFVX3lxTE1nRnYzTktFbDM5bmtCMVpwN1V2UEJiNkdCREtuV1dPLUVjMU80QmdXMUFZU0VGZ0JFSW1LeTNBZkdJcE15OTNfYzJzRGxDeGJIcllfT19sUVZzdHRU?oc=5' target='_blank' rel='noopener'>뉴스핌 ↗</a></div></div></section><section class='pn field'><h3>생활 경제·주가 <span class='who'>팀원 ④ 조사 · 확인 담당 점검</span></h3><div class='line'>코스피 급락, 10월 물가 2.8% 상승</div><div class='chips' style='margin:6px 0 2px'><span class=chip>주가</span></div><div class='it'><div class='t'>코스피, 급락 뒤 5000선 흔들려 <span class='gb ok'>확인됨</span></div><div class='d'>지난주 코스피와 코스닥이 한 주 동안 11%대나 함께 크게 떨어졌습니다. 9일 월요일에도 장 초반 코스피가 더 밀리며 5000선 아래위를 오가고 있습니다.</div><div class='src'>2026-11-09 · <a href='https://news.google.com/rss/articles/CBMib0FVX3lxTE45NU1KR08xZkRiUFNpdlhmU0NKdmhqY0VscmY0OUNuaTFHRkVKcXpLVldyNExmZG5GLThUYi15VERWaVFuVGIwb19PTU4yRUZQaWdZTTlsMG5qd2t5WkZrYUlLM3oxeFNVUkhhNFhiUQ?oc=5' target='_blank' rel='noopener'>조세일보 ↗</a><a href='https://news.google.com/rss/articles/CBMib0FVX3lxTE9qUlZmY2NFbEFiYmEwcFhFS1dqeXdsT0d0NDdtQXpSRDNsemxxYVVWNnp2cWpRdVVVZElXMW9CNHNUcXBrd3JOcUFQQWpaV2lWWUMxN1REQ0NjVUNzV1NNd3ZHNUxjdmtVbFNYaTJvbw?oc=5' target='_blank' rel='noopener'>기호일보 ↗</a></div></div><div class='it'><div class='t'>이번 주 고용·가계대출 지표 발표 <span class='gb ok'>확인됨</span></div><div class='d'>이번 주에는 10월 일자리 상황(고용 동향)과 가계가 빌린 돈이 얼마나 늘었는지(가계대출 동향)가 발표됩니다. 미국 소비자물가 발표도 있어 주식시장이 함께 주목하고 있습니다.</div><div class='src'>2026-11-08 · <a href='https://news.google.com/rss/articles/CBMiUkFVX3lxTE9IWVV3b29BZXBVNlNybGZKR3lwUUEyU0ZlLTFmQjEyN3NWUXZ5SGxjV0ZlTU5sMUhlYmNySzBkMl9oWDA2XzFFYTRHdmNMTU9jMlHSAVNBVV95cUxORm94d2paV0NTSG9SZHFBUzJOb3VmLTZCWVhwZDc0NWVtU01ackxRb3kzWGdzaG44c2RaZ05ZLTg5VHpzRmV2bVpWbXBxb2lydTE3SQ?oc=5' target='_blank' rel='noopener'>서울경제 ↗</a><a href='https://news.google.com/rss/articles/CBMiWkFVX3lxTE84TFNXcm0zeTR6YndqV3VzREpmNHZMYXNHTVVTV0hjODZJcHk2OFM1UkZOczN2MU4yQ3RKSWwyUE9vSmhrZGlqaDdFeVZRUEdnb0xLbTFEYmIxZw?oc=5' target='_blank' rel='noopener'>한국경제 ↗</a></div></div><div class='it'><div class='t'>10월 물가 2.8% 올라, 채소값은 내려 <span class='gb ok'>확인됨</span></div><div class='d'>10월 소비자물가가 1년 전보다 2.8% 올랐습니다. 신선식품 값은 6.2% 내려 장바구니 부담은 조금 줄었지만, 기름값은 크게 올랐습니다.</div><div class='src'>2026-11-04 · <a href='https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9uSTBvQl9feUY3eTVlVEo3dEYxOENEenhKMDRIdkNST0FCbUZRY2xzbGhFNnZlSkpWc0FSUnlmemRnWWR6QllGVGpjR19EVW9vYlRBRVQ4NlF0aEhvMzZTNkljTDZ6NGc?oc=5' target='_blank' rel='noopener'>자본시장뉴스 ↗</a><a href='https://news.google.com/rss/articles/CBMicEFVX3lxTE5KSURESTB6cWNjOEZUWi1veVBxWGpOY2FjWmx0RXNwRDZHQjRWcFZZT2tWeUc0R0Y3MVBCcE0zejV0cklUb0FudWdUZkRVdk04R3VoTTlMaHVQazhfaUxqUWNDT3h4RVVhdk9ydDVsYkY?oc=5' target='_blank' rel='noopener'>미디어써치 ↗</a></div></div></section></div>
+<div class='lab'>오늘 해 볼 일</div><div class='tip'><ol><li>공주도서관에 들러 11월 14일까지 열리는 평생학습주간 프로그램을 확인하고 참여해 보세요.</li><li>공주시에 이번 일자리박람회에 참여한 기업과 채용 소식을 문의해 지원할 곳을 찾아보세요.</li><li>이번 주 발표되는 10월 고용 동향 결과를 확인해 일자리 흐름을 살펴보세요.</li></ol></div>
+<div class="lab">우리 반 키워드 <small>숫자 = 그 낱말이 나온 채팅 글 수 · 강의실 채팅 최근 8분 글 6건(이름은 빼고 글만)</small></div>
+<div class="chips"><span class='chip big'>교육<sup>2</sup></span><span class='chip big'>일자리<sup>1</sup></span><span class='chip big'>취업율<sup>1</sup></span><span class='chip big'>세대별<sup>1</sup></span><span class='chip big'>만족도<sup>1</sup></span><span class='chip big'>교육참여인원<sup>1</sup></span><span class='chip big'>성평등가족부<sup>1</sup></span><span class='chip big'>정책<sup>1</sup></span><span class='chip big'>주가<sup>1</sup></span></div>
+<div class='lab'>사실 확인 노트 <small>조사한 AI와 다른 AI가 출처를 열어 봤습니다</small></div><div class='pn notes'>확인 <b class='mono'>12</b><div class='gbar'><i style='width:100.0%;background:var(--gr)' title='확인 12'></i></div><div>본문에서 뺀 소식은 없습니다.</div></div>
+<div class="foot">만든 순서: 채팅 키워드 모으기 → 조사 팀원 4명이 동시에 웹 조사 → 확인 담당 4명이 동시에 출처 확인 → 편집 담당이 한 장으로 정리(틀은 프로그램).<br>
+2026-11-10 11:12 만듦 · 최근 한 달 안의 소식 · 공주여성새로일하기센터 AI 에이전트 강의 실습</div>
+
+</main>
+</body>
+</html>
