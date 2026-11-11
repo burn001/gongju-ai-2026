@@ -2626,6 +2626,12 @@ function revFollowLoad() {   // 따라가기: 보완 상태를 같은 칸에
   }, () => {});
 }
 if (FOLLOW) setInterval(() => { if (!document.hidden) revFollowLoad(); }, 4000);
+/* 11.11. 따라가기 · 공개 덱: 결과 칸이 아직 공개 전(404 · 자리 표시)이면 20초마다 다시 불러 봄 — 자리 표시가 없는 날(시험 날짜 등)의 404 는 스스로 바뀌지 않았음 */
+if (!CD_ON || FOLLOW) setInterval(() => {
+  if (document.hidden) return;
+  document.querySelectorAll(".slide:not(.leave) .lvf").forEach((f) => { if (f.parentNode.dataset.lk || f.parentNode.classList.contains("on")) return;
+    try { const d = f.contentDocument; if (d && d.readyState === "complete" && d.documentElement.innerHTML.indexOf("gongju-live:published:") < 0) liveReload(f.dataset.live, true); } catch (e) {} });
+}, 20000);
 
 /* ── 마무리 링크 메일: 미리보기(받는 사람 수 · 제목 · 본문) → 확인 → 보내기 ── */
 let mailBusy = false;
