@@ -492,7 +492,7 @@ function qrSvg(text) {
 }
 /* 11.11. 결과 칸 맞춤: 칸(790×504)은 눌리지 않아 공개 래퍼의 머리말(제목 · 한눈에)만 보이고 지도는 칸 밖에 있었음 →
    불러오면 래퍼를 결과 iframe 위치까지(지도 실습은 그 안의 #map 까지) 내려 둠. 같은 출처(burn001.github.io)라 덱이 직접 스크롤.
-   러너 파일(다른 출처)은 주소 끝 #map 으로 */
+   러너 파일(다른 출처)은 ?focus=map — 러너가 내려 주는 스크립트를 붙임 */
 const LIVE_FOCUS = { s4: "map", s9: "map" };
 function lvFocus(f) {
   const id = LIVE_FOCUS[String(f.dataset.live || "").replace(/\d+$/, "")];
@@ -2582,10 +2582,10 @@ function boxLocal(sc, r) {
   const v = last.view, ver = Math.max(last.doneAt || 0, (r && r.doneAt) || 0), key = last.folder + "|" + v.rel + "|" + (v.at || 0) + "|" + ver;
   const pid = livePub(it), P = CD.pub, dn = P && P.done && P.done[LIVE_DAY] && P.done[LIVE_DAY][pid], j = P && P.job;
   if (box.dataset.lk !== key) {
-    const fu = rnFile(last.folder, v.rel); if (!fu) return !!box.dataset.lk;   // 원격 토큰을 받는 중 — 다음 그리기 때
+    const fu = rnFile(last.folder, v.rel); if (!fu) return true;   // 원격 토큰을 받는 중 — 다음 그리기 때
     const foc = LIVE_FOCUS[String(pid).replace(/\d+$/, "")];
     f.setAttribute("sandbox", "allow-scripts allow-popups allow-downloads");
-    f.src = fu + (/\.md$/i.test(v.rel) ? "?html=1&" : "?") + "v=" + (v.at || ver) + (foc ? "#" + foc : "");
+    f.src = fu + (/\.md$/i.test(v.rel) ? "?html=1&" : "?") + (foc ? "focus=" + foc + "&" : "") + "v=" + (v.at || ver);   // focus: 러너가 그 요소까지 내려 주는 스크립트를 붙여 줌(다른 출처 iframe 은 #map 으로 안 내려감)
     box.dataset.lk = key; const ph = box.querySelector(".ph"); if (ph) ph.remove();
   }
   let lab = box.querySelector(".loc"); if (!lab) { lab = document.createElement("div"); lab.className = "loc"; box.appendChild(lab); }
