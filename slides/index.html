@@ -2577,7 +2577,8 @@ function revPaint(sc) {
 function boxLocal(sc, r) {
   if (FOLLOW || !CD || !sc.item || !ITEM[sc.item]) return false;
   const box = layer.querySelector(".slide:not(.leave) .lvbox"), f = box && box.querySelector("iframe.lvf"); if (!f) return false;
-  const it = ITEM[sc.item], last = histOf(it.steps).filter((h) => h.status === "done" && h.view && h.view.rel).pop(); if (!last) return false;
+  const it = ITEM[sc.item], hs = histOf(it.steps), last = hs[hs.length - 1];   // 그 실습의 마지막 단계가 끝났을 때만(S4 ①② 사이에 옛 지도를 띄우지 않게)
+  if (!last || last.id !== it.steps[it.steps.length - 1] || last.status !== "done" || !last.view || !last.view.rel) return !!box.dataset.lk;
   const v = last.view, ver = Math.max(last.doneAt || 0, (r && r.doneAt) || 0), key = last.folder + "|" + v.rel + "|" + (v.at || 0) + "|" + ver;
   const pid = livePub(it), P = CD.pub, dn = P && P.done && P.done[LIVE_DAY] && P.done[LIVE_DAY][pid], j = P && P.job;
   if (box.dataset.lk !== key) {
