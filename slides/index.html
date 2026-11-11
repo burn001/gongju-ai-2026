@@ -260,7 +260,11 @@ body.sb .page { padding-right: calc(max(30vw, 320px) + 12px); }
 #psb .pc .po.mine span::before { content: "✓ "; }
 #psb .pc .ph { margin-top: 4px; font-size: .78em; color: var(--mu); }
 #psb .pc.svc { border-color: #8a6a1f; background: #1d1708; }
-#psb .pc.rsc { max-height: 32%; overflow: auto; }
+/* 11.11. 채팅 탭 = 바깥 한 줄 스크롤: 투표·설문·결과 카드·채팅 목록이 한 칸에서 같이 넘어감(카드 안·목록 안 작은 스크롤 없음), 입력 줄은 아래에 붙음 */
+#psb .pane[data-p="chat"] { overflow-y: auto; overscroll-behavior: contain; }
+#psb .pane[data-p="chat"] > * { flex-shrink: 0; }
+#psb .pane[data-p="chat"] .cl { flex: 1 0 auto; min-height: 0; overflow: visible; }
+#psb .pane[data-p="chat"] .foot { position: sticky; bottom: 0; z-index: 2; background: #070d17; }
 #psb .pc .rr { margin: 4px 0 6px; padding-top: 4px; border-top: 1px solid #1d3350; }
 #psb .pc .rr:first-of-type { border-top: 0; }
 #psb .pc .rr b { display: block; color: #e6eef8; }
@@ -486,6 +490,25 @@ function qrSvg(text) {
   try { if (typeof qrcode !== "function") throw 0; const q = qrcode(0, "M"); q.addData(text); q.make(); return q.createSvgTag({ cellSize: 6, margin: 2, scalable: true }); }
   catch (e) { return '<div style="color:#333;font-size:16px;text-align:center;padding-top:90px">QR 없음<br>주소를 입력하세요</div>'; }
 }
+/* 11.11. 결과 칸 맞춤: 칸(790×504)은 눌리지 않아 공개 래퍼의 머리말(제목 · 한눈에)만 보이고 지도는 칸 밖에 있었음 →
+   불러오면 래퍼를 결과 iframe 위치까지(지도 실습은 그 안의 #map 까지) 내려 둠. 같은 출처(burn001.github.io)라 덱이 직접 스크롤.
+   러너 파일(다른 출처)은 주소 끝 #map 으로 */
+const LIVE_FOCUS = { s4: "map", s9: "map" };
+function lvFocus(f) {
+  const id = LIVE_FOCUS[String(f.dataset.live || "").replace(/\d+$/, "")];
+  const go = () => { try {
+    if (f.parentNode.classList.contains("on")) return;   // 화면 조작 중에는 손대지 않음
+    const w = f.contentWindow, d = f.contentDocument; if (!d || !d.body) return;
+    const fr = d.querySelector("iframe.frame, .pdfv iframe"); let y = null;
+    if (fr) {
+      y = fr.getBoundingClientRect().top + w.scrollY - 4;
+      if (id) { try { const m = fr.contentDocument && fr.contentDocument.getElementById(id); if (m) y += m.getBoundingClientRect().top + fr.contentWindow.scrollY - 6; } catch (e) {} }
+    } else if (id) { const m = d.getElementById(id); if (m) y = m.getBoundingClientRect().top + w.scrollY - 6; }
+    if (y != null) w.scrollTo(0, Math.max(0, y));
+  } catch (e) {} };
+  go(); setTimeout(go, 900); setTimeout(go, 2500); setTimeout(go, 5000);
+}
+document.addEventListener("load", (e) => { const f = e.target; if (f && f.tagName === "IFRAME" && f.classList.contains("lvf")) lvFocus(f); }, true);
 /* 결과 공개 장: 왼쪽 = 그 공개 화면(iframe, 눌리지 않음), 오른쪽 = QR + 주소 크게 */
 function liveSlide(s, o) {
   const u = liveUrl(o.st);
@@ -1960,8 +1983,8 @@ async function pubRun(st, again) {
   } catch (err) { cdNote("러너에 연결하지 못했습니다"); }
   pubPosting = ""; await cdLoad();
 }
-function liveReload(st) {
-  document.querySelectorAll('.lvf[data-live="' + st + '"]').forEach((f) => { f.src = liveUrl(st) + "?v=" + Date.now(); });
+function liveReload(st, force) {   // 11.11. 러너 파일을 띄운 칸(발표자)은 그대로 둠 — 같은 결과라 공개가 끝나도 칸이 뒤바뀌지 않게
+  document.querySelectorAll('.lvf[data-live="' + st + '"]').forEach((f) => { if (!force && f.parentNode.dataset.lk) return; f.removeAttribute("sandbox"); f.src = liveUrl(st) + "?v=" + Date.now(); });
 }
 function liveWatch(p) {
   const m = (p && p.done && p.done[LIVE_DAY]) || {};
@@ -2043,7 +2066,7 @@ function psbBuild() {
     + '<div class="say"><textarea rows="3" maxlength="2000" placeholder="세션에 직접 지시 — [보내기] 또는 Ctrl+Enter (Enter는 줄바꿈)"></textarea><button type="button" class="go">보내기</button></div><div class="msg sm"></div></div>'
     + '<div class="pane" data-p="room"><iframe class="rmf" title="수강생 화면" referrerpolicy="no-referrer" style="flex:1 1 auto;width:100%;border:0;background:#081222"></iframe></div>'
     + '<div class="pane" data-p="chat"><details class="adh"><summary>즉석 투표</summary><div class="ab"><input type="text" class="aq" maxlength="80" placeholder="질문 한 줄"><textarea class="ao" rows="4" placeholder="보기 2～4줄 — 한 줄에 하나(24자 이내)"></textarea><div class="br"><button type="button" class="go aop">▶ 투표 열기</button><button type="button" class="go acl">■ 마감</button><button type="button" class="go abg">결과 크게 보기</button></div><div class="msg am"></div></div></details><div class="pc" hidden></div><div class="pc svc" hidden></div><div class="pc rsc" hidden></div><div class="cl" aria-live="polite"></div>'
-    + '<div class="say"><input type="text" maxlength="200" placeholder="강사로 채팅 쓰기(200자) — Enter 보내기"><button type="button" class="go">보내기</button></div><div class="msg cmg"></div></div>';
+    + '<div class="foot"><div class="say"><input type="text" maxlength="200" placeholder="강사로 채팅 쓰기(200자) — Enter 보내기"><button type="button" class="go">보내기</button></div><div class="msg cmg"></div></div></div>';
   document.body.appendChild(PSB);
   PSB.querySelector(".x").onclick = () => psbToggle(false);
   PSB.querySelectorAll(".tab").forEach((t) => { t.onclick = () => psbSetTab(t.dataset.t); });
@@ -2082,7 +2105,7 @@ function psbSetTab(t, quiet) {
   PSB.querySelectorAll(".tab").forEach((x) => x.classList.toggle("on", x.dataset.t === psbTab));
   PSB.querySelectorAll(".pane").forEach((x) => x.classList.toggle("on", x.dataset.p === psbTab));
   const bd = PSB.querySelector('.tab[data-t="' + psbTab + '"] .bd'); if (bd) bd.textContent = "";
-  if (psbTab === "chat" && !quiet) { const cl = PSB.querySelector(".cl"); cl.scrollTop = cl.scrollHeight; }
+  if (psbTab === "chat" && !quiet) { const sp = PSB.querySelector('[data-p="chat"]'); sp.scrollTop = sp.scrollHeight; }
 }
 function psbAuto(t) { psbSetTab(t); }   // 단추를 누를 때: 세션 단추 → 세션, 강의실 단추 → 채팅(손으로 고른 탭은 다음 단추까지 그대로)
 function psbBadge(txt) { if (!psbBuilt) return; const bd = PSB.querySelector('.tab[data-t="ses"] .bd'); if (bd) bd.textContent = txt; }
@@ -2139,7 +2162,7 @@ function psbStatePaint(j) {
   if (!list.length) { rs.hidden = true; return; }
   rs.hidden = false; rs.textContent = "";
   const h = document.createElement("div"); h.className = "pq"; h.textContent = "에이전트가 만든 결과"; rs.appendChild(h);
-  list.slice(0, 6).forEach((r) => {
+  list.slice(0, 4).forEach((r) => {
     const d = document.createElement("div"); d.className = "rr";
     const b = document.createElement("b"); b.textContent = (r.title || "") + "  " + (r.ts ? psbTime(r.ts) : ""); d.appendChild(b);
     if (r.summary) { const pp = document.createElement("p"); pp.textContent = r.summary; d.appendChild(pp); }
@@ -2192,7 +2215,7 @@ function psbAdd(m) {
   if (!m || !m.id || !psbBuilt) return;
   psbLast = Math.max(psbLast, m.ts || 0);
   if (psbMsgs.has(m.id)) return;
-  const cl = PSB.querySelector(".cl"), stick = cl.scrollHeight - cl.scrollTop - cl.clientHeight < 40;
+  const cl = PSB.querySelector(".cl"), sp = cl.parentNode, stick = sp.scrollHeight - sp.scrollTop - sp.clientHeight < 40;
   const el = document.createElement("div"); el.className = "cm" + (m.nick === "강사" ? " me" : ""); el.dataset.id = m.id;
   if (m.q) { const qb = document.createElement("span"); qb.className = "qb"; qb.textContent = "질문"; el.appendChild(qb); }
   const b = document.createElement("b"); b.textContent = m.nick || "익명"; el.appendChild(b);
@@ -2206,7 +2229,7 @@ function psbAdd(m) {
   psbMsgs.set(m.id, el); cl.appendChild(el);
   while (psbMsgs.size > 300) { const k = psbMsgs.keys().next().value; psbMsgs.get(k).remove(); psbMsgs.delete(k); }
   const em = cl.querySelector(".empty"); if (em) em.remove();
-  if (stick) cl.scrollTop = cl.scrollHeight;
+  if (stick) sp.scrollTop = sp.scrollHeight;
 }
 function psbHide(id) { const el = psbMsgs.get(id); if (el) { el.remove(); psbMsgs.delete(id); } }
 function psbChatLoad(first) {
@@ -2545,7 +2568,31 @@ function revPaint(sc) {
     a4Place(); wsPlace();
     revShare(sc, r);
   }
-  if (!r.active && r.doneAt && revSeen[sc.item] !== r.doneAt) { revSeen[sc.item] = r.doneAt; revLocal(sc, r); revShare(sc, r); }
+  const loc = !r.active && boxLocal(sc, r);
+  if (!r.active && r.doneAt && revSeen[sc.item] !== r.doneAt) { revSeen[sc.item] = r.doneAt; if (!loc) revLocal(sc, r); revShare(sc, r); }
+}
+/* 11.11. 결과 장 칸 = 러너 파일 먼저(발표자): 실습이 끝나면 곧바로(수강생 채팅 결과 카드와 같은 때) 러너의 결과 파일을 칸에 띄움.
+   예전에는 공개 주소(GitHub Pages)만 기다려 1～5분(빌드 4분 43초까지) 자리 표시가 남았음. 공개 주소는 QR · 주소 글자로 그대로.
+   러너 상태의 view = {rel, at}(html · mp4 · md — md 는 ?html=1). 보완 지시가 끝나면 수정본으로 다시. 따라가기 · 공개 덱은 공개 주소(lvFocus) */
+function boxLocal(sc, r) {
+  if (FOLLOW || !CD || !sc.item || !ITEM[sc.item]) return false;
+  const box = layer.querySelector(".slide:not(.leave) .lvbox"), f = box && box.querySelector("iframe.lvf"); if (!f) return false;
+  const it = ITEM[sc.item], last = histOf(it.steps).filter((h) => h.status === "done" && h.view && h.view.rel).pop(); if (!last) return false;
+  const v = last.view, ver = Math.max(last.doneAt || 0, (r && r.doneAt) || 0), key = last.folder + "|" + v.rel + "|" + (v.at || 0) + "|" + ver;
+  const pid = livePub(it), P = CD.pub, dn = P && P.done && P.done[LIVE_DAY] && P.done[LIVE_DAY][pid], j = P && P.job;
+  if (box.dataset.lk !== key) {
+    const fu = rnFile(last.folder, v.rel); if (!fu) return !!box.dataset.lk;   // 원격 토큰을 받는 중 — 다음 그리기 때
+    const foc = LIVE_FOCUS[String(pid).replace(/\d+$/, "")];
+    f.setAttribute("sandbox", "allow-scripts allow-popups allow-downloads");
+    f.src = fu + (/\.md$/i.test(v.rel) ? "?html=1&" : "?") + "v=" + (v.at || ver) + (foc ? "#" + foc : "");
+    box.dataset.lk = key; const ph = box.querySelector(".ph"); if (ph) ph.remove();
+  }
+  let lab = box.querySelector(".loc"); if (!lab) { lab = document.createElement("div"); lab.className = "loc"; box.appendChild(lab); }
+  const fresh = dn && (dn.srcAt || dn.at) >= ver - 1000;
+  const txt = j && j.running && j.step === pid ? "AI가 방금 만든 결과 · 공개 주소(QR)에 올리는 중 — 1～2분"
+    : fresh ? "" : dn ? "수정본(공개 전) — [⬆ 다시 공개]를 누르면 공개 주소도 바뀝니다" : "AI가 방금 만든 결과 · 공개 주소(QR)는 공개가 끝나면 열립니다";
+  lab.textContent = txt; lab.hidden = !txt;
+  return true;
 }
 function revLocal(sc, r) {   // 수정본을 칸에(공개가 수정보다 새것이면 공개 화면 그대로)
   const box = layer.querySelector(".lvbox"); if (!box) return;
