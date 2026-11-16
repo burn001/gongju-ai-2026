@@ -526,6 +526,11 @@ body:not(.lay) #topbar, body:not(.lay) #rflow { display: none !important; }
 #rflow[hidden] { display: none; }
 #rflow .rfh { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font: 700 15px var(--f-ui); color: var(--cy); margin-bottom: 8px; }
 #rflow .rfu { flex: 1; min-width: 0; font: 500 13px var(--f-mono); color: var(--mu2); overflow-wrap: anywhere; }
+/* 11.17. 결과가 두 번 보이던 것(슬라이드 안 칸 + 아래 펼침) → 발표자 배치에서는 아래 펼침만. 칸 자리에는 안내만(보완 중 Agent4D 칸은 그대로 위에 놓임) */
+body.lay .lvbox iframe.lvf { visibility: hidden; }
+body.lay .lvbox .ph { display: none; }
+body.lay .lvbox::before { content: "↓ 결과는 슬라이드 아래 '결과 화면 펼쳐 보기'에서 봅니다"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 24px; text-align: center; color: var(--mu); font-size: 24px; font-weight: 700; line-height: 1.5; }
+#rflow .rfr { font: 700 13px var(--f-ui); color: var(--cy); background: transparent; border: 1px solid rgba(79,209,232,.5); border-radius: 8px; padding: 4px 10px; cursor: pointer; }
 #rflow .rfo { font: 700 13px var(--f-ui); color: var(--cy); border: 1px solid rgba(79,209,232,.5); border-radius: 8px; padding: 4px 10px; text-decoration: none; }
 #rflow iframe { display: block; width: 100%; height: 900px; border: 1px solid var(--line); border-radius: 10px; background: #0a1424; }
 @media (max-width: 760px) {
@@ -547,7 +552,7 @@ body:not(.lay) #topbar, body:not(.lay) #rflow { display: none !important; }
       <div id="tt" aria-hidden="true"></div>
     </div></div>
   </div>
-  <section id="rflow" hidden aria-label="결과 화면 펼쳐 보기"><div class="rfh"><b>결과 화면 펼쳐 보기</b><span class="rfu"></span><a class="rfo" target="_blank" rel="noopener">새 창으로 ↗</a></div><iframe title="결과 화면(펼침)" referrerpolicy="no-referrer" scrolling="no"></iframe></section>
+  <section id="rflow" hidden aria-label="결과 화면 펼쳐 보기"><div class="rfh"><b>결과 화면 펼쳐 보기</b><span class="rfu"></span><button type="button" class="rfr" title="최신 결과를 다시 읽어 옵니다(보완 지시로 고친 판 포함)">↻ 새로고침</button><a class="rfo" target="_blank" rel="noopener">새 창으로 ↗</a></div><iframe title="결과 화면(펼침)" referrerpolicy="no-referrer" scrolling="no"></iframe></section>
   <div class="ctl" role="toolbar" aria-label="발표 조작">
     <button id="bPrev" type="button" aria-label="이전 장면">← 이전</button>
     <span class="pos" id="pos"></span>
@@ -2363,17 +2368,29 @@ async function pubRun(st, again) {
   pubPosting = ""; await cdLoad();
 }
 /* 11.16. 결과 장이면 슬라이드 아래에 그 공개 화면을 내용 높이 그대로 펼침(?flow — 화면이 높이를 알려 옴, 안쪽 스크롤 없음). 왼쪽 한 스크롤로 내려 봄 */
-function rflowSync(sl, force) {
+function rflowSync(sl, force) {   // 11.17. 칸이 러너 파일(방금 만든 결과 · 보완 수정본, sandbox)을 띄우면 펼침도 같은 파일로 — 공개 전 수정본이 아래에 안 보이던 문제
   const box = document.getElementById("rflow"); if (!box || FOLLOW) return;
   const f = sl && sl.querySelector(".lvf"), st = f && f.dataset.live;
-  if (!st) { box.hidden = true; box.dataset.st = ""; const fr = box.querySelector("iframe"); fr.removeAttribute("src"); fr.style.height = ""; return; }
+  const fr = box.querySelector("iframe");
+  if (!st) { box.hidden = true; box.dataset.st = ""; box.dataset.key = ""; fr.removeAttribute("src"); fr.style.height = ""; return; }
   box.hidden = false;
-  if (box.dataset.st === st && !force) return;
-  box.dataset.st = st;
-  const u = liveUrl(st), fr = box.querySelector("iframe");
-  box.querySelector(".rfu").textContent = u; box.querySelector(".rfo").href = u;
-  fr.style.height = ""; fr.src = u + "?flow=1&v=" + Date.now();
+  const local = f.hasAttribute("sandbox") ? (f.getAttribute("src") || "") : "", key = st + "|" + local;
+  if (box.dataset.key === key && !force) return;
+  box.dataset.st = st; box.dataset.key = key;
+  const u = local || liveUrl(st), bust = "rf=" + Date.now();
+  box.querySelector(".rfu").textContent = local ? "AI가 방금 만든 결과(공개 전 · 러너 파일)" : u; box.querySelector(".rfo").href = u;
+  if (local) { fr.setAttribute("sandbox", "allow-scripts allow-popups allow-downloads"); fr.setAttribute("scrolling", "yes"); fr.style.height = "1000px"; fr.src = u + (u.indexOf("?") < 0 ? "?" : "&") + bust; }
+  else { fr.removeAttribute("sandbox"); fr.setAttribute("scrolling", "no"); fr.style.height = ""; fr.src = u + "?flow=1&v=" + Date.now(); }
 }
+{ const rb = document.getElementById("rflow"), btn = rb && rb.querySelector(".rfr");
+  if (btn) btn.onclick = (e) => {   // [↻ 새로고침] — 러너 상태를 다시 읽고(칸이 새 결과로 바뀜) 펼침을 캐시 없이 다시 불러옴. 덱 초점은 되돌림
+    e.stopPropagation(); btn.blur(); try { window.focus(); } catch (er) {}
+    btn.disabled = true;
+    const done = () => { btn.disabled = false; const sc = S[cur], sl = layer.querySelector(".slide:not(.leave)");
+      if (sc && sc.live && sc.item && typeof revPaint === "function" && CD) { try { boxLocal(sc, revOf(sc.item)); } catch (er) {} }
+      rflowSync(sl, true); try { window.focus(); } catch (er) {} };
+    cdLoad().then(done, done);
+  }; }
 window.addEventListener("message", (e) => {
   const d = e.data, fr = document.querySelector("#rflow iframe");
   if (!fr || !d || typeof d.gongjuDocH !== "number" || e.source !== fr.contentWindow) return;
@@ -3014,6 +3031,7 @@ function boxLocal(sc, r) {
     f.setAttribute("sandbox", "allow-scripts allow-popups allow-downloads");
     f.src = fu + (/\.md$/i.test(v.rel) ? "?html=1&" : "?") + (foc ? "focus=" + foc + "&" : "") + "v=" + (v.at || ver);   // focus: 러너가 그 요소까지 내려 주는 스크립트를 붙여 줌(다른 출처 iframe 은 #map 으로 안 내려감)
     box.dataset.lk = key; const ph = box.querySelector(".ph"); if (ph) ph.remove();
+    rflowSync(layer.querySelector(".slide:not(.leave)"));   // 11.17. 아래 펼침도 새 결과로
   }
   let lab = box.querySelector(".loc"); if (!lab) { lab = document.createElement("div"); lab.className = "loc"; box.appendChild(lab); }
   const fresh = dn && (dn.srcAt || dn.at) >= ver - 1000;
@@ -3035,6 +3053,7 @@ function revLocal(sc, r) {   // 수정본을 칸에(공개가 수정보다 새�
   revLocal._retry = 0;
   if (fu) {
     const f = box.querySelector("iframe"); if (f) { f.setAttribute("sandbox", "allow-scripts allow-popups allow-downloads"); f.src = fu + "?v=" + r.doneAt; }
+    rflowSync(layer.querySelector(".slide:not(.leave)"));   // 11.17. 보완 수정본을 아래 펼침에도 바로
     lab.textContent = "수정본(공개 전) — [⬆ 다시 공개]를 누르면 공개 주소도 바뀝니다";
   } else lab.textContent = "수정 끝 — [⬆ 다시 공개]를 누르면 수정본이 이 칸에 뜹니다";
   box.appendChild(lab);
