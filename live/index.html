@@ -8,8 +8,10 @@
 --f-ui:"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",sans-serif;--f-mono:"JetBrains Mono",Consolas,monospace}
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%}
-body{background:var(--void) radial-gradient(ellipse at 72% -8%,var(--bg1) 0%,var(--bg0) 58%,var(--void) 100%) no-repeat fixed;color:var(--ink);font-family:var(--f-ui);word-break:keep-all;overflow-wrap:anywhere;line-height:1.55;-webkit-text-size-adjust:100%}
+body{background:var(--void);color:var(--ink);font-family:var(--f-ui);word-break:keep-all;overflow-wrap:anywhere;line-height:1.55;-webkit-text-size-adjust:100%}
 a{color:var(--cy)}
+/* 11.16. 스크롤 수리: 배경을 background-attachment:fixed 대신 고정 층으로(fixed 배경은 스크롤마다 화면 전체를 다시 그려 PDF 쪽 그림과 겹치면 스크롤이 끊김) */
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 72% -8%,var(--bg1) 0%,var(--bg0) 58%,var(--void) 100%)}
 .wrap{max-width:1180px;margin:0 auto;padding:22px 16px 40px}
 .hd{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
 .hd .dot{width:12px;height:12px;border-radius:50%;background:var(--cy);box-shadow:0 0 12px var(--cy);flex:none;margin-top:9px;animation:pulse 2.4s ease-in-out infinite}
@@ -34,8 +36,9 @@ h1{font-size:clamp(26px,4.2vw,40px);font-weight:900;margin:2px 0 0;letter-spacin
 .btn:hover{background:rgba(79,209,232,.25)}
 .btn.sub{border-color:#2b3f60;background:#111c2e;color:var(--ink)}
 .frame{display:block;width:100%;height:78vh;min-height:520px;border:1px solid var(--line);border-radius:10px;background:#0a1424}
+.pdfv .pg.wt{background:#e9edf2}
 .pdfv{border:1px solid var(--line);border-radius:10px;background:#1b2536;padding:12px;min-height:240px;overflow:visible}
-.pdfv .pg{display:block;width:100%;height:auto;margin:0 auto 12px;background:#fff;border-radius:3px;box-shadow:0 6px 18px rgba(0,0,0,.45)}
+.pdfv .pg{display:block;width:100%;height:auto;aspect-ratio:var(--ar,0.7071);margin:0 auto 12px;background:#fff;border-radius:3px;box-shadow:0 6px 18px rgba(0,0,0,.45)}
 .pdfv .ld{color:var(--mu);padding:30px 10px;text-align:center}
 .pdfv iframe{display:block;width:100%;height:80vh;border:0;background:#fff}
 .note{font-size:13.5px;color:var(--mu2);margin-top:8px}
@@ -69,7 +72,7 @@ footer .k{font-weight:700;color:var(--cy);margin-right:8px}
 @media (max-width:600px){.frame{height:70vh;min-height:420px}.wrap{padding:16px 14px 32px}}
 </style></head>
 <body><div class="wrap">
-<header class="hd"><span class="dot"></span><div class="tt"><div class="eb">공주여성새로일하기센터 · AI 에이전트 활용 강의</div><h1>실습 결과</h1></div><a class="back" href="../">← 강의 자료</a></header>
+<header class="hd"><span class="dot"></span><div class="tt"><div class="eb">공주여성새로일하기센터 · AI 에이전트 활용 강의</div><h1>실습 결과</h1></div><a class="back" href="https://burn001.github.io/gongju-ai-2026/" target="_top">← 강의 자료</a></header>
 <div class="cards">
 <a class="card" href="1109/"><div class="t">2026. 11. 9.(월)</div><div class="st">그날의 실습 결과</div></a>
 <a class="card" href="1110/"><div class="t">2026. 11. 10.(화)</div><div class="st">그날의 실습 결과</div></a>
