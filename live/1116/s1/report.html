@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>보고서 본문</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root{color-scheme:dark;--void:#05090f;--bg0:#0a1424;--bg1:#17305a;--ink:#eef4fb;--mu:#b4c5de;--mu2:#93a7c6;--dim:#6f83a3;--line:#2a4268;--panel:rgba(17,31,54,.86);--cy:#4fd1e8;--warn:#f4b740;--bad:#ff7a66;--gr:#5fe0a0;
+--f-ui:"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",sans-serif;--f-mono:"JetBrains Mono",Consolas,monospace}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--void) radial-gradient(ellipse at 72% -8%,var(--bg1) 0%,var(--bg0) 58%,var(--void) 100%) no-repeat fixed;color:var(--ink);font-family:var(--f-ui);word-break:keep-all;overflow-wrap:anywhere;line-height:1.55;-webkit-text-size-adjust:100%}
+a{color:var(--cy)}
+.wrap{max-width:1180px;margin:0 auto;padding:22px 16px 40px}
+.hd{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
+.hd .dot{width:12px;height:12px;border-radius:50%;background:var(--cy);box-shadow:0 0 12px var(--cy);flex:none;margin-top:9px;animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+.hd .tt{flex:1 1 auto;min-width:0}
+.eb{font-weight:700;font-size:14px;color:var(--cy);letter-spacing:.06em}
+h1{font-size:clamp(26px,4.2vw,40px);font-weight:900;margin:2px 0 0;letter-spacing:-.015em;line-height:1.25}
+.back{flex:none;font-weight:700;font-size:14px;text-decoration:none;color:var(--cy);border:1px solid rgba(79,209,232,.5);border-radius:8px;padding:6px 12px;background:rgba(79,209,232,.08)}
+.back:hover{background:rgba(79,209,232,.2)}
+.what{font-size:clamp(16px,2.1vw,19px);font-weight:500;line-height:1.55;border-left:4px solid var(--cy);padding:8px 0 8px 16px;margin:16px 0 8px;background:linear-gradient(90deg,rgba(79,209,232,.14),transparent 80%)}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;color:var(--mu2);font-size:14px;margin:0 0 14px}
+.meta b{color:var(--mu);font-weight:700}
+.pn{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 18px}
+.lab{font-weight:700;font-size:15px;color:var(--cy);letter-spacing:.04em}
+.sum ul{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.sum li{position:relative;padding-left:18px;font-size:16px;color:#dfe8f4}
+.sum li::before{content:"";position:absolute;left:0;top:.62em;width:8px;height:8px;border-radius:2px;background:var(--cy);box-shadow:0 0 6px var(--cy)}
+.art{margin-top:16px}
+.art .bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.art .bar .sp{flex:1}
+.btn{display:inline-block;font:700 14px var(--f-ui);padding:7px 14px;border-radius:8px;border:1px solid var(--cy);background:rgba(79,209,232,.12);color:var(--cy);text-decoration:none;white-space:nowrap}
+.btn:hover{background:rgba(79,209,232,.25)}
+.btn.sub{border-color:#2b3f60;background:#111c2e;color:var(--ink)}
+.frame{display:block;width:100%;height:78vh;min-height:520px;border:1px solid var(--line);border-radius:10px;background:#0a1424}
+.pdfv{border:1px solid var(--line);border-radius:10px;background:#1b2536;padding:12px;min-height:240px;overflow:visible}
+.pdfv .pg{display:block;width:100%;height:auto;margin:0 auto 12px;background:#fff;border-radius:3px;box-shadow:0 6px 18px rgba(0,0,0,.45)}
+.pdfv .ld{color:var(--mu);padding:30px 10px;text-align:center}
+.pdfv iframe{display:block;width:100%;height:80vh;border:0;background:#fff}
+.note{font-size:13.5px;color:var(--mu2);margin-top:8px}
+.more{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.warnband{border:1px solid rgba(244,183,64,.7);background:rgba(40,30,8,.55);border-radius:10px;padding:10px 14px;color:#f6e3b8;font-size:14.5px;margin-top:12px}
+footer{margin-top:22px;border-top:1px dashed #335789;padding-top:12px;font-size:13.5px;color:var(--mu2);line-height:1.6}
+footer .k{font-weight:700;color:var(--cy);margin-right:8px}
+.mono{font-family:var(--f-mono)}
+.md{font-size:16px;line-height:1.7;color:#e3ebf6}
+.md h1,.md h2,.md h3,.md h4{line-height:1.35;margin:1.2em 0 .5em}.md h1{font-size:28px}.md h2{font-size:22px;color:var(--cy)}.md h3{font-size:19px}.md h4{font-size:17px}
+.md table{border-collapse:collapse;width:100%;margin:.8em 0;font-size:15px;display:block;overflow-x:auto}
+.md th,.md td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}.md th{background:rgba(79,209,232,.1);color:var(--cy)}
+.md code{font-family:var(--f-mono);font-size:.92em;background:rgba(79,209,232,.1);padding:1px 5px;border-radius:4px}
+.md pre{background:#081424;border:1px solid var(--line);border-radius:8px;padding:12px;overflow:auto}.md pre code{background:none;padding:0}
+.md blockquote{margin:.8em 0;padding:4px 14px;border-left:4px solid var(--warn);color:var(--mu)}
+.md hr{border:0;border-top:1px dashed #335789;margin:1.4em 0}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-top:16px}
+.card{display:block;text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;min-height:132px}
+.card:hover{border-color:var(--cy)}
+.card.on{border-color:rgba(95,224,160,.75);box-shadow:0 0 18px rgba(95,224,160,.12)}
+.card .tag{display:inline-block;font:700 13px var(--f-mono);padding:2px 9px;border-radius:5px;background:rgba(79,209,232,.14);color:var(--cy);border:1px solid rgba(79,209,232,.5)}
+.card .no{font:700 22px var(--f-mono);color:var(--cy);margin-right:8px}
+.card .t{font-size:20px;font-weight:900;margin-top:8px}
+.card .st{font-size:14px;margin-top:6px;color:var(--mu2)}
+.card.on .st{color:var(--gr);font-weight:700}
+.wait{max-width:760px;margin:6vh auto 0;text-align:center}
+.wait .big{font-size:clamp(22px,4vw,34px);font-weight:900;line-height:1.4;margin:22px 0 10px}
+.wait .orb{width:72px;height:72px;margin:0 auto;border-radius:50%;border:3px solid rgba(79,209,232,.35);border-top-color:var(--cy);animation:spin 1.6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.hd .dot,.wait .orb{animation:none}}
+@media (max-width:600px){.frame{height:70vh;min-height:420px}.wrap{padding:16px 14px 32px}}
+</style></head>
+<body><div class="wrap">
+<header class="hd"><span class="dot"></span><div class="tt"><div class="eb">공주 새일센터 AI 에이전트 강의 · 실습 결과</div><h1>보고서 본문</h1></div><a class="back" href="./">← 돌아가기</a></header>
+<section class="pn" style="margin-top:16px"><div class="md"><h1>공주시 경력단절여성 재취업 지원 현황</h1>
+<blockquote>공주시 여성 고용률은 51.8%(2026 상반기)로 남성(66.8%)보다 15.0%p 낮고, 30~49세 여성 고용률도 1년 사이 하락세임. 공주 센터 자체 실적은 확인되지 않아 센터 내부 자료로 보완이 필요함.</blockquote>
+<h2>1. 현황</h2>
+<ul><li>공주시 여성 고용률 하락세</li><li style="margin-left:1.2em">15세 이상 여성 고용률 51.8%, 직전 반기(2025 하반기, 55.1%) 대비 3.3%p 하락함 (KOSIS DT_1ES3A03_A03S, 2026 상반기)</li><li style="margin-left:1.2em">30~49세 여성 고용률 70.8%로 2025 하반기(75.5%) 대비 4.7%p, 2024 하반기(77.4%) 대비 6.6%p 하락함 (KOSIS DT_1ES3A03_A03S, 2026 상반기)</li><li style="margin-left:1.2em">남성 고용률 66.8%, 전체 고용률 59.1%이며 남녀 격차는 15.0%p임 (KOSIS DT_1ES3A03_A02S·A01S, 2026 상반기, 격차는 단순 산출)</li><li>전국 경력단절여성 규모 (공주시 값은 확인 필요)</li><li style="margin-left:1.2em">전국 경력단절여성 1,105.2천명 (KOSIS DT_1ES4H07J, 2025)</li><li style="margin-left:1.2em">사유별 육아 489.5천명(44.3%, 산출)이 가장 많고, 결혼 267.6천명, 임신·출산 244.0천명, 가족돌봄 56.4천명, 자녀교육 47.7천명 순임 (KOSIS DT_1ES4H07J, 2025)</li><li style="margin-left:1.2em">공주시 경력단절여성 수·비율, 경제활동참가율은 조회 가능한 시군구 통계가 없어 확인 필요임</li><li>지역 여건</li><li style="margin-left:1.2em">주민등록 총인구 99,311명 (KOSIS DT_1B040A3, 2026년 10월)</li><li style="margin-left:1.2em">고령인구비율 33% (KOSIS DT_1YL20631, 2025)</li></ul>
+<table><thead><tr><th>공주시 고용률(%)</th><th>2024 하반기</th><th>2025 상반기</th><th>2025 하반기</th><th>2026 상반기</th></tr></thead><tbody><tr><td>여성(15세 이상)</td><td>54.9</td><td>53.4</td><td>55.1</td><td>51.8</td></tr><tr><td>여성(30~49세)</td><td>77.4</td><td>74.0</td><td>75.5</td><td>70.8</td></tr><tr><td>남성</td><td>68.2</td><td>65.8</td><td>65.4</td><td>66.8</td></tr><tr><td>전체</td><td>61.4</td><td>59.4</td><td>60.1</td><td>59.1</td></tr></tbody></table>
+<p>(KOSIS DT_1ES3A03_A01S·A02S·A03S, 조회 2026. 11. 16.)</p>
+<h2>2. 지원 제도·사례</h2>
+<ul><li>새일센터 기본 구조</li><li style="margin-left:1.2em">여성새로일하기센터(새일센터)는 여성가족부(현 성평등가족부)와 고용노동부가 공동 지정함 (성평등가족부 누리집, 날짜 확인 필요, 검색 요약 기준·원문 미확인)</li><li style="margin-left:1.2em">상담, 직업교육훈련, 인턴십, 취업연계, 사후관리를 제공함 (같은 자료, 검색 요약 기준)</li><li>새일여성인턴십 (타 시 공고 사례)</li><li style="margin-left:1.2em">새일센터에 구직 등록한 미취업 여성이 대상이며 인턴 기간은 3개월임 (인천광역시 안내, 날짜 확인 필요, 검색 요약 기준)</li><li style="margin-left:1.2em">1인당 총 460만 원(기업 400만 원, 인턴 60만 원) 지원임. 인천 공고 기준이므로 공주에 그대로 적용된다고 볼 수 없음</li><li>충남 새일센터 성과 사례</li><li style="margin-left:1.2em">당진여성새일센터는 2024년 3개 과정 훈련생 60명이 수료하고 73.3%가 취·창업에 성공했다고 밝힘 (뉴스 보도, 2025년, 월일 확인 필요, 검색 요약 기준). 당진 한 곳의 수치임</li><li>정책 환경</li><li style="margin-left:1.2em">제4차 여성의 경제활동 촉진과 경력단절 예방에 관한 기본계획(2025~2029)은 대상을 경력단절여성 중심에서 청년·중장년·고령 여성 등으로 확대함 (여성가족부, 2025년, 발표일 확인 필요, 보도 요약 기준)</li><li style="margin-left:1.2em">충남은 지역성평등지수 상위권에 진입했으나 기혼여성 경력단절·미취업은 과제로 남았음 (서울신문, 2025. 12. 16.)</li><li>공주여성새로일하기센터 개별 프로그램, 연간 실적, 취업률, 사례는 확인 필요함</li></ul>
+<h2>3. 시사점·건의</h2>
+<ul><li>30~49세 여성 고용률이 2024 하반기 이후 하락하여 핵심 연령대 재취업 지원 강화가 필요함</li><li>전국적으로 육아가 경력단절의 최대 사유이므로 돌봄 연계형 훈련·근무시간 유연 일자리 발굴이 필요함</li><li>공주 센터의 연간 취업률·훈련 수료·인턴십 연계 실적을 정리하여 본 보고서의 확인 필요 항목을 보완할 것을 건의함</li><li>공주시 경력단절여성 규모는 센터 구직등록 자료와 시 통계를 활용해 별도 파악할 필요가 있음</li><li>당진 등 충남 타 센터의 훈련과정 운영 방식을 벤치마킹하되, 수치는 공주 실적으로 확인 후 활용해야 함</li></ul>
+<h2>참고 자료</h2>
+<ul><li>국가데이터처 KOSIS, 시군구 성별 고용률, 통계표 ID DT_1ES3A03_A01S·A02S·A03S, 조회 2026. 11. 16.</li><li>국가데이터처 KOSIS, 경력단절여성 사유별, 통계표 ID DT_1ES4H07J, 2025</li><li>국가데이터처 KOSIS, 주민등록 인구, 통계표 ID DT_1B040A3, 2026년 10월</li><li>국가데이터처 KOSIS, 고령인구비율, 통계표 ID DT_1YL20631, 2025</li><li>성평등가족부(옛 여성가족부), 경력단절여성 취업지원 안내, 날짜 확인 필요, https://www.mogef.go.kr/sp/geq/sp_geq_f002.do</li><li>인천광역시, 새일여성인턴십 안내, 날짜 확인 필요, https://www.incheon.go.kr/welfare/WE020106</li><li>당진여성새일센터 2025년 직업교육훈련 교육생 모집(뉴스 보도), 2025년(월일 확인 필요), https://news.tf.co.kr/read/ogmeta/2184647.htm</li><li>서울신문, 충남 &#39;성평등 상위&#39;, 2034 여성 순유출 급감, 2025. 12. 16., https://m.seoul.co.kr/news/2025/12/16/20251216500201</li><li>제4차 여성의 경제활동 촉진과 경력단절 예방에 관한 기본계획(2025~2029) 관련 보도, 2025년, https://v.daum.net/v/7QPIB9e74k</li></ul></div></section>
+<div class="warnband">AI가 만든 <b>초안</b>입니다. 숫자는 원문에서 꼭 다시 확인하세요.</div>
+</div></body></html>
