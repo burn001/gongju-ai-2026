@@ -527,12 +527,17 @@ body:not(.lay) #topbar, body:not(.lay) #rflow { display: none !important; }
 #rflow .rfh { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font: 700 15px var(--f-ui); color: var(--cy); margin-bottom: 8px; }
 #rflow .rfu { flex: 1; min-width: 0; font: 500 13px var(--f-mono); color: var(--mu2); overflow-wrap: anywhere; }
 /* 11.17. 결과가 두 번 보이던 것(슬라이드 안 칸 + 아래 펼침) → 발표자 배치에서는 아래 펼침만. 칸 자리에는 안내만(보완 중 Agent4D 칸은 그대로 위에 놓임) */
-body.lay .lvbox iframe.lvf { visibility: hidden; }
+body.lay .lvbox iframe.lvf { visibility: hidden; }   /* 발표자 배치: 칸 iframe 은 주소만 data-src 에 두고 불러오지 않음(lvGo) */
 body.lay .lvbox .ph { display: none; }
-body.lay .lvbox::before { content: "↓ 결과는 슬라이드 아래 '결과 화면 펼쳐 보기'에서 봅니다"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 24px; text-align: center; color: var(--mu); font-size: 24px; font-weight: 700; line-height: 1.5; }
+body.lay .lvbox::before { content: "↓ 결과는 슬라이드 아래 '작업 산출물'에서 봅니다"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 24px; text-align: center; color: var(--mu); font-size: 24px; font-weight: 700; line-height: 1.5; }
 #rflow .rfr { font: 700 13px var(--f-ui); color: var(--cy); background: transparent; border: 1px solid rgba(79,209,232,.5); border-radius: 8px; padding: 4px 10px; cursor: pointer; }
 #rflow .rfo { font: 700 13px var(--f-ui); color: var(--cy); border: 1px solid rgba(79,209,232,.5); border-radius: 8px; padding: 4px 10px; text-decoration: none; }
 #rflow iframe { display: block; width: 100%; height: 900px; border: 1px solid var(--line); border-radius: 10px; background: #0a1424; }
+/* 11.17. 박사님 지시: 작업 산출물은 하단 출력 하나로 통일 — 그 실습의 산출물(단계별 · 디자인 후보 · 공개 화면)을 차례로 쌓아 한 스크롤로 */
+#rflow .rfe { margin-bottom: 18px; }
+#rflow .rfeh { display: flex; align-items: center; gap: 10px; font: 700 14px var(--f-ui); color: var(--ink); margin: 0 0 6px; }
+#rflow .rfeh span { flex: 1; min-width: 0; color: var(--mu2); font: 500 12px var(--f-mono); overflow-wrap: anywhere; }
+.dy .frh { margin-top: 8px; font-size: 15px; color: var(--cy); font-weight: 700; }
 @media (max-width: 760px) {
   body.lay { overflow: auto; }
   body.lay .page, body.lay.sb .page { position: static; overflow: visible; padding: 0 12px 20px; }
@@ -552,7 +557,7 @@ body.lay .lvbox::before { content: "↓ 결과는 슬라이드 아래 '결과 �
       <div id="tt" aria-hidden="true"></div>
     </div></div>
   </div>
-  <section id="rflow" hidden aria-label="결과 화면 펼쳐 보기"><div class="rfh"><b>결과 화면 펼쳐 보기</b><span class="rfu"></span><button type="button" class="rfr" title="최신 결과를 다시 읽어 옵니다(보완 지시로 고친 판 포함)">↻ 새로고침</button><a class="rfo" target="_blank" rel="noopener">새 창으로 ↗</a></div><iframe title="결과 화면(펼침)" referrerpolicy="no-referrer" scrolling="no"></iframe></section>
+  <section id="rflow" hidden aria-label="작업 산출물"><div class="rfh"><b>작업 산출물</b><span class="rfu"></span><button type="button" class="rfr" title="최신 산출물을 다시 읽어 옵니다(보완 지시로 고친 판 포함)">↻ 새로고침</button></div><div class="rfl"></div></section>
   <div class="ctl" role="toolbar" aria-label="발표 조작">
     <button id="bPrev" type="button" aria-label="이전 장면">← 이전</button>
     <span class="pos" id="pos"></span>
@@ -620,14 +625,14 @@ function lvFocus(f) {   // 11.16. 공개 화면이 다른 출처(강의실 사�
 /* 공개 화면이 불러지면 {gongjuLive:{kind}} 를 알려 옴(published · placeholder · day · missing) → 칸의 상태로 둠(아래 20초 확인이 씀) */
 window.addEventListener("message", (e) => {
   const d = e.data && e.data.gongjuLive; if (!d) return;
-  document.querySelectorAll("iframe.lvf").forEach((f) => { if (f.contentWindow === e.source) f.dataset.lvk = String(d.kind || ""); });
+  document.querySelectorAll("iframe.lvf, #rflow iframe[data-live]").forEach((f) => { if (f.contentWindow === e.source) f.dataset.lvk = String(d.kind || ""); });
 });
 document.addEventListener("load", (e) => { const f = e.target; if (f && f.tagName === "IFRAME" && f.classList.contains("lvf")) lvFocus(f); }, true);
 /* 결과 공개 장: 왼쪽 = 그 공개 화면(iframe, 눌리지 않음), 오른쪽 = QR + 주소 크게 */
 function liveSlide(s, o) {
   const u = liveUrl(o.st);
   return `<div class="slide${o.big ? " lvbig" : ""}">${hd(s, o.title)}
-  <div class="lvbox a-rise" ${d(.15)}><div class="ph">${u} 불러오는 중…</div><iframe class="lvf" data-live="${o.st}" src="${u}?v=${Date.now()}" title="${o.what} — 공개 화면" tabindex="-1" referrerpolicy="no-referrer" loading="eager"></iframe></div>
+  <div class="lvbox a-rise" ${d(.15)}><div class="ph">${u} 불러오는 중…</div><iframe class="lvf" data-live="${o.st}" ${FOLLOW ? "src" : "data-src"}="${u}?v=${Date.now()}" title="${o.what} — 공개 화면" tabindex="-1" referrerpolicy="no-referrer" loading="eager"></iframe></div>
   <div class="lvside">
     <div class="lab a-fade" ${d(.2)} style="text-align:center">${o.big ? "휴대폰 카메라로 QR을 찍어 가져가세요" : "내 화면에서 열어 보세요"}</div>
     <div class="lvqr a-pop" ${d(.3)}>${qrSvg(u)}</div>
@@ -1385,7 +1390,7 @@ add({ ch: 10, eb: "END", cr: { poll: "wish" }, sub: ["감사합니다. 궁금한
    아이템 · 진행기 단계 · 공개 묶음 · 동적 화면(흐름2 화면틀 json, 러너 GET /conduct/screen?id=) 은 아래 ITEMS 한 곳에서 정함. */
 const OLD_DECK = /[?&]old(=|&|$)/.test(location.search);
 const ITEMS = [
-  { id: "report", title: "보고서 워크플로", kind: "참여형", min: 12, what: "여러분이 고른 주제로 출처가 달린 한글 보고서", steps: ["rep-sort", "rep-plan", "s1"], pub: "s1", mark: "report",
+  { id: "report", title: "보고서 워크플로", kind: "참여형", min: 12, what: "여러분이 고른 주제로 출처가 달린 한글 보고서", steps: ["rep-sort", "rep-plan", "s1-md", "s1"], pub: "s1", mark: "report",
     screens: { sort: "rep-sort", plan: "rep-plan" } },
   { id: "slides", title: "보고서 → 발표 슬라이드", kind: "투표", min: 8, what: "디자인 샘플을 보고 투표 → 그 디자인으로 발표 슬라이드", steps: ["sld-design", "s7"], pub: "s7", dep: "report", depNote: "보고서가 없으면 미리 만든 예시 보고서로",
     screens: { design: "sld-design" } },
@@ -1678,7 +1683,7 @@ if (!OLD_DECK) (function rebuild() {
     html: (s) => `<div class="slide">${hd(s, o.title)}<div class="dy" data-dyn="${o.screen || "file"}">${dynA4On()
       ? `<div class="wait a4w"><div class="a4slot" style="left:-16px;top:-8px;width:790px;height:520px"><div class="ph"><div style="font-size:24px;font-weight:900;color:var(--ink)">AI 팀 실시간 화면 불러오는 중…</div></div></div><div class="side"><div class="orb"></div><div class="big2">${o.wait || "AI가 정리하는 중…"}</div><div>왼쪽은 AI 팀이 지금 일하는 모습입니다.<br>정리가 끝나면 이 화면에 바로 뜹니다</div></div></div>`
       : `<div class="wait"><div class="orb"></div><div class="big2">${o.wait || "AI가 정리하는 중…"}</div><div>${EMB.a4d || CD_ON ? "정리가 끝나면 이 화면에 바로 뜹니다" : "강사 화면에서 보여 드립니다"}</div></div>`}</div></div>` });
-  const runScr = (it, o) => put({ ch: C(it.id), item: it.id, ref: it.title, eb: `${it.no}. ${it.title} · 실행 화면`, a4d: [40, 104, 790, 520], ws: [846, 104, 394, 520], gate: o.gate, sub: o.sub || ["지금 AI 팀이 일하는 모습입니다. 왼쪽은 팀장과 팀원이 일을 주고받는 모습, 오른쪽은 지금 하는 일이 글로 올라오는 창입니다.", "작업이 끝나야 다음 장으로 넘어갑니다."],
+  const runScr = (it, o) => put({ ch: C(it.id), item: it.id, ref: it.title, eb: `${it.no}. ${it.title} · 실행 화면`, a4d: [40, 104, 790, 520], ws: [846, 104, 394, 520], gate: o.gate, run: o.run || null, sub: o.sub || ["지금 AI 팀이 일하는 모습입니다. 왼쪽은 팀장과 팀원이 일을 주고받는 모습, 오른쪽은 지금 하는 일이 글로 올라오는 창입니다.", "작업이 끝나야 다음 장으로 넘어갑니다."],
     html: (s) => `<div class="slide">${hd(s, o.title)}
     <div class="a4slot a-fade" ${d(.1)} style="left:40px;top:104px;width:790px;height:520px"><div class="ph">${EMB.a4d ? `<div style="font-size:24px;font-weight:900;color:var(--ink)">AI 팀 실시간 화면 불러오는 중…</div>` : `<div style="font-size:26px;font-weight:900;color:var(--ink)">AI 팀 실시간 화면은 강사 화면에서</div><div style="font-size:18px;margin-top:8px">내 화면의 'AI 작업 화면' 탭에서 같은 일을 글로 볼 수 있습니다</div>`}</div></div>
     <div class="wsslot a-fade" ${d(.15)} style="left:846px;top:104px;width:394px;height:520px">${CD_ON ? "인터랙티브 창 불러오는 중…" : "AI 작업 화면 — 내 화면(가상 강의실)의<br><b class=\"cy\">'AI 작업 화면'</b> 탭에서 보세요"}</div>
@@ -1694,9 +1699,9 @@ if (!OLD_DECK) (function rebuild() {
     collect(it, { title: "1. 보고서 — 어떤 주제로 만들까요?", q: "센터장님께 올릴 보고서, 어떤 주제가 궁금하세요?", lines: ["공주 · 여성 · 일자리 · 돌봄 · 교육 무엇이든", "한 줄이면 됩니다"], ex: ["공주 여성 고용률", "경력단절 이유", "돌봄과 일자리"], runLabel: "주제 정리",
       sub: ["첫 실습은 보고서입니다. 센터장님께 올릴 보고서 주제를 채팅창에 한 줄씩 적어 주세요.", "2～3분 모은 뒤 AI가 비슷한 것끼리 묶어 후보 셋을 고르고, 투표로 하나를 정합니다."] });
     dyn(it, { title: "받은 주제 정리", screen: it.screens.sort, step: "rep-sort", gate: ["rep-sort"], poll: true, run: { step: "rep-plan", label: "작업 설계" }, wait: "AI가 주제를 묶고 고르는 중…", sub: ["여러분이 적은 주제를 AI가 묶었습니다. 후보 셋 가운데 하나를 투표로 골라 주세요.", "투표를 마감하고 작업 설계를 보냅니다."] });
-    dyn(it, { title: "작업 설계 — 이렇게 나눠 맡깁니다", screen: it.screens.plan, step: "rep-plan", gate: ["rep-plan"], run: { step: "s1", label: "보고서 만들기" }, wait: "AI가 작업을 설계하는 중…", sub: ["AI 팀장이 세운 작업 계획입니다. 통계 담당과 자료 담당이 동시에 조사하고, 작성 · 확인 담당이 숫자를 대조합니다.", "실행을 누르면 5분 안팎입니다."] });
+    dyn(it, { title: "작업 설계 — 이렇게 나눠 맡깁니다", screen: it.screens.plan, step: "rep-plan", gate: ["rep-plan"], run: { step: "s1-md", label: "보고서 만들기 ⓐ md" }, wait: "AI가 작업을 설계하는 중…", sub: ["AI 팀장이 세운 작업 계획입니다. 통계 담당과 자료 담당이 동시에 조사하고, 작성 · 확인 담당이 숫자를 대조합니다.", "실행을 누르면 5분 안팎입니다."] });
     put(Object.assign({ ch: C(it.id), item: it.id, ref: it.title, newSlide: "prompt", cut: "늦으면 건너뜀" }, NEWS.prompt));   // 11.16. 밤 — 보고서를 기다리는 동안 이야기(→ 다음 장이 실시간 화면)
-    runScr(it, { title: "보고서를 만드는 중", gate: ["s1"] });
+    runScr(it, { title: "보고서를 만드는 중 — ⓐ md 작성 → ⓑ 한글 변환", gate: ["s1-md", "s1"], run: { step: "s1", label: "ⓑ 한글로 변환" } });   // 11.17. 보고서 2단계(박사님: 단계마다 단추) — ⓐ가 끝나면 이 장의 [ⓑ 한글로 변환]
     result(it, { title: "오늘 만든 보고서 — 내 화면에서 넘겨 보세요", sub: ["방금 만든 보고서입니다. 한글 파일을 PDF로 바꿔 올렸습니다. 숫자 옆 출처를 눈여겨보세요."] }); }
 
   /* 2. 슬라이드 변환 — 디자인 샘플 세 가지(투표) → 전체 */
@@ -2367,38 +2372,77 @@ async function pubRun(st, again) {
   } catch (err) { cdNote("러너에 연결하지 못했습니다"); }
   pubPosting = ""; await cdLoad();
 }
-/* 11.16. 결과 장이면 슬라이드 아래에 그 공개 화면을 내용 높이 그대로 펼침(?flow — 화면이 높이를 알려 옴, 안쪽 스크롤 없음). 왼쪽 한 스크롤로 내려 봄 */
-function rflowSync(sl, force) {   // 11.17. 칸이 러너 파일(방금 만든 결과 · 보완 수정본, sandbox)을 띄우면 펼침도 같은 파일로 — 공개 전 수정본이 아래에 안 보이던 문제
+/* 11.17. 하단 출력 하나(작업 산출물) — 박사님 지시 "작업 산출물은 하단에 나오는 출력 하나로 통일(스크롤해서 같이 보는게 훨씬 낫다)".
+   그 실습(item)의 장이면 산출물을 시간 순서로 차례로 쌓음: ① 러너 기록의 단계별 결과(view — 보고서 md → hwpx 처럼 단계가 늘어도 CD.stepItem 으로 자동 포함)
+   ② 동적 장 화면의 디자인 후보(frame) ③ 러너 결과가 없으면 결과 장의 공개 화면(?flow — 높이를 알려 옴). 슬라이드 안 결과 칸은 발표자 배치에서 불러오지 않음(lvGo) */
+function lvGo(f, u) { if (FOLLOW) f.src = u; else f.dataset.src = u; }
+function outEntries(sc) {
+  if (!sc || !sc.item || sc.hub || !ITEM[sc.item] || OLD_DECK) return [];
+  const it = ITEM[sc.item], L = [], seen = {};
+  if (CD && CD_ON) {
+    const si = CD.stepItem || {}, rv = revOf(it.id).doneAt || 0, title = (id) => ((CD.steps || []).find((x) => x.id === id) || {}).title || id;
+    (CD.history || []).forEach((h) => {
+      if (!(si[h.id] === it.id || it.steps.indexOf(h.id) >= 0) || h.status !== "done" || !h.view || !h.view.rel) return;
+      const fu = rnFile(h.folder, h.view.rel); if (!fu) return;   // 원격 토큰을 받는 중 — 다음 그리기 때
+      const k = h.folder + "|" + h.view.rel, v = Math.max(h.view.at || 0, h.doneAt || 0, rv);
+      if (seen[k]) L.splice(L.indexOf(seen[k]), 1);   // 같은 파일을 다시 만든 단계 → 나중 것 하나만
+      seen[k] = { k, t: h.doneAt || 0, label: title(h.id), sub: h.view.rel, sb: true, src: fu + (/\.md$/i.test(h.view.rel) ? "?html=1&" : "?") + "v=" + v };
+      L.push(seen[k]);
+    });
+    S.forEach((x) => { if (x.item !== it.id || !x.dyn) return; const j = dynCache[x.dyn], dd = j && j.data; if (!dd || !dd.folder) return;
+      (dd.candidates || []).slice(0, 3).forEach((c, i) => { const fu = c.frame && rnFile(dd.folder, c.frame); if (!fu) return;
+        L.push({ k: "cand|" + dd.folder + "|" + c.frame, t: j.at || 0, label: "후보 " + (c.key || "ABC"[i]) + " — " + (c.label || ""), sub: c.frame, sb: true, src: fu + "?v=" + (j.at || 0) }); }); });
+    L.sort((a, b) => a.t - b.t);
+  }
+  if (!L.length && sc.live) { const st = sc.live.endsWith("#") ? livePub(it) : sc.live, u = liveUrl(st);
+    L.push({ k: "pub|" + st, label: "공개 화면", sub: u, live: st, src: u + "?flow=1&v=" + Date.now(), href: u }); }
+  return L;
+}
+function rflowSync(sl, force) {
   const box = document.getElementById("rflow"); if (!box || FOLLOW) return;
-  const f = sl && sl.querySelector(".lvf"), st = f && f.dataset.live;
-  const fr = box.querySelector("iframe");
-  if (!st) { box.hidden = true; box.dataset.st = ""; box.dataset.key = ""; fr.removeAttribute("src"); fr.style.height = ""; return; }
+  const L = outEntries(S[cur]), ls = box.querySelector(".rfl");
+  if (!L.length) { box.hidden = true; box.dataset.key = ""; ls.textContent = ""; return; }
   box.hidden = false;
-  const local = f.hasAttribute("sandbox") ? (f.getAttribute("src") || "") : "", key = st + "|" + local;
+  const key = L.map((x) => x.k + (x.live ? "" : "@" + x.src)).join(" ");
   if (box.dataset.key === key && !force) return;
-  box.dataset.st = st; box.dataset.key = key;
-  const u = local || liveUrl(st), bust = "rf=" + Date.now();
-  box.querySelector(".rfu").textContent = local ? "AI가 방금 만든 결과(공개 전 · 러너 파일)" : u; box.querySelector(".rfo").href = u;
-  if (local) { fr.setAttribute("sandbox", "allow-scripts allow-popups allow-downloads"); fr.setAttribute("scrolling", "yes"); fr.style.height = "1000px"; fr.src = u + (u.indexOf("?") < 0 ? "?" : "&") + bust; }
-  else { fr.removeAttribute("sandbox"); fr.setAttribute("scrolling", "no"); fr.style.height = ""; fr.src = u + "?flow=1&v=" + Date.now(); }
+  box.dataset.key = key;
+  box.querySelector(".rfu").textContent = L.length > 1 ? L.length + "개 · 아래로 이어 봅니다" : "";
+  const old = {}; ls.querySelectorAll(".rfe").forEach((e) => { old[e.dataset.k] = e; });
+  L.forEach((x) => {
+    let e = old[x.k]; delete old[x.k];
+    if (!e) { e = document.createElement("div"); e.className = "rfe"; e.dataset.k = x.k;
+      e.innerHTML = '<div class="rfeh"><b></b><span></span><a class="rfo" target="_blank" rel="noopener">새 창으로 ↗</a></div><iframe referrerpolicy="no-referrer"></iframe>'; }
+    ls.appendChild(e);   // 순서대로(이미 있으면 자리만 옮김)
+    e.querySelector("b").textContent = x.label; e.querySelector(".rfeh span").textContent = x.sub || ""; e.querySelector(".rfo").href = x.href || x.src;
+    const fr = e.querySelector("iframe"); fr.title = "작업 산출물 — " + x.label;
+    if (x.live) fr.dataset.live = x.live; else delete fr.dataset.live;
+    if (x.sb) { fr.setAttribute("sandbox", "allow-scripts allow-popups allow-downloads"); if (!fr.dataset.fit) fr.setAttribute("scrolling", "yes"); } else { fr.removeAttribute("sandbox"); fr.setAttribute("scrolling", "no"); }
+    const want = x.live ? x.k : x.src;
+    if (force || fr.dataset.want !== want) {
+      fr.dataset.want = want; if (!fr.dataset.fit) fr.style.height = x.sb ? "900px" : "";
+      fr.src = x.live || !force ? x.src : x.src + "&rf=" + Date.now();
+    }
+  });
+  Object.keys(old).forEach((k) => old[k].remove());
 }
 { const rb = document.getElementById("rflow"), btn = rb && rb.querySelector(".rfr");
-  if (btn) btn.onclick = (e) => {   // [↻ 새로고침] — 러너 상태를 다시 읽고(칸이 새 결과로 바뀜) 펼침을 캐시 없이 다시 불러옴. 덱 초점은 되돌림
+  if (btn) btn.onclick = (e) => {   // [↻ 새로고침] — 러너 상태를 다시 읽고 하단 출력을 캐시 없이 다시 불러옴. 덱 초점은 되돌림
     e.stopPropagation(); btn.blur(); try { window.focus(); } catch (er) {}
     btn.disabled = true;
     const done = () => { btn.disabled = false; const sc = S[cur], sl = layer.querySelector(".slide:not(.leave)");
-      if (sc && sc.live && sc.item && typeof revPaint === "function" && CD) { try { boxLocal(sc, revOf(sc.item)); } catch (er) {} }
+      if (sc && sc.live && sc.item && CD) { try { boxLocal(sc, revOf(sc.item)); } catch (er) {} }
+      if (sc && sc.dyn) dynLoad();
       rflowSync(sl, true); try { window.focus(); } catch (er) {} };
     cdLoad().then(done, done);
   }; }
+if (CD_ON && !FOLLOW) setInterval(() => { if (!document.hidden) rflowSync(layer.querySelector(".slide:not(.leave)")); }, 3000);   // 러너 기록이 바뀌면(새 단계 결과 · 보완 수정본) 하단 출력에 바로
 window.addEventListener("message", (e) => {
-  const d = e.data, fr = document.querySelector("#rflow iframe");
-  if (!fr || !d || typeof d.gongjuDocH !== "number" || e.source !== fr.contentWindow) return;
-  fr.style.height = Math.min(40000, Math.max(300, Math.ceil(d.gongjuDocH) + 4)) + "px";
+  const d = e.data; if (!d || typeof d.gongjuDocH !== "number") return;
+  document.querySelectorAll("#rflow iframe").forEach((fr) => { if (e.source === fr.contentWindow) { fr.style.height = Math.min(40000, Math.max(300, Math.ceil(d.gongjuDocH) + 4)) + "px"; fr.setAttribute("scrolling", "no"); fr.dataset.fit = "1"; } });   // 높이를 알려 오면 안쪽 스크롤 없이
 });
 function liveReload(st, force) {   // 11.11. 러너 파일을 띄운 칸(발표자)은 그대로 둠 — 같은 결과라 공개가 끝나도 칸이 뒤바뀌지 않게
-  document.querySelectorAll('.lvf[data-live="' + st + '"]').forEach((f) => { if (!force && f.parentNode.dataset.lk) return; f.removeAttribute("sandbox"); f.src = liveUrl(st) + "?v=" + Date.now(); });
-  const rb = document.getElementById("rflow"); if (rb && !rb.hidden && rb.dataset.st === st) rflowSync(layer.querySelector(".slide:not(.leave)"), true);
+  document.querySelectorAll('.lvf[data-live="' + st + '"]').forEach((f) => { if (!force && f.parentNode.dataset.lk) return; f.removeAttribute("sandbox"); lvGo(f, liveUrl(st) + "?v=" + Date.now()); });
+  if (document.querySelector('#rflow iframe[data-live="' + st + '"]')) rflowSync(layer.querySelector(".slide:not(.leave)"), true);
 }
 function liveWatch(p) {
   const m = (p && p.done && p.done[LIVE_DAY]) || {};
@@ -2717,6 +2761,7 @@ function gateOf(sc) {
   let i0 = hs.length - 1; while (i0 > 0 && ids.indexOf(hs[i0 - 1].id) < ids.indexOf(hs[i0].id)) i0--;   // 이번 회차의 첫 단계
   const t0 = hs[i0].sentAt;
   if (h.id === last && h.status === "done") { const ms = hs.slice(i0).reduce((a, x) => a + (x.durationMs || 0), 0); return { block: false, kind: "done", txt: "✓ 끝났습니다 · " + cdFmt(ms) + " — → 를 누르면 다음 장으로" }; }
+  if (h.status === "done" && h.id !== last && !CD_CHAIN[h.id]) { const nx = ids[ids.indexOf(h.id) + 1], ne = CD_STEPS.find((x) => x.step === nx); return { block: true, kind: "wait", txt: "✓ " + (h.short || h.id) + " 끝 — 다음 단계 [▶ " + ((ne && ne.label) || nx) + "]을 누르세요 · 비상: Shift+→" }; }   // 11.17. 단계마다 단추
   if (h.status === "undelivered") return { block: true, kind: "err", txt: "⚠ 지시가 세션에 전달되지 않았습니다 — 앞 장에서 다시 실행 · 비상: Shift+→" };
   return { block: true, kind: "run", txt: "● AI 팀이 일하는 중 · " + (ids.length > 1 ? (h.short || h.id) + " · " : "") + cdFmt(cdNow() - t0) + " — 끝나면 넘어갑니다" };
 }
@@ -2795,7 +2840,7 @@ function dynHtml(d) {
   const stats = (d.stats || []).slice(0, 4);
   const cands = (frames) => (d.candidates || []).slice(0, 3).map((c, i) => { const key = c.key || "ABC"[i]; const pick = d.pick && d.pick.key === key;
     const fu = frames && dynFrameUrl(d, c.frame);
-    return `<div class="cand${pick ? " pick" : ""}" style="--c:${CC[i % 3]}"><span class="k">${esc(key)}</span>${c.minutes ? `<span class="m">약 ${esc(c.minutes)}분</span>` : ""}<b>${esc(c.label)}</b>${c.why ? `<span>${esc(c.why)}</span>` : ""}${fu ? `<div class="fr"><iframe src="${esc(fu)}" tabindex="-1" loading="lazy" sandbox="allow-scripts"></iframe></div>` : ""}</div>`; }).join("");
+    return `<div class="cand${pick ? " pick" : ""}" style="--c:${CC[i % 3]}"><span class="k">${esc(key)}</span>${c.minutes ? `<span class="m">약 ${esc(c.minutes)}분</span>` : ""}<b>${esc(c.label)}</b>${c.why ? `<span>${esc(c.why)}</span>` : ""}${fu ? `<div class="frh">↓ 아래 작업 산출물에서 크게 보기</div>` : ""}</div>`; }).join("");
   const poll = d.poll ? `<div class="pollx"><b>투표</b>${esc(d.poll.question)} — 강의실 화면에서 골라 주세요</div>` : "";
   let main = "";
   if (d.kind === "sort") {
@@ -2845,6 +2890,7 @@ function dynLoad() {
     dynCache[sc.dyn] = j;
     if (j.data.title) { const t = layer.querySelector(".slide:not(.leave) .hd .t"); if (t) t.textContent = j.data.title; }
     box.innerHTML = dynHtml(j.data);
+    rflowSync(layer.querySelector(".slide:not(.leave)"));   // 11.17. 디자인 후보 등은 하단 출력으로
     dynA4(sc, false);
     box.querySelectorAll(".fr").forEach((f) => { const k = f.clientWidth / 1600; const ifr = f.querySelector("iframe"); if (ifr) ifr.style.transform = "scale(" + k + ")"; });
     if (sc.pollFromScreen) { actSlide = -1; actPaint(); }
@@ -3021,15 +3067,15 @@ function revPaint(sc) {
 function boxLocal(sc, r) {
   if (FOLLOW || !CD || !sc.item || !ITEM[sc.item]) return false;
   const box = layer.querySelector(".slide:not(.leave) .lvbox"), f = box && box.querySelector("iframe.lvf"); if (!f) return false;
-  const it = ITEM[sc.item], hs = histOf(it.steps), last = hs[hs.length - 1];   // 그 실습의 마지막 단계가 끝났을 때만(S4 ①② 사이에 옛 지도를 띄우지 않게)
-  if (!last || last.id !== it.steps[it.steps.length - 1] || last.status !== "done" || !last.view || !last.view.rel) return !!box.dataset.lk;
+  const it = ITEM[sc.item], hs = histOf(it.steps), last = hs.slice().reverse().find((h) => h.status === "done" && h.view && h.view.rel && it.steps.indexOf(h.id) >= it.steps.length - 2);   // 11.17. 보고서 ⓐ md 가 끝나면 바로(끝 두 단계만 — S4 ①② 사이 옛 지도 막음)   // 그 실습의 마지막 단계가 끝났을 때만(S4 ①② 사이에 옛 지도를 띄우지 않게)
+  if (!last) return !!box.dataset.lk;
   const v = last.view, ver = Math.max(last.doneAt || 0, (r && r.doneAt) || 0), key = last.folder + "|" + v.rel + "|" + (v.at || 0) + "|" + ver;
   const pid = livePub(it), P = CD.pub, dn = P && P.done && P.done[LIVE_DAY] && P.done[LIVE_DAY][pid], j = P && P.job;
   if (box.dataset.lk !== key) {
     const fu = rnFile(last.folder, v.rel); if (!fu) return true;   // 원격 토큰을 받는 중 — 다음 그리기 때
     const foc = LIVE_FOCUS[pid];
     f.setAttribute("sandbox", "allow-scripts allow-popups allow-downloads");
-    f.src = fu + (/\.md$/i.test(v.rel) ? "?html=1&" : "?") + (foc ? "focus=" + foc + "&" : "") + "v=" + (v.at || ver);   // focus: 러너가 그 요소까지 내려 주는 스크립트를 붙여 줌(다른 출처 iframe 은 #map 으로 안 내려감)
+    lvGo(f, fu + (/\.md$/i.test(v.rel) ? "?html=1&" : "?") + (foc ? "focus=" + foc + "&" : "") + "v=" + (v.at || ver));   // focus: 러너가 그 요소까지 내려 주는 스크립트를 붙여 줌(다른 출처 iframe 은 #map 으로 안 내려감)
     box.dataset.lk = key; const ph = box.querySelector(".ph"); if (ph) ph.remove();
     rflowSync(layer.querySelector(".slide:not(.leave)"));   // 11.17. 아래 펼침도 새 결과로
   }
@@ -3052,7 +3098,7 @@ function revLocal(sc, r) {   // 수정본을 칸에(공개가 수정보다 새�
   if (!fu && rel && rn.remote && !revLocal._retry) { revLocal._retry = 1; rnTok(true).then(() => { revLocal._retry = 0; if (S[cur] === sc) revLocal(sc, r); }); return; }
   revLocal._retry = 0;
   if (fu) {
-    const f = box.querySelector("iframe"); if (f) { f.setAttribute("sandbox", "allow-scripts allow-popups allow-downloads"); f.src = fu + "?v=" + r.doneAt; }
+    const f = box.querySelector("iframe"); if (f) { f.setAttribute("sandbox", "allow-scripts allow-popups allow-downloads"); lvGo(f, fu + "?v=" + r.doneAt); }
     rflowSync(layer.querySelector(".slide:not(.leave)"));   // 11.17. 보완 수정본을 아래 펼침에도 바로
     lab.textContent = "수정본(공개 전) — [⬆ 다시 공개]를 누르면 공개 주소도 바뀝니다";
   } else lab.textContent = "수정 끝 — [⬆ 다시 공개]를 누르면 수정본이 이 칸에 뜹니다";
@@ -3075,6 +3121,7 @@ if (FOLLOW) setInterval(() => { if (!document.hidden) revFollowLoad(); }, 4000);
 /* 11.11. 따라가기 · 공개 덱: 결과 칸이 아직 공개 전(404 · 자리 표시)이면 20초마다 다시 불러 봄 — 자리 표시가 없는 날(시험 날짜 등)의 404 는 스스로 바뀌지 않았음 */
 if (!CD_ON || FOLLOW) setInterval(() => {
   if (document.hidden) return;
+  if (!FOLLOW) { document.querySelectorAll("#rflow iframe[data-live]").forEach((f) => { if (f.dataset.lvk !== "published") { delete f.dataset.lvk; liveReload(f.dataset.live, true); } }); return; }   // 11.17. 발표자 배치: 하단 출력이 공개 화면을 띄움
   document.querySelectorAll(".slide:not(.leave) .lvf").forEach((f) => { if (f.parentNode.dataset.lk || f.parentNode.classList.contains("on")) return;
     if (f.dataset.lvk !== "published") { delete f.dataset.lvk; liveReload(f.dataset.live, true); } });   // 11.16. 다른 출처라 내용을 못 읽음 → 공개 화면이 알려 준 상태로
 }, 20000);
