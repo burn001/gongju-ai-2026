@@ -1646,7 +1646,7 @@ if (!OLD_DECK) (function rebuild() {
     dyn(it, { title: "받은 주제 정리", screen: it.screens.sort, step: "rep-sort", gate: ["rep-sort"], poll: true, run: { step: "rep-plan", label: "작업 설계" }, wait: "AI가 주제를 묶고 고르는 중…", sub: ["여러분이 적은 주제를 AI가 묶었습니다. 후보 셋 가운데 하나를 투표로 골라 주세요.", "투표를 마감하고 작업 설계를 보냅니다."] });
     dyn(it, { title: "작업 설계 — 이렇게 나눠 맡깁니다", screen: it.screens.plan, step: "rep-plan", gate: ["rep-plan"], run: { step: "s1-md", label: "보고서 만들기 ⓐ md" }, wait: "AI가 작업을 설계하는 중…", sub: ["AI 팀장이 세운 작업 계획입니다. 통계 담당과 자료 담당이 동시에 조사하고, 작성 · 확인 담당이 숫자를 대조합니다.", "실행을 누르면 5분 안팎입니다."] });
     put(Object.assign({ ch: C(it.id), item: it.id, ref: it.title, newSlide: "prompt", cut: "늦으면 건너뜀" }, NEWS.prompt));   // 11.16. 밤 — 보고서를 기다리는 동안 이야기(→ 다음 장이 실시간 화면)
-    runScr(it, { title: "보고서를 만드는 중 — ⓐ md 작성 → ⓑ 한글 변환", gate: ["s1-md", "s1"], run: { step: "s1", label: "ⓑ 한글로 변환" } });   // 11.17. 보고서 2단계(박사님: 단계마다 단추) — ⓐ가 끝나면 이 장의 [ⓑ 한글로 변환]
+    runScr(it, { title: "보고서를 만드는 중 — ⓐ md 작성 → ⓑ 한글 변환", gate: ["s1-md", "s1"], run: { step: "s1", label: "ⓑ 한글로 변환", pre: "s1-md" } });   // 11.17. 보고서 2단계(박사님: 단계마다 단추) — ⓐ가 끝나면 이 장의 [ⓑ 한글로 변환]
     result(it, { title: "오늘 만든 보고서 — 내 화면에서 넘겨 보세요", sub: ["방금 만든 보고서입니다. 한글 파일을 PDF로 바꿔 올렸습니다. 숫자 옆 출처를 눈여겨보세요."] }); }
 
   /* 2. 슬라이드 변환 — 디자인 샘플 세 가지(투표) → 전체 */
@@ -2172,8 +2172,10 @@ function actBuild() {
   actSlide = cur; actItems = []; pAct.querySelector(".acts").textContent = "";
   const sc = S[cur], e = CD_AT[cur], c = sc && sc.cr;
   if (e) {
-    const b = actBtn("", () => { const v = stepView(e); if (v.dis) return; if (v.again && !confirm(e.label + "을(를) 이미 실행했습니다. 다시 실행할까요?")) return; cdRun(e); });
-    actItems.push(() => { const v = stepView(e); b.textContent = v.txt; b.className = "ab " + (v.cls || ""); b.disabled = !!v.dis; return v.note || ""; });
+    /* 11.17. 앞 단계(pre)가 아직 안 끝났으면 이 단추는 앞 단계를 보냄 — 보고서 실행 화면에서 ⓐ md 를 건너뛰고 ⓑ 한글 변환만 보내던 문제 */
+    const ef = () => { if (!e.pre || !CD) return e; if (histOf([e.pre]).some((h) => h.status === "done")) return e; return CD_STEPS.find((x) => x.step === e.pre) || e; };
+    const b = actBtn("", () => { const x = ef(), v = stepView(x); if (v.dis) return; if (v.again && !confirm(x.label + "을(를) 이미 실행했습니다. 다시 실행할까요?")) return; cdRun(x); });
+    actItems.push(() => { const v = stepView(ef()); b.textContent = v.txt; b.className = "ab " + (v.cls || ""); b.disabled = !!v.dis; return v.note || ""; });
   }
   const pst = OLD_DECK ? ((e && PUB_IDS[e.step]) || (sc && sc.live) || null) : (sc && sc.live ? (sc.item ? livePub(ITEM[sc.item]) : sc.live) : null);   // 결과 공개 — 새 덱은 결과 장에서만(자동 공개가 실패했을 때 손으로)
   if (!OLD_DECK && typeof actExtra === "function") actExtra(sc, "pre");
