@@ -1878,6 +1878,7 @@ document.addEventListener("keydown", (e) => {
   if (k === "t" || k === "T") { toggleTT(); return; }
   if (k === "p" || k === "P") { togglePres(); return; }
   if ((k === "g" || k === "G") && a4Has()) { a4Toggle(); return; }
+  if ((k === "m" || k === "M") && a4Has()) { a4Sound(); return; }
   if (k === "Escape" && a4Over) { a4Toggle(false); return; }
   if (ttEl.classList.contains("on") && k === "Escape") { toggleTT(false); return; }
   if (k === "ArrowRight" && e.shiftKey) { e.preventDefault(); stopAuto(); goNext("ask"); }   // 비상: 작업 중이어도 확인 뒤 넘김
@@ -2020,12 +2021,31 @@ function a4Place() {
     const r = ovK === f.k ? [0, 0, 1280, 720] : (sc[f.slot] || null);
     const pre = !r && !FOLLOW && f.k === "alris" && nx[f.slot];   // 발표자: 리플레이는 바로 앞 장에서 미리 불러 둠
     if (!r && !pre) { el.hidden = true; el.classList.remove("over", "pre"); return; }
-    if (el.getAttribute("src") !== EMB[f.k]) { el.classList.remove("ld"); el.src = EMB[f.k]; }
+    const want = a4Src(f.k);
+    if (el.getAttribute("src") !== want) { el.classList.remove("ld"); el.src = want; }
     const q = r || nx[f.slot];
     el.style.left = q[0] + "px"; el.style.top = q[1] + "px"; el.style.width = q[2] + "px"; el.style.height = q[3] + "px";
     el.classList.toggle("over", ovK === f.k); el.classList.toggle("pre", !!pre); el.hidden = false;
   });
 }
+/* Agent4D 소리(배경음악·효과음) — 발표자가 켜고 끔(M 또는 조작 띠 단추). 저장 gongjuDeck.a4dSound = "1"|"0"(없으면 Agent4D 기본값 그대로).
+   iframe 주소에 ?sound=1|0 을 붙여 다시 불러옴(Agent4D 쪽 URL 일회성 값, 공유 링크도 그대로 넘김). 덱을 누른 뒤 불러오므로 allow="autoplay" 로 소리가 남 */
+let a4Snd = lsGet("gongjuDeck.a4dSound");
+function a4Src(k) {
+  const base = EMB[k]; if (!base || (a4Snd !== "1" && a4Snd !== "0")) return base;
+  try { const u = new URL(base); u.searchParams.set("sound", a4Snd); return u.href; } catch (e) { return base; }
+}
+const a4SndBtn = document.createElement("button");
+a4SndBtn.id = "bA4Snd"; a4SndBtn.type = "button";
+function a4SndPaint() { const on = a4Snd === "1"; a4SndBtn.textContent = on ? "🔊 AI 화면 소리 켜짐" : "🔇 AI 화면 소리"; a4SndBtn.setAttribute("aria-pressed", String(on)); a4SndBtn.title = "Agent4D 배경음악·효과음 켜기/끄기 (M) — 바꾸면 AI 팀 화면을 다시 불러옵니다(몇 초)"; }
+function a4Sound(on) {
+  if (FOLLOW || !a4Has()) return;
+  a4Snd = (on === undefined ? a4Snd !== "1" : on) ? "1" : "0";
+  lsSet("gongjuDeck.a4dSound", a4Snd); a4SndPaint();
+  FR.forEach((f) => { if (f.el && f.el.getAttribute("src")) { const want = a4Src(f.k); if (f.el.getAttribute("src") !== want) { f.el.classList.remove("ld"); f.el.src = want; } } });
+}
+a4SndBtn.onclick = () => { a4SndBtn.blur(); a4Sound(); };
+if (!FOLLOW && a4Has()) { a4SndPaint(); const fb = document.getElementById("bFull"); if (fb) fb.insertAdjacentElement("afterend", a4SndBtn); }
 function a4Toggle(on) { if (FOLLOW || !a4Has()) return; a4Over = on === undefined ? !a4Over : on; a4Place(); if (!a4Over) { try { FR.forEach((f) => f.el && f.el.blur()); window.focus(); } catch (e) {} } }
 
 /* 강의실 따라가기 — 발표자 키가 있으면 장을 넘길 때마다(0.3초 몰아서) 지금 장을 강의실에 올림: POST /api/deck {slide, total, prompt?}.
