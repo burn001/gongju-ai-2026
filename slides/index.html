@@ -2028,9 +2028,9 @@ if (crKey) {
     setInterval(() => { if (!document.hidden) refreshPoll(); }, 5000);
   }, (e) => chipSet("bad", e && /presenter/.test(e.message) ? "강의실 연동 ✕ 발표자 키가 맞지 않습니다" : "강의실 연동 ✕ 연결 안 됨"));
 }
-/* Agent4D 칸 두 가지 — 실시간(a4d, 장의 a4d 칸) · ALRIS 리플레이(alris, 장의 alr 칸). 장마다 iframe 하나씩 계속 살려 두고, 칸이 있는 장에서만 그 자리로 옮겨 보임.
+/* Agent4D 칸 두 가지 — 실시간(a4d, 장의 a4d 칸) · ALRIS 리플레이(alris, 장의 alr 칸). 어느 순간에도 iframe 하나만 — 칸이 있는 장에서만 만들어 그 자리에 두고, 칸이 없는 장에서는 요소째 내림(11.17.).
    iframe 은 pointer-events:none · tabindex -1 이라 눌러도 덱이 초점을 지킴(← → 그대로). 불러오기(load) 전에는 투명 — 밑의 '불러오는 중' 자리 표시가 보임.
-   발표자 덱에서만: 주소는 이 브라우저 저장값 · 리플레이는 앞 장(6장)에서 미리 불러 둠(첫 로드 6～14초) · G = 지금 장의 칸(없으면 실시간)을 전체 겹화면(조작 가능).
+   발표자 덱에서만: 주소는 이 브라우저 저장값 · 리플레이는 앞 장(6장)에 다른 Agent4D 칸이 없을 때만 소리 끈 주소로 미리 불러 둠(첫 로드 6～14초) · G = 지금 장의 칸(없으면 실시간)을 전체 겹화면(조작 가능).
    공개 덱(키 없음) · 따라가기(?follow, 수강생 강의실)에는 링크가 없어 자리 표시만(11.10. 결정: Agent4D는 강사 화면에만) */
 const EMB = { a4d: a4dUrl, alris: alrisUrl };
 const FR = [{ k: "a4d", slot: "a4d", id: "a4d", title: "AI 팀 실시간 화면" }, { k: "alris", slot: "alr", id: "alr", title: "ALRIS 개발 세션 리플레이" }];
@@ -2047,28 +2047,30 @@ function frEl(f) {
   canvas.appendChild(el); f.el = el; return el;
 }
 const a4Has = () => FR.some((f) => EMB[f.k]);
-function a4Place() {
+function a4Place() {   // 11.17. Agent4D iframe 은 어느 순간에도 하나만 — 칸이 없는 것은 숨기지 않고 요소째 내림(렌더링·소리 함께 멈춤). 들어올 때 다시 불러옴(몇 초)
   const sc = S[cur] || {}, nx = S[cur + 1] || {};
   a4x.classList.toggle("on", a4Over);
   const ovK = a4Over ? ((FR.find((f) => sc[f.slot] && EMB[f.k]) || {}).k || (EMB.a4d ? "a4d" : null)) : null;
-  FR.forEach((f) => {
-    const el = frEl(f); if (!el) return;
-    const r = ovK === f.k ? [0, 0, 1280, 720] : (sc[f.slot] || null);
-    const pre = !r && !FOLLOW && f.k === "alris" && nx[f.slot];   // 발표자: 리플레이는 바로 앞 장에서 미리 불러 둠
-    if (!r && !pre) { el.hidden = true; el.classList.remove("over", "pre"); return; }
-    const want = a4Src(f.k);
-    if (el.getAttribute("src") !== want) { el.classList.remove("ld"); el.src = want; }
-    const q = r || nx[f.slot];
-    el.style.left = q[0] + "px"; el.style.top = q[1] + "px"; el.style.width = q[2] + "px"; el.style.height = q[3] + "px";
-    el.classList.toggle("over", ovK === f.k); el.classList.toggle("pre", !!pre); el.hidden = false;
-  });
+  const rOf = (f) => (ovK === f.k ? [0, 0, 1280, 720] : ovK ? null : (sc[f.slot] || null));
+  const vis = FR.find((f) => EMB[f.k] && rOf(f));   // 이 장에 보일 칸(하나만 — 겹화면이면 그 칸)
+  // 리플레이 미리 불러오기: 이 장에 보일 Agent4D 칸이 없을 때만, 소리 끈 주소로
+  const want = vis || (!FOLLOW && EMB.alris && nx.alr ? FR.find((f) => f.k === "alris") : null);
+  FR.forEach((f) => { if (f !== want && f.el) { f.el.remove(); f.el = null; } });   // 먼저 내리고 나서 띄움 → 늘 1개 이하
+  if (!want) return;
+  const el = frEl(want); if (!el) return;
+  const r = rOf(want), pre = !r;
+  const src = a4Src(want.k, pre);
+  if (el.getAttribute("src") !== src) { el.classList.remove("ld"); el.src = src; }
+  const q = r || nx[want.slot];
+  el.style.left = q[0] + "px"; el.style.top = q[1] + "px"; el.style.width = q[2] + "px"; el.style.height = q[3] + "px";
+  el.classList.toggle("over", ovK === want.k); el.classList.toggle("pre", pre); el.hidden = false;
 }
 /* Agent4D 소리(배경음악·효과음) — 발표자가 켜고 끔(M 또는 조작 띠 단추). 저장 gongjuDeck.a4dSound = "1"|"0"(없으면 Agent4D 기본값 그대로).
    iframe 주소에 ?sound=1|0 을 붙여 다시 불러옴(Agent4D 쪽 URL 일회성 값, 공유 링크도 그대로 넘김). 덱을 누른 뒤 불러오므로 allow="autoplay" 로 소리가 남 */
 let a4Snd = lsGet("gongjuDeck.a4dSound");
-function a4Src(k) {
-  const base = EMB[k]; if (!base || (a4Snd !== "1" && a4Snd !== "0")) return base;
-  try { const u = new URL(base); u.searchParams.set("sound", a4Snd); return u.href; } catch (e) { return base; }
+function a4Src(k, mute) {   // mute = 미리 불러 두는 중(안 보임) → 늘 sound=0
+  const v = mute ? "0" : a4Snd, base = EMB[k]; if (!base || (v !== "1" && v !== "0")) return base;
+  try { const u = new URL(base); u.searchParams.set("sound", v); return u.href; } catch (e) { return base; }
 }
 const a4SndBtn = document.createElement("button");
 a4SndBtn.id = "bA4Snd"; a4SndBtn.type = "button";
@@ -2077,7 +2079,7 @@ function a4Sound(on) {
   if (FOLLOW || !a4Has()) return;
   a4Snd = (on === undefined ? a4Snd !== "1" : on) ? "1" : "0";
   lsSet("gongjuDeck.a4dSound", a4Snd); a4SndPaint();
-  FR.forEach((f) => { if (f.el && f.el.getAttribute("src")) { const want = a4Src(f.k); if (f.el.getAttribute("src") !== want) { f.el.classList.remove("ld"); f.el.src = want; } } });
+  a4Place();   // 떠 있는 하나만 새 주소로(미리 불러 두는 중이면 소리 끈 주소 그대로)
 }
 a4SndBtn.onclick = () => { a4SndBtn.blur(); a4Sound(); };
 if (!FOLLOW && a4Has()) { a4SndPaint(); const fb = document.getElementById("bFull"); if (fb) fb.insertAdjacentElement("afterend", a4SndBtn); }
