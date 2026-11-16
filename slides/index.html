@@ -560,7 +560,7 @@ body.lay .lvbox::before { content: "↓ 결과는 슬라이드 아래 '작업 �
    ALRIS 수치는 최종연구심의회 발표(보고서 v13, 2026. 11. 8.)에서 가져옴.
    발표자 전용: P 줄임 표시(⏱) 켜기·끄기, T 시간표, ` 또는 S 오른쪽 사이드바(세션 · 채팅), Shift+N 진행기 단계 고르기. 주소 끝 ?p 로 열면 줄임 표시가 켜진 채 시작.
    발표자 키로 열면 슬라이드 아래 단추 줄: 세션 실행 · 투표 열기/마감 · 질문 띄우기는 단추를 눌러야만 함(장을 넘기는 것만으로는 장 번호 따라가기만).
-   11. 10. 순서 조정: 표지 → 입장 → 강사 · ALRIS → 설문(첫 투표) → 챗봇 vs 에이전트 → 팀으로 일하는 AI → 실시간 화면 → 오늘의 흐름 …
+   11. 10. 순서 조정: 표지 → 입장 → 강사 · ALRIS → 챗봇 vs 에이전트 → 팀으로 일하는 AI → 실시간 화면 → 오늘의 흐름 …
    발표자 주소(#key=…)로 열면 강의실 투표와 연동(아래 '강의실 연동' 참고).
    ════════════════════════════════════════════════════════════ */
 const DAY = "2026. 11. 10.·11. 17.(화)";
@@ -725,7 +725,7 @@ add({ ch: 0, sub: ["먼저 가상 강의실에 들어와 주세요. 인터넷 �
     <div style="margin:10px auto 0;width:172px;height:172px;background:#fff;border-radius:8px;padding:8px"><img src="assets/qr_room.png" alt="가상 강의실 주소 QR 코드" style="width:100%;height:100%;image-rendering:pixelated"></div>
   </div>
   <div style="position:absolute;left:60px;right:60px;top:398px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
-    ${[["주소창에 입력", "위 주소 그대로 · Enter"], ["바로 입장", "대화명은 자동으로 붙습니다 (예: '부지런한 초록 다람쥐')"], ["화면 구성", "왼쪽 슬라이드 · 오른쪽 위 AI 작업 화면 · 오른쪽 아래 채팅"], ["설문은 카드로", "투표 · 설문이 화면에 카드로 뜹니다"]].map((r, i) => `<div class="pn rel a-rise" ${d(.5 + i * .12)} style="padding:18px 20px;height:186px">
+    ${[["주소창에 입력", "위 주소 그대로 · Enter"], ["바로 입장", "대화명은 자동으로 붙습니다 (예: '부지런한 초록 다람쥐')"], ["화면 구성", "왼쪽 슬라이드 · 오른쪽 위 AI 작업 화면 · 오른쪽 아래 채팅"], ["투표는 카드로", "투표가 화면에 카드로 뜹니다"]].map((r, i) => `<div class="pn rel a-rise" ${d(.5 + i * .12)} style="padding:18px 20px;height:186px">
       <span class="mono" style="display:inline-flex;width:42px;height:42px;border-radius:50%;align-items:center;justify-content:center;background:var(--cy);color:#04121e;font-size:21px;font-weight:700">${i + 1}</span>
       <div style="font-size:24px;font-weight:900;margin-top:12px">${r[0]}</div><div style="font-size:19px;color:var(--mu);margin-top:4px">${r[1]}</div></div>`).join("")}
   </div>
@@ -814,19 +814,6 @@ add({ ch: 1, eb: "제가 AI로 만든 것", sub: ["저는 건축과 도시를 �
       <div style="font-size:21px;line-height:1.5;color:var(--mu);margin-top:8px">${g[2]}</div></div>`).join("")}
   </div>
   <div class="keymsg a-wipe" ${d(1)} style="top:510px">에이전트는 일을 준비하고, <span class="cy">결정과 책임은 사람</span>이 집니다.</div>
-  </div>` });
-
-/* ── 설문(첫 투표) — 발표자 키로 열면 강의실 투표 'warmup'을 자동으로 엶 ── */
-add({ ch: 2, eb: "설문 · 여러분께 묻습니다", cr: { poll: "warmup" }, sub: ["본론에 들어가기 전에 하나 여쭙겠습니다. AI를 어디에 써 보셨나요? 가상 강의실 채팅창에 투표가 올라옵니다.", "여러 개 고르셔도 됩니다. 아직 안 써 보셨다면 그것도 좋은 답입니다."],
-  html: (s) => `<div class="slide">${hd(s, "본론 전에 하나 여쭙겠습니다")}
-  <div class="a-rise" ${d(.15)} style="position:absolute;left:60px;right:60px;top:132px;font-size:48px;font-weight:900;letter-spacing:-.01em">AI를 <span class="cy glow">어디에</span> 써 보셨나요?</div>
-  <div class="a-fade" ${d(.3)} style="position:absolute;left:62px;top:206px;font-size:22px;color:var(--mu)">가상 강의실 채팅창에 투표가 올라옵니다 · <b class="warn">여러 개</b> 골라도 됩니다</div>
-  <div style="position:absolute;left:60px;right:60px;top:270px;display:grid;grid-template-columns:repeat(4,1fr);gap:18px">
-    ${[["검색 · 질문", "궁금한 것 물어보기"], ["문서 작성", "글 · 안내문 · 보고서"], ["번역", "외국어 읽고 쓰기"], ["아직 안 써 봤어요", "오늘이 처음이어도 괜찮습니다"]].map((r, i) => `<div class="pn rel a-pop" ${d(.4 + i * .12)} style="padding:24px 24px;height:220px;${i === 3 ? "border-color:var(--warn)" : ""}">
-      <div class="mono" style="font-size:40px;font-weight:700;color:${i === 3 ? "var(--warn)" : "var(--cy)"}">${i + 1}</div>
-      <div style="font-size:30px;font-weight:900;margin-top:10px;line-height:1.25">${r[0]}</div><div style="font-size:19px;color:var(--mu);margin-top:8px">${r[1]}</div></div>`).join("")}
-  </div>
-  <div class="keymsg a-wipe" ${d(1)} style="top:540px;font-size:24px">마지막에는 <span class="cy">"내일 바로 맡겨 보고 싶은 일"</span>을 여쭙겠습니다. 두 답이 어떻게 달라지는지 보세요.</div>
   </div>` });
 
 /* ── 챗봇과 에이전트 + S4 출발 ── */
@@ -1327,7 +1314,7 @@ add({ ch: 10, sub: ["오늘 강의 자료와 AI가 만든 결과물을 한 페�
       <span class="mono" style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--cy);color:#04121e;font-size:20px;font-weight:700">${r[0]}</span>
       <div><div style="font-size:24px;font-weight:900">${r[1]}</div><div style="font-size:19px;color:var(--mu);margin-top:4px">${r[2]}</div></div></div>`).join("")}
   <div class="pn a-rise" ${d(.6)} style="left:60px;width:650px;top:494px;height:96px;padding:12px 24px;border-color:rgba(95,224,160,.7)"><div class="lab" style="color:var(--gr)">담기는 것</div>
-    <div style="font-size:18px;line-height:1.5;margin-top:4px;color:#dfe8f4">오늘 슬라이드 · 실습 결과(보고서 · 발표 슬라이드 · 설문 · 모션그래픽 · 대시보드 · 지도) · 오늘 배운 것</div></div>
+    <div style="font-size:18px;line-height:1.5;margin-top:4px;color:#dfe8f4">오늘 슬라이드 · 실습 결과(보고서 · 발표 슬라이드 · 모션그래픽 · 대시보드 · 지도) · 오늘 배운 것</div></div>
   <div class="lvside" style="left:760px;top:116px;gap:10px">
     <div class="lab a-fade" ${d(.5)} style="text-align:center">오늘 수업 정리 페이지</div>
     <div class="lvqr a-pop" ${d(.6)} style="width:320px;height:320px;padding:12px">${qrSvg(liveUrl("wrap"))}</div>
@@ -1357,8 +1344,6 @@ const ITEMS = [
     screens: { sort: "rep-sort", plan: "rep-plan" } },
   { id: "slides", title: "보고서 → 발표 슬라이드", kind: "투표", min: 8, what: "디자인 샘플을 보고 투표 → 그 디자인으로 발표 슬라이드", steps: ["sld-design", "s7"], pub: "s7", dep: "report", depNote: "보고서가 없으면 미리 만든 예시 보고서로",
     screens: { design: "sld-design" } },
-  { id: "survey", title: "설문 자동화", kind: "참여형", min: 11, what: "여러분 주제로 AI가 문항을 만들고, 직접 응답하면 AI가 분석", steps: ["sv-plan", "sv-make", "sv-analyze"], pub: "survey", mark: "survey",
-    screens: { plan: "sv-plan", survey: "sv-survey" } },
   { id: "motion", title: "모션그래픽 만들기", kind: "참여형", min: 8, what: "여러분이 고른 말로 장면을 짜고, 팀원이 나눠 만든 짧은 움직이는 화면(반복 재생)", steps: ["mo-plan", "mo-make"], pub: "motion", mark: "motion",
     screens: { plan: "mo-plan" } },
   { id: "ceo", title: "CEO 대시보드", kind: "참여형", min: 10, what: "여러분 키워드로 센터장이 아침에 볼 한 화면", steps: ["ceo-1", "ceo-2"], pub: "ceo", mark: "ceo" },
@@ -1393,7 +1378,7 @@ const NEWS = {
         ["파일", "참고 PDF"], ["도구", "변환 결과"], ["대화", "요약해 줘"], ["파일", "지난 보고서"], ["도구", "지도 자료"], ["대화", "슬라이드로도"], ["파일", "채용공고 286건"], ["도구", "검사 결과"]];
       const lab = { 지시: "지시", 대화: "대화 기록", 파일: "읽은 파일", 도구: "도구 결과" };
       const cards = C.map((c, i) => `<div class="dcard m-in${i < 4 ? " dim" : ""}" style="--c:${DCOL[c[0]]};left:${16 + (i % 4) * 154}px;top:${16 + Math.floor(i / 4) * 80}px;${tv(.4 + i * .27)}--t2:5.7s"><small>${lab[c[0]]}</small>${c[1]}</div>`).join("");
-      const ovf = [["대화", "설문도 해 줘", 446, 296], ["파일", "응답 자료", 560, 314]].map((c, i) => `<div class="dcard ovf m-in" style="--c:${DCOL[c[0]]};left:${c[2]}px;top:${c[3]}px;${tv(4.9 + i * .3)}--t2:5.7s;z-index:2"><small>${lab[c[0]]}</small>${c[1]}</div>`).join("");
+      const ovf = [["대화", "표로도 정리해 줘", 446, 296], ["파일", "엑셀 자료", 560, 314]].map((c, i) => `<div class="dcard ovf m-in" style="--c:${DCOL[c[0]]};left:${c[2]}px;top:${c[3]}px;${tv(4.9 + i * .3)}--t2:5.7s;z-index:2"><small>${lab[c[0]]}</small>${c[1]}</div>`).join("");
       return `<div class="slide mv">${hd(s, "기억 창 — AI가 한 번에 펼쳐 보는 책상")}
       <div class="m-fade" style="position:absolute;left:60px;top:114px;display:flex;gap:8px;align-items:center;font-size:16px;color:var(--mu);${tv(.1)}">책상에 올라가는 것 ${Object.keys(lab).map((k) => `<span class="chip" style="font-size:14px;padding:2px 10px;color:${DCOL[k]}">${lab[k]}</span>`).join("")}</div>
       <div class="desk" style="left:60px;top:150px;width:640px;height:350px">${cards}${ovf}</div>
@@ -1617,7 +1602,7 @@ if (!OLD_DECK) (function rebuild() {
   const reuse = (o, extra) => put(Object.assign({}, o, extra));
 
   /* 허브 — 카드 9장, 상태는 진행기(러너)에서 */
-  put({ ch: 3, hub: true, eb: "오늘의 실습", sub: ["오늘은 아홉 가지 일을 AI 팀에게 맡깁니다. 하나가 끝나면 이 화면으로 돌아와 다음 것을 고릅니다.", "주황 글씨는 여러분이 채팅이나 투표로 함께하는 실습입니다."],
+  put({ ch: 3, hub: true, eb: "오늘의 실습", sub: ["오늘은 여덟 가지 일을 AI 팀에게 맡깁니다. 하나가 끝나면 이 화면으로 돌아와 다음 것을 고릅니다.", "주황 글씨는 여러분이 채팅이나 투표로 함께하는 실습입니다."],
     html: (s) => `<div class="slide">${hd(s, "오늘의 실습 — 골라서 들어갑니다")}
     <div class="hub-top" id="hubTop"></div>
     <div class="hub-g">${ITEMS.map((x) => `<div class="hc a-pop" ${d(.1 + x.no * .05)} data-item="${x.id}" role="button" tabindex="-1">
@@ -1642,7 +1627,7 @@ if (!OLD_DECK) (function rebuild() {
     <div class="cfeed a-rise" ${d(.25)} data-feed="${it.mark}"><div class="h">지금 모인 글 <b>-</b></div><div class="ls"><div class="e">${"강사가 [질문 띄우기]를 누르면<br>그 뒤에 올라온 글이 여기 모입니다"}</div></div></div>
     <div class="note a-fade" ${d(.8)} style="top:612px;font-size:18px"><span class="k">약속</span><span>대화명은 빼고 <b class="cy">글만</b> AI에게 넘깁니다. 모이면 AI가 비슷한 것끼리 묶어 정리합니다.</span></div>
     </div>` });
-  const dyn = (it, o) => put({ ch: C(it.id), item: it.id, ref: it.title, dyn: o.screen || ("file:" + o.src.step), dynSrc: o.src || null, dynStep: o.step, surveyWatch: !!o.surveyWatch, gate: o.gate || null, run: o.run || null, pollFromScreen: !!o.poll, sub: o.sub,
+  const dyn = (it, o) => put({ ch: C(it.id), item: it.id, ref: it.title, dyn: o.screen || ("file:" + o.src.step), dynSrc: o.src || null, dynStep: o.step, gate: o.gate || null, run: o.run || null, pollFromScreen: !!o.poll, sub: o.sub,
     html: (s) => `<div class="slide">${hd(s, o.title)}<div class="dy" data-dyn="${o.screen || "file"}"><div class="wait"><div class="orb"></div><div class="big2">${o.wait || "AI가 정리하는 중…"}</div><div>${CD_ON ? "정리가 끝나면 이 화면에 바로 뜹니다" : "강사 화면에서 보여 드립니다"}</div></div></div></div>` });
   const runScr = (it, o) => put({ ch: C(it.id), item: it.id, ref: it.title, eb: `${it.no}. ${it.title} · 실행 화면`, gate: o.gate, run: o.run || null, sub: o.sub || ["지금 AI 팀이 일하는 중입니다.", "작업이 끝나야 다음 장으로 넘어갑니다."],
     html: (s) => `<div class="slide">${hd(s, o.title)}
@@ -1671,25 +1656,15 @@ if (!OLD_DECK) (function rebuild() {
     runScr(it, { title: "슬라이드를 만드는 중", gate: ["s7"] });
     result(it, { title: "오늘 만든 발표 슬라이드 — 내 화면에서 넘겨 보세요", sub: ["방금 만든 발표 슬라이드입니다. 새 창으로 열면 왼쪽 오른쪽 화살표로 넘겨 볼 수 있습니다."] }); }
 
-  /* 3. 설문 자동화 — 채팅 주제 → 설계(설명 장) → 문항 만들기 → [설문 열기] 응답 → 분석 */
-  { const it = ITEM.survey;
-    collect(it, { title: "3. 설문 — 무엇을 물어볼까요?", q: "우리 센터가 수강생에게 설문으로 묻고 싶은 주제는?", lines: ["교육 · 취업 · 돌봄 · 센터 이용 무엇이든", "최근 10분 글을 씁니다"], ex: ["교육 만족도", "듣고 싶은 강좌", "취업 준비 어려움"], runLabel: "주제 고르기 · 설계",
-      sub: ["이번에는 설문을 AI에게 맡깁니다. 어떤 주제로 물어볼지 채팅창에 적어 주세요.", "AI가 주제를 골라 설계하고, 문항을 만들어 여러분 화면에 설문을 띄웁니다."] });
-    dyn(it, { title: "설문 설계", screen: it.screens.plan, step: "sv-plan", gate: ["sv-plan"], run: { step: "sv-make", label: "문항 만들기" }, wait: "AI가 주제를 고르고 설계하는 중…", sub: ["AI가 고른 주제와 문항 설계입니다. 실행을 누르면 팀원 둘이 문항을 나눠 쓰고, 다른 팀원이 점검합니다."] });
-    runScr(it, { title: "설문 문항을 만드는 중", gate: ["sv-make"] });
-    dyn(it, { title: "지금 응답해 주세요", screen: it.screens.survey, step: "sv-make", surveyWatch: true, run: { step: "sv-analyze", label: "응답 분석" }, wait: "문항 정리를 기다리는 중…", sub: ["AI가 만든 설문입니다. [설문 열기]를 누르면 여러분 화면에 설문 카드가 뜹니다. 1분이면 끝납니다.", "응답이 모이면 설문을 마감하고 분석을 맡깁니다."] });
-    runScr(it, { title: "응답을 분석하는 중", gate: ["sv-analyze"] });
-    result(it, { title: "설문 분석 결과 — 내 화면에서 보세요", sub: ["여러분 응답을 집계 프로그램이 세고, AI 팀원들이 해석했습니다."] }); }
-
-  /* 4. 모션그래픽 — 채팅 문구 → 장면 구성(설명 장) → 팀원이 장면 나눠 제작 → motion.html(반복 재생). 11.10. 박사님 결정: mp4 렌더 안 함 */
+  /* 3. 모션그래픽 — 채팅 문구 → 장면 구성(설명 장) → 팀원이 장면 나눠 제작 → motion.html(반복 재생). 11.10. 박사님 결정: mp4 렌더 안 함 */
   { const it = ITEM.motion;
-    collect(it, { title: "4. 모션그래픽 — 무엇을 알릴까요?", q: "우리 센터를 알리는 짧은 영상, 어떤 말을 넣고 싶으세요?", lines: ["한 줄 문구 · 넣고 싶은 장면 · 분위기", "최근 10분 글을 씁니다"], ex: ["다시 일하는 엄마들", "따뜻한 분위기", "무료 교육 안내"], runLabel: "장면 구성",
+    collect(it, { title: "3. 모션그래픽 — 무엇을 알릴까요?", q: "우리 센터를 알리는 짧은 영상, 어떤 말을 넣고 싶으세요?", lines: ["한 줄 문구 · 넣고 싶은 장면 · 분위기", "최근 10분 글을 씁니다"], ex: ["다시 일하는 엄마들", "따뜻한 분위기", "무료 교육 안내"], runLabel: "장면 구성",
       sub: ["이번에는 30초 안팎의 짧은 영상을 만듭니다. 넣고 싶은 말이나 장면을 채팅창에 적어 주세요.", "AI가 모아 장면을 짜고, 팀원들이 장면을 나눠 동시에 만든 뒤 바로 재생되는 화면으로 합칩니다."] });
     dyn(it, { title: "장면 구성", screen: it.screens.plan, step: "mo-plan", gate: ["mo-plan"], run: { step: "mo-make", label: "모션그래픽 만들기" }, wait: "AI가 장면을 짜는 중…", sub: ["AI가 짠 장면입니다. 실행을 누르면 팀원들이 장면을 나눠 만들고, 팀장이 하나로 합칩니다. 1분 안팎입니다."] });
     runScr(it, { title: "모션그래픽을 만드는 중", gate: ["mo-make"] });
     result(it, { title: "오늘 만든 모션그래픽 — 내 화면에서 보세요", sub: ["방금 만든 모션그래픽입니다. 브라우저에서 바로 반복 재생됩니다. 장면마다 다른 팀원이 만들었습니다."] }); }
 
-  /* 5. CEO 대시보드 — 키워드 → 팀 계획(설명 장) → 실행 */
+  /* 4. CEO 대시보드 — 키워드 → 팀 계획(설명 장) → 실행 */
   { const it = ITEM.ceo;
     /* 11.10. 박사님 지시: 도입부에 실제 예시 — 강사가 매일 아침 받는 CEO 브리핑(오늘 자, examples/ 에 공개). 키워드 모으기 → 실행 흐름은 그대로 */
     put({ ch: C(it.id), item: it.id, ref: it.title, sub: ["먼저 실제 예시입니다. 강사가 매일 아침 07:40에 받는 CEO 브리핑, 오늘 자입니다.", "분야 여섯 개를 AI 에이전트 15명이 나눠 조사하고, 사실을 확인하고, 정리하고, 검수했습니다. 오늘 자는 출처 42개, 오류 0건입니다."],
@@ -1703,13 +1678,13 @@ if (!OLD_DECK) (function rebuild() {
       </div>
       <div class="note a-fade" ${d(.8)} style="top:640px;font-size:18px"><span class="k">다음 장</span><span>여러분 키워드로 센터장님 아침 화면을 <b class="cy">같은 방식</b>으로 만듭니다. 미리보기는 마우스 휠로 내려 볼 수 있습니다.</span></div>
       </div>` });
-    collect(it, { title: "5. CEO 대시보드 — 무엇을 보고 싶으세요?", q: "센터장님이 매일 아침 한눈에 보고 싶은 소식은?", lines: ["관심 키워드 한두 개"], ex: ["육아 지원", "공주 일자리", "물가", "디지털 교육"], runLabel: "키워드 정리 · 팀 계획",
+    collect(it, { title: "4. CEO 대시보드 — 무엇을 보고 싶으세요?", q: "센터장님이 매일 아침 한눈에 보고 싶은 소식은?", lines: ["관심 키워드 한두 개"], ex: ["육아 지원", "공주 일자리", "물가", "디지털 교육"], runLabel: "키워드 정리 · 팀 계획",
       sub: ["센터장님이 아침에 한눈에 볼 화면을 만듭니다. 보고 싶은 소식을 키워드로 적어 주세요.", "AI가 키워드를 묶어 분야를 나누고, 팀원마다 맡길 일을 정합니다."] });
     dyn(it, { title: "AI 팀에게 이렇게 나눠 맡깁니다", src: { step: "ceo-1", file: "out/plan.json", adapt: "ceo" }, step: "ceo-1", gate: ["ceo-1"], run: { step: "ceo-2", label: "대시보드 만들기" }, wait: "AI가 키워드를 묶고 팀을 짜는 중…", sub: ["여러분 키워드를 분야로 묶었습니다. 팀원들이 분야를 나눠 동시에 최근 소식을 찾고, 다른 AI가 출처를 확인합니다.", "실행을 누르면 4분 안팎입니다."] });
     runScr(it, { title: "대시보드를 만드는 중", gate: ["ceo-2"] });
     result(it, { title: "오늘 만든 CEO 대시보드", sub: ["방금 만든 센터장 아침 화면입니다. 맨 위에 'AI 초안 · 사실 확인 필요'가 붙어 있습니다."] }); }
 
-  /* 6. 공주 일자리 지도(준비된 작업) */
+  /* 5. 공주 일자리 지도(준비된 작업) */
   { const it = ITEM.s4;
     explain(it, keep.s4sp, { sub: ["센터 상담사는 매주 여러 사이트를 돌며 공주 채용공고를 모읍니다. 사람이 하면 반나절입니다.", "이 일을 AI 팀에게 화면의 지시 그대로 맡깁니다. 미리 만들어 둔 도구로 6분 안팎에 끝납니다."],
       html: (s) => sp(s, { title: "공주 일자리 지도 — AI 팀에게 맡깁니다",
@@ -1720,16 +1695,16 @@ if (!OLD_DECK) (function rebuild() {
     runScr(it, { title: "AI 팀원 셋이 공고를 모으는 중", gate: ["s4-1", "s4-2", "s4-3"], sub: ["수집 담당 셋이 동시에 공고를 모으고, 분석 · 지도 · 검사가 차례로 이어집니다. 6분 안팎입니다.", "끝나야 다음 장으로 넘어갑니다."] });
     result(it, { title: "오늘 만든 공주 일자리 지도 — 눌러 보세요", sub: ["오늘 AI 팀이 모은 공고로 만든 지도입니다. 숫자는 오늘 모은 표본 안의 값입니다."] }); }
 
-  /* 7. 일하는 엄마 지도(준비된 작업) */
+  /* 6. 일하는 엄마 지도(준비된 작업) */
   { const it = ITEM.s9;
     explain(it, keep.s9sp);
     explain(it, keep.s9wf, { run: { step: "s9", label: "일하는 엄마 지도" } });
     runScr(it, { title: "일자리에 돌봄시설을 겹치는 중", gate: ["s9"] });
     result(it, { title: "오늘 만든 일하는 엄마 지도 — 눌러 보세요", sub: ["일자리 점을 누르면 1킬로미터 안의 어린이집 · 유치원 · 초등학교가 보입니다. 가깝다고 들어갈 수 있는 것은 아닙니다."] }); }
 
-  /* 8. 여러분의 요청(몇 번이고) — 채팅 → 정리(투표) → 계획 → 실행 → 결과 → ↺ */
+  /* 7. 여러분의 요청(몇 번이고) — 채팅 → 정리(투표) → 계획 → 실행 → 결과 → ↺ */
   { const it = ITEM.req;
-    collect(it, { title: "8. 여러분의 요청 — AI에게 무엇을 시켜 볼까요?", q: "AI 팀에게 맡겨 보고 싶은 일, 결과를 보고 싶은 작업을 적어 주세요", lines: ["10분 안에 화면으로 보여 드릴 수 있는 것"], ex: ["경력 공백 면접 답변", "아이 방학 계획표", "우리 동네 행사 안내문"], runLabel: "요청 정리",
+    collect(it, { title: "7. 여러분의 요청 — AI에게 무엇을 시켜 볼까요?", q: "AI 팀에게 맡겨 보고 싶은 일, 결과를 보고 싶은 작업을 적어 주세요", lines: ["10분 안에 화면으로 보여 드릴 수 있는 것"], ex: ["경력 공백 면접 답변", "아이 방학 계획표", "우리 동네 행사 안내문"], runLabel: "요청 정리",
       sub: ["이제 여러분 차례입니다. AI 팀에게 맡겨 보고 싶은 일을 채팅창에 적어 주세요.", "모이면 AI가 정리해 후보 셋을 고르고, 투표로 정한 일을 바로 실행합니다. 몇 번이고 다시 할 수 있습니다."] });
     dyn(it, { title: "받은 요청 정리", screen: it.screens.sort, step: "req-sort", gate: ["req-sort"], poll: true, run: { step: "req-plan", label: "작업 계획" }, wait: "AI가 요청을 묶고 고르는 중…", sub: ["여러분 요청을 AI가 묶었습니다. 하기 어려운 요청은 이유를 붙여 뺐습니다. 후보 가운데 하나를 투표로 골라 주세요."] });
     dyn(it, { title: "작업 계획", screen: it.screens.plan, step: "req-plan", gate: ["req-plan"], run: { step: "req-run", label: "이 계획대로 실행" }, wait: "AI가 계획을 세우는 중…", sub: ["AI 팀장이 세운 계획입니다. 실행을 누르면 팀원들이 나눠 일합니다."] });
@@ -1737,7 +1712,7 @@ if (!OLD_DECK) (function rebuild() {
     runScr(it, { title: "요청을 실행하는 중", gate: ["req-run"] });
     result(it, { title: "여러분 요청의 결과", sub: ["여러분 요청으로 만든 결과입니다. 한 번 더 하려면 [↺ 한 번 더]를 누릅니다."] }); }
 
-  /* 9. 마무리 — 배운 것 → 수업 정리 페이지 → QR · 주소 공유 → 인사 */
+  /* 8. 마무리 — 배운 것 → 수업 정리 페이지 → QR · 주소 공유 → 인사 */
   { const it = ITEM.wrap, c = C(it.id);
     if (keep.wrong) reuse(keep.wrong, { ch: c, item: it.id, sub: ["강의를 준비하며 본 장면 가운데 AI가 틀린 곳이 네 군데 있었습니다.", "그래서 검사 담당을 따로 둡니다. 다른 AI든 프로그램이든, 그리고 마지막은 사람이 봅니다."] });
     if (keep.wide) reuse(keep.wide, { ch: c, sub: ["오늘 본 일들은 시작일 뿐입니다. AI로 할 수 있는 것은 무궁무진합니다.", "중요한 것은 무엇을 맡길지 고르는 눈입니다."] });
@@ -1762,21 +1737,21 @@ function livePub(it) {
 
 /* ════════════ 발표자 시간표(T 키) ════════════ */
 const TT = OLD_DECK ? [["0:00", "입장(주소창 · QR, 채팅 인사)", 10, 0], ["0:10", "강사 소개, ALRIS(개발 세션 리플레이)", 10, 1], ["0:20", "설문 → 챗봇 vs 에이전트 → 팀으로 일하는 AI + S4 출발", 12, 2]]
-  : [["0:00", "입장(주소창 · QR, 채팅 인사)", 8, 0], ["0:08", "강사 소개, ALRIS", 4, 1], ["0:17", "설문 → 챗봇 vs 에이전트 → 팀으로 일하는 AI → 기억 창 · 다시 읽기 · 혼자 vs 팀 · 스킬 · MCP/팀원/스킬", 12, 2], ["0:31", "실습 대시보드 — 골라서 들어가기", 1, 3],
-     ["0:32", "① 보고서(시연 전 준비 4장 → 채팅 주제 → 정리 · 투표 → 설계 → 실행 5분)", 16, 4], ["0:48", "② 슬라이드 변환(디자인 샘플 투표 → 전체)", 8, 5], ["0:56", "③ 설문 자동화(주제 → 문항 → 응답 → 분석) <b>①</b>", 11, 6, 1], ["1:07", "④ 모션그래픽(문구 → 장면 → 반복 재생 화면) <b>②</b>", 8, 7, 1],
-     ["1:15", "⑤ CEO 대시보드(키워드 → 팀 계획 → 한 장)", 10, 8], ["1:25", "⑥ 공주 일자리 지도(준비된 작업 6분)", 9, 9], ["1:34", "⑦ 일하는 엄마 지도 <b>③</b>", 6, 10, 1], ["1:40", "⑧ 여러분의 요청(회차당 7분 · 남는 시간만큼)", 10, 11], ["1:50", "⑨ 마무리(스킬 관리 요령 포함) · 정리 페이지 · QR 공유 · 질문", 17, 12]];
+  : [["0:00", "입장(주소창 · QR, 채팅 인사)", 8, 0], ["0:08", "강사 소개, ALRIS", 4, 1], ["0:17", "챗봇 vs 에이전트 → 팀으로 일하는 AI → 기억 창 · 다시 읽기 · 혼자 vs 팀 · 스킬 · MCP/팀원/스킬", 12, 2], ["0:31", "실습 대시보드 — 골라서 들어가기", 1, 3],
+     ["0:32", "① 보고서(시연 전 준비 4장 → 채팅 주제 → 정리 · 투표 → 설계 → 실행 5분)", 16, 4], ["0:48", "② 슬라이드 변환(디자인 샘플 투표 → 전체)", 8, 5], ["0:56", "③ 모션그래픽(문구 → 장면 → 반복 재생 화면) <b>②</b>", 8, 6, 1],
+     ["1:15", "④ CEO 대시보드(키워드 → 팀 계획 → 한 장)", 10, 7], ["1:25", "⑤ 공주 일자리 지도(준비된 작업 6분)", 9, 8], ["1:34", "⑥ 일하는 엄마 지도 <b>③</b>", 6, 9, 1], ["1:40", "⑦ 여러분의 요청(회차당 7분 · 남는 시간만큼)", 10, 10], ["1:50", "⑧ 마무리(스킬 관리 요령 포함) · 정리 페이지 · QR 공유 · 질문", 17, 11]];
 if (!OLD_DECK) { let m = 0; TT.forEach((r) => { r[0] = Math.floor(m / 60) + ":" + String(m % 60).padStart(2, "0"); m += r[2]; }); }   // 11.17. 시각은 분을 더해 자동(장을 빼도 맞음)
 function buildTT() {
   const st = CH.map((_, c) => S.findIndex((x) => x.ch === c)), n = CH.map((_, c) => S.filter((x) => x.ch === c).length);
   return `<div style="position:absolute;left:44px;top:26px;font-size:15px;font-weight:700;color:var(--cy);letter-spacing:.06em">발표자 전용 · T 닫기 · P 줄임 표시(⏱) 켜기/끄기</div>
-  <div style="position:absolute;left:44px;top:48px;font-size:30px;font-weight:900">시간표 — ${OLD_DECK ? "공주 일자리 이야기 (2시간)" : "오늘의 실습 아홉 가지 (합계 " + (() => { const m = TT.reduce((a, r) => a + r[2], 0); return Math.floor(m / 60) + "시간 " + (m % 60) + "분"; })() + ")"}</div>
+  <div style="position:absolute;left:44px;top:48px;font-size:30px;font-weight:900">시간표 — ${OLD_DECK ? "공주 일자리 이야기 (2시간)" : "오늘의 실습 여덟 가지 (합계 " + (() => { const m = TT.reduce((a, r) => a + r[2], 0); return Math.floor(m / 60) + "시간 " + (m % 60) + "분"; })() + ")"}</div>
   <div style="position:absolute;left:44px;top:100px;width:720px"><table><tr><th>시각</th><th>꼭지</th><th>분</th><th>장</th></tr>
     ${TT.map((r) => `<tr class="${r[4] ? "cut" : ""}"><td class="t">${r[0]}</td><td>${r[1]}</td><td class="m">${r[2]}</td><td class="n">${st[r[3]] + 1}～${st[r[3]] + n[r[3]]}</td></tr>`).join("")}</table></div>
   <div style="position:absolute;left:800px;right:40px;top:100px;display:flex;flex-direction:column;gap:12px">
     <div class="pn rel" style="padding:12px 16px;border-color:var(--warn)"><div class="lab" style="color:var(--warn);font-size:15px">늦으면 줄이는 순서</div>
       <div style="font-size:16.5px;line-height:1.55;margin-top:4px">${OLD_DECK ? "① S2 · S3 → 녹화본 3분 또는 건너뛰기<br>② S7 → 결과 화면만<br>③ S9 → S4 지도 공개에 합침" : "허브에서 건너뛸 실습을 고르면 됩니다<br>① 설문 · ② 모션그래픽 · ③ 엄마 지도 순으로 뺌<br>⑧ 요청 반복은 남는 시간만큼<br>⏱ 시연 전 준비 4장 · 스킬 관리 장은 훑고 넘김(4～6분)"}</div></div>
     <div class="pn rel" style="padding:12px 16px"><div class="lab" style="font-size:15px">강의 전 · 진행 팁</div>
-      <ul class="li" style="gap:5px;margin-top:6px">${(OLD_DECK ? ["발표자 주소 …/slides/#key=…"] : ["아침: start-remote.ps1 → ⟲ 강의 초기화 → 발표자 주소(#key · a4d · alris)", "실습 장: 설명 장 [▶ 실행] → 실행 화면(→ 막힘, Shift+→ 비상) → 결과 장(자동 공개 1～2분)", "결과 장 [✎ 보완 지시] → 같은 장에서 고치기 → [⬆ 다시 공개]", "허브로 돌아가면 AI 세션을 뒤에서 새로 띄움(30초) — 그동안 실행 단추는 '새 세션 준비 중'", "참여형: [▶ 질문 띄우기] 뒤 2～3분 채팅 → [▶ 실행] (설문 · 모션은 최근 10분 글만)", "마무리: 정리 페이지 공개 뒤 [✉ 링크 보내기] — 받는 사람 수 · 본문 확인 창"]).map((x) => `<li style="font-size:15.5px;line-height:1.4">${x}</li>`).join("")}</ul></div>
+      <ul class="li" style="gap:5px;margin-top:6px">${(OLD_DECK ? ["발표자 주소 …/slides/#key=…"] : ["아침: start-remote.ps1 → ⟲ 강의 초기화 → 발표자 주소(#key)", "실습 장: 설명 장 [▶ 실행] → 실행 화면(→ 막힘, Shift+→ 비상) → 결과 장(자동 공개 1～2분)", "결과 장 [✎ 보완 지시] → 같은 장에서 고치기 → [⬆ 다시 공개]", "허브로 돌아가면 AI 세션을 뒤에서 새로 띄움(30초) — 그동안 실행 단추는 '새 세션 준비 중'", "참여형: [▶ 질문 띄우기] 뒤 2～3분 채팅 → [▶ 실행] (설문 · 모션은 최근 10분 글만)", "마무리: 정리 페이지 공개 뒤 [✉ 링크 보내기] — 받는 사람 수 · 본문 확인 창"]).map((x) => `<li style="font-size:15.5px;line-height:1.4">${x}</li>`).join("")}</ul></div>
   </div>`;
 }
 
@@ -1899,8 +1874,8 @@ addEventListener("hashchange", () => { const i = fromHash(); if (i !== cur) go(i
 /* ════════════ 강의실 연동(발표자 키) ════════════
    발표자 주소 …/slides/#key=<발표자 키> 로 한 번 열면 이 브라우저에 저장하고 주소창에서 지움.
    11.09. 밤 원칙: 장을 넘기는 것만으로는 아무 일도 하지 않음(장 번호 올리기 = 수강생 따라가기만 자동).
-   투표 · 설문 · 강사 질문 띄우기 · 세션 실행은 슬라이드 아래 발표자 단추 줄(#pAct)의 단추를 눌러야만 함.
-     설문 장 → [▶ 설문 열기]·[■ 마감] (warmup) · S4 투표 장 → [▶ ① 투표 열기]·[▶ ② 투표 열기](①을 마감하고 엶)·[■ 마감]
+   투표 · 강사 질문 띄우기 · 세션 실행은 슬라이드 아래 발표자 단추 줄(#pAct)의 단추를 눌러야만 함.
+     S4 투표 장 → [▶ ① 투표 열기]·[▶ ② 투표 열기](①을 마감하고 엶)·[■ 마감]
      S8 투표 장 → 's8-job' · 마지막 장 → 'wish' · S5 첫 장 → [질문 띄우기]/[질문 내리기](강의실 채팅 위 띠 + 극장 스크린)
    이미 응답이 있을 수 있는 투표(이 창에서 전에 연 투표 · 응답 있는 같은 투표)를 다시 열 때는 확인(응답이 지워짐).
    오른쪽 위 표시는 연동 상태 · 지금 투표만 보여 줌. 키 · 링크는 화면에 찍지 않음. 지우기: #key=off */
@@ -1924,11 +1899,10 @@ const crKey = FOLLOW ? null : lsGet("gongjuDeck.pkey");
 const CR_DRY = !!crKey && /[?&]dry(=|&|$)/.test(location.search);
 function cdDryLog(what, body) { console.log("[dry]", what, JSON.stringify(body || {})); (window.__cdDry = window.__cdDry || []).push({ what, body, at: Date.now() }); }
 const CR_POLLS = {
-  warmup: { id: "warmup", name: "설문", question: "AI를 어디에 써 보셨나요?", options: ["검색·질문", "문서 작성", "번역", "아직 안 써 봤어요"], multi: true },
   "s8-job": { id: "s8-job", name: "공고 투표", question: "김○○ 씨(가상 인물)가 지원해 볼 공고, 어느 것이 좋을까요?", options: ["세무회계사무원 (사무)", "어린이집 보육도우미 (돌봄)", "마트 즉석반찬코너 사원 (음식·판매)"], multi: false },
   "s4-most": { id: "s4-most", name: "투표 ①", question: "공주에서 가장 많이 올라온 일자리는?", options: ["돌봄 · 요양", "사무 · 회계", "음식 · 카페", "제조 · 생산"], multi: false },
   "s4-fit": { id: "s4-fit", name: "투표 ②", question: "모은 공고 중 몇 %가 경력단절여성에게 맞을까요?", options: ["10%", "25%", "40%", "60% 이상"], multi: false },
-  wish: { id: "wish", name: "마지막 투표", question: "내일 바로 맡겨 보고 싶은 일은?", options: ["자료 조사", "문서 작성", "설문 만들기", "리포트·대시보드"], multi: false } };
+  wish: { id: "wish", name: "마지막 투표", question: "내일 바로 맡겨 보고 싶은 일은?", options: ["자료 조사", "문서 작성", "자료 정리", "리포트·대시보드"], multi: false } };
 let crOK = false, crPoll = null, crPromptAt = -1, crActBusy = false;
 const chip = crKey ? document.createElement("div") : null;
 if (chip) { chip.id = "crChip"; stage.appendChild(chip); document.body.classList.add("crc"); }
@@ -2210,7 +2184,7 @@ function actBuild() {
   if (c && c.poll) {
     const defs = [CR_POLLS[c.poll]].concat(c.next ? [CR_POLLS[c.next.poll]] : []);
     defs.forEach((def, k) => {
-      const lab = def.id === "warmup" ? "설문 열기" : (defs.length > 1 ? ["①", "②"][k] + " 투표 열기" : def.name + " 열기");
+      const lab = (defs.length > 1 ? ["①", "②"][k] + " 투표 열기" : def.name + " 열기");
       const b = actBtn("", () => { psbAuto("chat"); pollOpen(def); });
       actItems.push(() => { const p = crPoll && crPoll.poll, on = !!p && p.id === def.id && !p.closed, was = !!p && p.id === def.id && p.closed;
         b.textContent = on ? "● " + lab.replace(" 열기", "") + " 열림 · " + crPoll.total + "명" : (was ? "▶ " + lab.replace("열기", "다시 열기") : "▶ " + lab);
@@ -2487,7 +2461,7 @@ function psbStateLoad() {
 }
 function psbStatePaint(j) {
   const sv = PSB.querySelector(".svc"), rs = PSB.querySelector(".rsc"); if (!sv || !rs) return;
-  const v = j && j.survey;
+  const v = null;   // 11.17. 박사님: 수강자 설문은 뺌 — 설문 카드 안 그림
   if (v) { sv.hidden = false; sv.textContent = "";
     const q = document.createElement("div"); q.className = "pq"; q.textContent = "📝 설문 열림 · " + (v.title || "");
     const sm = document.createElement("small"); sm.textContent = "응답 " + (j.surveyCount || 0) + "건 · " + ((v.questions || []).length) + "문항"; q.appendChild(sm); sv.appendChild(q);
@@ -2798,22 +2772,15 @@ function feedLoad() {
     ms.slice(-9).forEach((m) => { const el = document.createElement("div"); el.className = "m"; el.textContent = m.text; ls.appendChild(el); });
   }, () => {});
 }
-/* ── 설문 응답 수 ── */
-let svState = { open: false, n: 0 }, svOpenAt = 0;
-function svLoad() {
-  const sc = S[cur]; if (!sc || !sc.surveyWatch || !crOK) return;
-  crApi("/state").then((j) => { svState = { open: !!(j && j.survey), n: (j && j.surveyCount) || 0 }; actPaint(); }, () => {});
-}
 function slideEnter(sc, sl) {
   if (sc && sc.live && sc.item && !OLD_DECK) { sc._rv = ""; revSeen[sc.item] = 0; revFollowLoad(); }
   if (sc && sc.dyn) { dynLoad(); dynFollowLoad(); }
   if (sc && sc.collectMark) feedLoad();
-  if (sc && sc.surveyWatch) svLoad();
   framePaint();
 }
-if (CD_ON) setInterval(() => { if (document.hidden) return; const sc = S[cur] || {}; if (sc.dyn) dynLoad(); if (sc.collectMark) feedLoad(); if (sc.surveyWatch) svLoad(); }, 3000);
+if (CD_ON) setInterval(() => { if (document.hidden) return; const sc = S[cur] || {}; if (sc.dyn) dynLoad(); if (sc.collectMark) feedLoad(); }, 3000);
 if (FOLLOW) setInterval(() => { if (!document.hidden && (S[cur] || {}).dyn) dynFollowLoad(); }, 4000);
-/* ── 발표자 단추(새 덱): 허브 · 결과 장 · 동적 장 투표 · 설문 마감 ── */
+/* ── 발표자 단추(새 덱): 허브 · 결과 장 · 동적 장 투표 ── */
 function actExtra(sc, phase) {
   if (!sc) return;
   if (phase === "pre" && sc.hub) {
@@ -2833,12 +2800,6 @@ function actExtra(sc, phase) {
       const x = actBtn("sub", () => pollClose());
       actItems.push(() => { const q = crPoll && crPoll.poll; x.textContent = "■ 마감"; x.disabled = !crOK || crActBusy || !(q && q.id === def.id && !q.closed); return ""; });
     }
-  }
-  if (sc.surveyWatch) {   // [설문 열기] = 러너가 문항 단계 폴더의 out/survey.json 을 강의실 설문으로(POST /api/survey/define) · [설문 마감]
-    const o = actBtn("", () => { psbAuto("chat"); cdPost("/conduct/survey/open", { step: sc.dynStep }).then((r) => { cdNote(r.ok ? (r.j.dry ? "(dry) 설문 열기" : "설문 열림 · " + r.j.count + "문항") : (r.j.message || r.j.error || "실패")); svOpenAt = Date.now(); svLoad(); }); });
-    actItems.push(() => { const h = histOf([sc.dynStep]).pop(); o.textContent = svState.open ? "● 설문 열림 · " + svState.n + "명" : "▶ 설문 열기"; o.className = "ab " + (svState.open ? "run" : ""); o.disabled = !h || h.status !== "done" || svState.open; return h && h.status !== "done" ? "문항을 만드는 중" : ""; });
-    const x = actBtn("sub", () => { if (!confirm("설문을 마감할까요? 마감 뒤에는 응답을 받지 않습니다.")) return; cdPost("/conduct/survey/close", {}).then((r) => { cdNote(r.ok ? "설문 마감" : (r.j.message || "실패")); svLoad(); }); });
-    actItems.push(() => { x.textContent = "■ 설문 마감"; x.disabled = !svState.open; return ""; });
   }
   if (sc.live && sc.item) {
     const rb = actBtn("", () => revOpen(sc));
