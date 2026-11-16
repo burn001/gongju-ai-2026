@@ -503,16 +503,46 @@ body.follow .cmd .cp { display: none; }
 .mv .m-lift { transform: translate(var(--dx), var(--dy)); animation: mvLift .9s cubic-bezier(.5,0,.3,1) var(--t, 0s) backwards; }
 .mv .m-open { animation: mvOpen .5s cubic-bezier(.2,.8,.3,1.1) var(--t, 0s) backwards; }
 @media (prefers-reduced-motion: reduce) { .mv *, .mv .dcard.dim, .mv .dcard.ovf { animation: none !important; } }
+
+/* 11.16. 밤 박사님 지시 배치: 위 = 조작 띠(고정) · 왼쪽 = 슬라이드 + 결과 펼침(왼쪽 전체 한 스크롤) · 오른쪽 = 사이드바(따로 한 스크롤). 따라가기(?follow)는 예전 그대로 */
+body.lay { overflow: hidden; }
+body.lay .page { position: fixed; left: 0; top: 0; bottom: 0; right: 0; overflow-y: auto; overscroll-behavior: contain; display: block; padding: 0 16px 28px; min-height: 0; }
+body.lay.sb .page { right: max(30vw, 320px); padding-right: 16px; }
+body.lay #topbar { position: sticky; top: 0; z-index: 35; display: flex; flex-direction: column; gap: 4px; margin: 0 -16px 12px; padding: 6px 16px; background: rgba(5,9,15,.95); border-bottom: 1px solid #1b2c46; }
+body.lay #topbar .ctl { gap: 6px; }
+body.lay #topbar .ctl button { padding: 5px 10px; }
+body.lay #topbar #pAct { min-height: 0; gap: 6px; }
+body.lay #topbar #pAct .ab { font-size: 13.5px; padding: 6px 12px; }
+body.lay #cdPick { top: calc(100% + 6px); bottom: auto; max-height: 70vh; }
+body.lay #deck { display: block; flex: none; }
+body.lay #stage { margin: 0 auto; }
+body:not(.lay) #topbar, body:not(.lay) #rflow { display: none !important; }
+#rflow { margin: 16px auto 0; max-width: 1280px; }
+#rflow[hidden] { display: none; }
+#rflow .rfh { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font: 700 15px var(--f-ui); color: var(--cy); margin-bottom: 8px; }
+#rflow .rfu { flex: 1; min-width: 0; font: 500 13px var(--f-mono); color: var(--mu2); overflow-wrap: anywhere; }
+#rflow .rfo { font: 700 13px var(--f-ui); color: var(--cy); border: 1px solid rgba(79,209,232,.5); border-radius: 8px; padding: 4px 10px; text-decoration: none; }
+#rflow iframe { display: block; width: 100%; height: 900px; border: 1px solid var(--line); border-radius: 10px; background: #0a1424; }
+@media (max-width: 760px) {
+  body.lay { overflow: auto; }
+  body.lay .page, body.lay.sb .page { position: static; overflow: visible; padding: 0 12px 20px; }
+  body.lay #topbar { margin: 0 -12px 10px; padding: 6px 12px; }
+  body.lay.sb #psb { position: static; width: auto; min-width: 0; height: auto; max-height: none; overflow: visible; border-left: 0; border-top: 1px solid #22385a; }
+  body.lay.sb #psb .pane { min-height: 0; }
+  body.lay.sb #psb .pane[data-p="room"] { height: 80vh; }
+}
 </style>
 </head>
 <body>
 <div class="page">
+  <div id="topbar"></div>
   <div id="deck">
     <div id="stage" aria-live="polite"><div id="canvas"><div id="layer"></div>
       <div id="hud"><div id="prog"></div><div id="sub" hidden></div><div id="ft"><span id="ftl"></span><span class="c" id="ftc"></span><span id="ftn"></span></div></div>
       <div id="tt" aria-hidden="true"></div>
     </div></div>
   </div>
+  <section id="rflow" hidden aria-label="결과 화면 펼쳐 보기"><div class="rfh"><b>결과 화면 펼쳐 보기</b><span class="rfu"></span><a class="rfo" target="_blank" rel="noopener">새 창으로 ↗</a></div><iframe title="결과 화면(펼침)" referrerpolicy="no-referrer" scrolling="no"></iframe></section>
   <div class="ctl" role="toolbar" aria-label="발표 조작">
     <button id="bPrev" type="button" aria-label="이전 장면">← 이전</button>
     <span class="pos" id="pos"></span>
@@ -1752,6 +1782,8 @@ ttEl.innerHTML = buildTT();
 /* 따라가기 모드: 주소에 ?follow — 수강생 강의실이 강사 덱의 지금 장을 따라 보여 줌(발표자 표시·키·조작 없음) */
 const FOLLOW = /[?&]follow(=|&|$)/.test(location.search);
 document.body.classList.toggle("follow", FOLLOW);
+document.body.classList.toggle("lay", !FOLLOW);   // 11.16. 위 조작 띠 · 왼쪽 한 스크롤 배치
+if (!FOLLOW) document.getElementById("topbar").appendChild(document.querySelector(".ctl"));
 let pres = !FOLLOW && /[?&]p(=|&|$)/.test(location.search);
 try { if (!FOLLOW && !pres && localStorage.getItem("gongjuDeckPres") === "1") pres = true; } catch (e) {}
 document.body.classList.toggle("pres", pres);
@@ -1777,6 +1809,7 @@ function go(i) {
   play(sl);
   a4Place(); crEnter(sc); crDeck(); followTell();
   if (typeof slideEnter === "function") slideEnter(sc, sl);
+  rflowSync(sl);
   document.getElementById("ftc").textContent = CH[sc.ch];
   document.getElementById("ftn").textContent = String(i + 1).padStart(2, "0") + " / " + S.length;
   document.getElementById("pos").textContent = (i + 1) + " / " + S.length;
@@ -1824,7 +1857,7 @@ function fit() {
   const full = document.fullscreenElement === deck || FOLLOW;
   const pa = document.getElementById("pAct"), paH = pa && pa.parentNode !== deck ? pa.offsetHeight + 12 : 0; // 발표자 단추 줄
   const aw = full ? innerWidth : deck.clientWidth, ah = full ? innerHeight : Math.max(200, innerHeight - 90 - paH);
-  const k = Math.min(aw / 1280, ah / 720);
+  const k = full || FOLLOW ? Math.min(aw / 1280, ah / 720) : Math.min(1.6, aw / 1280);   // 11.16. 왼쪽 너비 가득(세로는 왼쪽 한 스크롤)
   stage.style.width = 1280 * k + "px"; stage.style.height = 720 * k + "px"; canvas.style.transform = `scale(${k})`;
 }
 addEventListener("resize", fit); document.addEventListener("fullscreenchange", fit);
@@ -2179,10 +2212,14 @@ let actItems = [], actSlide = -1, actH = 0;
 if (pAct) {
   pAct.id = "pAct"; pAct.setAttribute("role", "toolbar"); pAct.setAttribute("aria-label", "발표자 단추");
   pAct.innerHTML = '<div id="cdChip" class="off"><i></i><span class="t"></span><button type="button" class="pk" title="단계 고르기 (Shift+N) — 고른 뒤 확인을 눌러야 보냄">단계 ▾</button><button type="button" class="rs" title="강의 초기화 — 세션 새로 띄우기 · AI_temp_proj 비우기(준비자료만 남김) · AI 작업 화면 비우기 · 진행기 처음으로. 강의실 데이터는 그대로">⟲ 초기화</button></div><div class="acts"></div><span class="an"></span><div id="cdPick"></div>';
-  deck.parentNode.insertBefore(pAct, deck.nextSibling);
+  pActHome();
   pAct.querySelector(".pk").onclick = (ev) => { ev.stopPropagation(); ev.currentTarget.blur(); cdPickToggle(); };
   pAct.querySelector(".rs").onclick = (ev) => { ev.stopPropagation(); ev.currentTarget.blur(); cdReset(); };
-  document.addEventListener("fullscreenchange", () => { const inFs = document.fullscreenElement === deck; if (inFs && pAct.parentNode !== deck) deck.appendChild(pAct); else if (!inFs && pAct.parentNode === deck) deck.parentNode.insertBefore(pAct, deck.nextSibling); fit(); });
+  document.addEventListener("fullscreenchange", () => { const inFs = document.fullscreenElement === deck; if (inFs && pAct.parentNode !== deck) deck.appendChild(pAct); else if (!inFs && pAct.parentNode === deck) pActHome(); fit(); });
+}
+function pActHome() {   // 11.16. 발표자 단추 줄은 위 조작 띠(따라가기·예전 배치면 슬라이드 아래)
+  const tb = document.getElementById("topbar");
+  if (!FOLLOW && tb) tb.insertBefore(pAct, tb.firstChild); else deck.parentNode.insertBefore(pAct, deck.nextSibling);
 }
 function actBtn(cls, onclick) { const b = document.createElement("button"); b.type = "button"; b.className = "ab " + (cls || ""); b.onclick = (ev) => { ev.stopPropagation(); b.blur(); onclick(); }; pAct.querySelector(".acts").appendChild(b); return b; }
 function actBuild() {
@@ -2262,8 +2299,26 @@ async function pubRun(st, again) {
   } catch (err) { cdNote("러너에 연결하지 못했습니다"); }
   pubPosting = ""; await cdLoad();
 }
+/* 11.16. 결과 장이면 슬라이드 아래에 그 공개 화면을 내용 높이 그대로 펼침(?flow — 화면이 높이를 알려 옴, 안쪽 스크롤 없음). 왼쪽 한 스크롤로 내려 봄 */
+function rflowSync(sl, force) {
+  const box = document.getElementById("rflow"); if (!box || FOLLOW) return;
+  const f = sl && sl.querySelector(".lvf"), st = f && f.dataset.live;
+  if (!st) { box.hidden = true; box.dataset.st = ""; const fr = box.querySelector("iframe"); fr.removeAttribute("src"); fr.style.height = ""; return; }
+  box.hidden = false;
+  if (box.dataset.st === st && !force) return;
+  box.dataset.st = st;
+  const u = liveUrl(st), fr = box.querySelector("iframe");
+  box.querySelector(".rfu").textContent = u; box.querySelector(".rfo").href = u;
+  fr.style.height = ""; fr.src = u + "?flow=1&v=" + Date.now();
+}
+window.addEventListener("message", (e) => {
+  const d = e.data, fr = document.querySelector("#rflow iframe");
+  if (!fr || !d || typeof d.gongjuDocH !== "number" || e.source !== fr.contentWindow) return;
+  fr.style.height = Math.min(40000, Math.max(300, Math.ceil(d.gongjuDocH) + 4)) + "px";
+});
 function liveReload(st, force) {   // 11.11. 러너 파일을 띄운 칸(발표자)은 그대로 둠 — 같은 결과라 공개가 끝나도 칸이 뒤바뀌지 않게
   document.querySelectorAll('.lvf[data-live="' + st + '"]').forEach((f) => { if (!force && f.parentNode.dataset.lk) return; f.removeAttribute("sandbox"); f.src = liveUrl(st) + "?v=" + Date.now(); });
+  const rb = document.getElementById("rflow"); if (rb && !rb.hidden && rb.dataset.st === st) rflowSync(layer.querySelector(".slide:not(.leave)"), true);
 }
 function liveWatch(p) {
   const m = (p && p.done && p.done[LIVE_DAY]) || {};
