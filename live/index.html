@@ -69,8 +69,13 @@ footer .k{font-weight:700;color:var(--cy);margin-right:8px}
 .wait .orb{width:72px;height:72px;margin:0 auto;border-radius:50%;border:3px solid rgba(79,209,232,.35);border-top-color:var(--cy);animation:spin 1.6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.hd .dot,.wait .orb{animation:none}}
-@media (max-width:600px){.frame{height:70vh;min-height:420px}.wrap{padding:16px 14px 32px}}
-</style></head>
+/* 11.16. ?flow=1 — 덱 왼쪽 '결과 펼쳐 보기'에 내용 높이 그대로 들어갈 때: vh 높이를 px 로(덱이 iframe 을 늘릴 때마다 같이 자라지 않게) */
+html.flow,html.flow body{min-height:0}
+html.flow .frame{height:720px}
+html.flow .pdfv iframe{height:900px}
+html.flow .wait{margin-top:40px}
+@media (max-width:600px){.frame{height:70vh;min-height:420px}.wrap{padding:16px 14px 32px}html.flow .frame{height:560px}}
+</style><script>if(/[?&]flow=/.test(location.search))document.documentElement.classList.add("flow")</script></head>
 <body><div class="wrap">
 <header class="hd"><span class="dot"></span><div class="tt"><div class="eb">공주여성새로일하기센터 · AI 에이전트 활용 강의</div><h1>실습 결과</h1></div><a class="back" href="https://burn001.github.io/gongju-ai-2026/" target="_top">← 강의 자료</a></header>
 <div class="cards">

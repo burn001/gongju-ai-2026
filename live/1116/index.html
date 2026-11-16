@@ -69,13 +69,18 @@ footer .k{font-weight:700;color:var(--cy);margin-right:8px}
 .wait .orb{width:72px;height:72px;margin:0 auto;border-radius:50%;border:3px solid rgba(79,209,232,.35);border-top-color:var(--cy);animation:spin 1.6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.hd .dot,.wait .orb{animation:none}}
-@media (max-width:600px){.frame{height:70vh;min-height:420px}.wrap{padding:16px 14px 32px}}
-</style><meta name="gongju-live" content="day"></head>
-<body data-live="gongju-live:day:1116:W1siczEiLDE3OTQ4MzU0NjExMjldXQ=="><div class="wrap">
+/* 11.16. ?flow=1 — 덱 왼쪽 '결과 펼쳐 보기'에 내용 높이 그대로 들어갈 때: vh 높이를 px 로(덱이 iframe 을 늘릴 때마다 같이 자라지 않게) */
+html.flow,html.flow body{min-height:0}
+html.flow .frame{height:720px}
+html.flow .pdfv iframe{height:900px}
+html.flow .wait{margin-top:40px}
+@media (max-width:600px){.frame{height:70vh;min-height:420px}.wrap{padding:16px 14px 32px}html.flow .frame{height:560px}}
+</style><script>if(/[?&]flow=/.test(location.search))document.documentElement.classList.add("flow")</script><meta name="gongju-live" content="day"></head>
+<body data-live="gongju-live:day:1116:W1siczEiLDE3OTQ4MzYyNTMzMTldXQ=="><div class="wrap">
 <header class="hd"><span class="dot"></span><div class="tt"><div class="eb">공주여성새로일하기센터 · AI 에이전트 활용 강의</div><h1>오늘의 실습 결과 <span style="color:var(--cy)">2026. 11. 16.(월)</span></h1></div><a class="back" href="https://burn001.github.io/gongju-ai-2026/" target="_top">← 강의 자료</a></header>
 <p class="what">강의 시간에 AI 에이전트가 만든 결과물입니다. 실습이 끝나고 강사가 공개하면 카드가 초록으로 바뀝니다.</p>
 <div class="cards">
-<a class="card on" href="s1/"><div><span class="no">1</span><span class="tag">보고서</span></div><div class="t">리서치 보고서</div><div class="st">공개됨 · 22:24</div></a>
+<a class="card on" href="s1/"><div><span class="no">1</span><span class="tag">보고서</span></div><div class="t">리서치 보고서</div><div class="st">공개됨 · 22:37</div></a>
 <a class="card" href="s7/"><div><span class="no">2</span><span class="tag">슬라이드</span></div><div class="t">발표 슬라이드</div><div class="st">실습이 끝나면 공개</div></a>
 <a class="card" href="survey/"><div><span class="no">3</span><span class="tag">설문</span></div><div class="t">설문 자동화</div><div class="st">실습이 끝나면 공개</div></a>
 <a class="card" href="motion/"><div><span class="no">4</span><span class="tag">모션</span></div><div class="t">모션그래픽</div><div class="st">실습이 끝나면 공개</div></a>
@@ -87,7 +92,7 @@ footer .k{font-weight:700;color:var(--cy);margin-right:8px}
 <div class="warnband">AI가 만든 <b>초안</b>입니다. 숫자·공고·시설 정보는 원문에서 꼭 다시 확인하세요. 수강생 이름·연락처는 싣지 않습니다.</div>
 <footer><span class="k">문의</span>공주여성새로일하기센터 041-850-6061 · 마지막 확인 <span class="mono" id="chk">-</span></footer>
 </div><script>
-(function(){var M="gongju-live:day:1116:W1siczEiLDE3OTQ4MzU0NjExMjldXQ==",el=document.getElementById("chk");
+(function(){var M="gongju-live:day:1116:W1siczEiLDE3OTQ4MzYyNTMzMTldXQ==",el=document.getElementById("chk");
 function t(){var d=new Date();return ("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2)+":"+("0"+d.getSeconds()).slice(-2);}
 if(el)el.textContent=t();
 setInterval(function(){if(document.hidden)return;fetch(location.pathname+"?v="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():"";}).then(function(x){
@@ -105,4 +110,6 @@ addEventListener("message",function(e){var d=e.data;if(!d||typeof d!=="object")r
 if(typeof d.gongjuH==="number"){fr.forEach(function(f){if(f.contentWindow===e.source){f._msg=1;setH(f,d.gongjuH);}});return;}
 if(typeof d.gongjuFocusY==="number"&&fr[0]&&fr[0].contentWindow===e.source){var y=fr[0].getBoundingClientRect().top+scrollY+d.gongjuFocusY-6;scrollTo(0,Math.max(0,y));return;}
 if(d.gongjuFocus&&e.source===parent){want=String(d.gongjuFocus);focus();setTimeout(focus,1200);setTimeout(focus,3500);}});
+if(parent!==window&&document.documentElement.classList.contains("flow")){var W=document.querySelector(".wrap")||B,lh=0;function dh(){var h=Math.ceil(W.getBoundingClientRect().bottom+scrollY+8);if(Math.abs(h-lh)>2){lh=h;try{parent.postMessage({gongjuDocH:h},"*");}catch(e){}}}
+addEventListener("load",dh);setTimeout(dh,1500);if(window.ResizeObserver)new ResizeObserver(dh).observe(W);else setInterval(dh,2000);}
 })();</script></body></html>

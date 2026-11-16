@@ -69,16 +69,21 @@ footer .k{font-weight:700;color:var(--cy);margin-right:8px}
 .wait .orb{width:72px;height:72px;margin:0 auto;border-radius:50%;border:3px solid rgba(79,209,232,.35);border-top-color:var(--cy);animation:spin 1.6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.hd .dot,.wait .orb{animation:none}}
-@media (max-width:600px){.frame{height:70vh;min-height:420px}.wrap{padding:16px 14px 32px}}
-</style><meta name="gongju-live" content="published"></head>
-<body data-live="gongju-live:published:1116:s1:1116-s1-mwjaoqa7" data-pub="1116-s1-mwjaoqa7"><div class="wrap">
+/* 11.16. ?flow=1 — 덱 왼쪽 '결과 펼쳐 보기'에 내용 높이 그대로 들어갈 때: vh 높이를 px 로(덱이 iframe 을 늘릴 때마다 같이 자라지 않게) */
+html.flow,html.flow body{min-height:0}
+html.flow .frame{height:720px}
+html.flow .pdfv iframe{height:900px}
+html.flow .wait{margin-top:40px}
+@media (max-width:600px){.frame{height:70vh;min-height:420px}.wrap{padding:16px 14px 32px}html.flow .frame{height:560px}}
+</style><script>if(/[?&]flow=/.test(location.search))document.documentElement.classList.add("flow")</script><meta name="gongju-live" content="published"></head>
+<body data-live="gongju-live:published:1116:s1:1116-s1-mwjb5tdh" data-pub="1116-s1-mwjb5tdh"><div class="wrap">
 <header class="hd"><span class="dot"></span><div class="tt"><div class="eb">2026. 11. 16.(월) 실습 결과 · 보고서</div><h1>리서치 보고서</h1></div><a class="back" href="../">← 오늘의 실습 결과</a></header>
 <p class="what">수강생이 채팅으로 낸 주제를 AI가 묶고, 투표로 고른 주제를 팀원들이 나눠 조사해 숫자마다 출처가 달린 한글 보고서를 만들었습니다.</p>
-<div class="meta"><span>만든 시각 <b>2026. 11. 16. 21:59</b></span><span>AI가 일한 시간 <b>2분 45초</b></span><span>공개 <b>2026. 11. 16. 22:24</b></span></div>
+<div class="meta"><span>만든 시각 <b>2026. 11. 16. 22:37</b></span><span>공개 <b>2026. 11. 16. 22:37</b></span></div>
 
 
-<section class="art"><div class="bar"><span class="lab">리서치 보고서 (한글 파일을 PDF로)</span></div><div class="pdfv" id="pdfv" data-src="report.pdf?v=1116-s1-mwjaoqa7"><div class="ld">보고서를 불러오는 중…</div></div>
-<div class="more"><a class="btn" href="report.pdf?v=1116-s1-mwjaoqa7" download>PDF 내려받기</a><a class="btn sub" href="report.pdf?v=1116-s1-mwjaoqa7" target="_blank" rel="noopener">PDF 새 창으로 열기 ↗</a></div>
+<section class="art"><div class="bar"><span class="lab">리서치 보고서 (한글 파일을 PDF로)</span></div><div class="pdfv" id="pdfv" data-src="report.pdf?v=1116-s1-mwjb5tdh"><div class="ld">보고서를 불러오는 중…</div></div>
+<div class="more"><a class="btn" href="report.pdf?v=1116-s1-mwjb5tdh" download>PDF 내려받기</a><a class="btn sub" href="report.pdf?v=1116-s1-mwjb5tdh" target="_blank" rel="noopener">PDF 새 창으로 열기 ↗</a></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
 (function(){var box=document.getElementById("pdfv"),src=box.getAttribute("data-src"),MAX=40;
@@ -94,12 +99,12 @@ pdfjsLib.getDocument({url:src,cMapUrl:"https://cdn.jsdelivr.net/npm/pdfjs-dist@3
  next();
 },function(e){fallback(e&&e.message);});})();
 </script></section>
-<div class="more"><a class="btn sub" href="report.html?v=1116-s1-mwjaoqa7" target="_blank" rel="noopener">웹 글로 읽기 ↗</a></div>
+<div class="more"><a class="btn sub" href="report.html?v=1116-s1-mwjb5tdh" target="_blank" rel="noopener">웹 글로 읽기 ↗</a></div>
 
 <div class="warnband">AI가 만든 <b>초안</b>입니다. 숫자·공고·시설 정보는 원문에서 꼭 다시 확인하세요.</div>
 <footer><span class="k">공주여성새로일하기센터</span>AI 에이전트 활용 강의 · 2026. 11. 16.(월) · 문의 041-850-6061 · <a href="../">오늘의 실습 결과</a> · <a href="https://burn001.github.io/gongju-ai-2026/" target="_top">강의 자료</a></footer>
 </div><script>
-(function(){var M="gongju-live:published:1116:s1:1116-s1-mwjaoqa7",el=document.getElementById("chk");
+(function(){var M="gongju-live:published:1116:s1:1116-s1-mwjb5tdh",el=document.getElementById("chk");
 function t(){var d=new Date();return ("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2)+":"+("0"+d.getSeconds()).slice(-2);}
 if(el)el.textContent=t();
 setInterval(function(){if(document.hidden)return;fetch(location.pathname+"?v="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():"";}).then(function(x){
@@ -117,4 +122,6 @@ addEventListener("message",function(e){var d=e.data;if(!d||typeof d!=="object")r
 if(typeof d.gongjuH==="number"){fr.forEach(function(f){if(f.contentWindow===e.source){f._msg=1;setH(f,d.gongjuH);}});return;}
 if(typeof d.gongjuFocusY==="number"&&fr[0]&&fr[0].contentWindow===e.source){var y=fr[0].getBoundingClientRect().top+scrollY+d.gongjuFocusY-6;scrollTo(0,Math.max(0,y));return;}
 if(d.gongjuFocus&&e.source===parent){want=String(d.gongjuFocus);focus();setTimeout(focus,1200);setTimeout(focus,3500);}});
+if(parent!==window&&document.documentElement.classList.contains("flow")){var W=document.querySelector(".wrap")||B,lh=0;function dh(){var h=Math.ceil(W.getBoundingClientRect().bottom+scrollY+8);if(Math.abs(h-lh)>2){lh=h;try{parent.postMessage({gongjuDocH:h},"*");}catch(e){}}}
+addEventListener("load",dh);setTimeout(dh,1500);if(window.ResizeObserver)new ResizeObserver(dh).observe(W);else setInterval(dh,2000);}
 })();</script></body></html>
