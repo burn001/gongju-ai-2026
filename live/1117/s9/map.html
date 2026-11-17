@@ -950,7 +950,7 @@ document.getElementById("kpis").innerHTML = [
 const small = matchMedia("(max-width:640px)").matches;
 const map = L.map("map", { zoomControl: !small, scrollWheelZoom: false, zoomSnap: 1, zoomDelta: 1 }).setView([36.46, 127.12], 12);
 // 바탕 지도: OpenStreetMap 타일을 CSS로 어둡게(S4와 같음). CARTO 어두운 지도는 키 없이 'API KEY REQUIRED' 그림이 떠서 쓰지 않음
-const osm = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> 기여자' });
+const osm = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", { maxZoom: 19, attribution: 'Tiles &copy; <a href="https://www.esri.com/">Esri</a> &mdash; Esri, HERE, Garmin, &copy; OpenStreetMap 기여자' }); // OSM 타일은 공개 사이트(no-referrer)에서 차단 그림이 떠서 Esri로 바꿈(11.17.)
 let tErr = 0, tOk = 0, tFail = false;
 document.getElementById("map").classList.add("tiles-dim");
 function noTiles() { if (tFail) return; tFail = true; document.getElementById("tilemsg").style.display = "block"; areaLabels.addTo(map); }
