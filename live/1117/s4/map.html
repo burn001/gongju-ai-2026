@@ -1051,9 +1051,11 @@ if(nNew) document.getElementById("newLegend").hidden = false;
 /* ---------- 지도 ---------- */
 const small = matchMedia("(max-width:640px)").matches;
 const map = L.map("map",{scrollWheelZoom:false,zoomControl:!small,zoomSnap:1,zoomDelta:1}).setView([36.46,127.12],12);
-const ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> 기여자';
-// 바탕 지도: OpenStreetMap 타일을 CSS로 어둡게(남색 틀에 맞춤). CARTO 어두운 지도는 키 없이 'API KEY REQUIRED'가 떠서 쓰지 않음(11.09. 확인)
-const osm = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:ATTR});
+const ATTR = 'Tiles &copy; <a href="https://www.esri.com/">Esri</a> &mdash; Esri, HERE, Garmin, &copy; OpenStreetMap 기여자';
+// 바탕 지도: Esri 거리 지도를 CSS로 어둡게(남색 틀에 맞춤).
+// OpenStreetMap 타일은 공개 사이트(Referrer-Policy: no-referrer)에서 'Access blocked' 그림이 떠서 쓰지 않음(11.17. 확인)
+// CARTO 어두운 지도는 키 없이 'API KEY REQUIRED'가 떠서 쓰지 않음(11.09. 확인)
+const osm = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",{maxZoom:19,attribution:ATTR});
 let errs=0, loaded=0, failed=false;
 document.getElementById("map").classList.add("tiles-dim");
 function noTiles(){ if(failed) return; failed=true; document.getElementById("tilemsg").style.display="block"; areaLabels.addTo(map); }
