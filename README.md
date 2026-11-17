@@ -2,7 +2,12 @@
 
 공주여성새로일하기센터 AI 에이전트 활용 강의(2026. 11. 10., 11. 17.) 자료입니다.
 
-- 슬라이드(PDF): https://burn001.github.io/gongju-ai-2026/pdf/gongju-ai-2026-slides.pdf
+- 슬라이드(PDF)
+  - 11. 17.(B반, 46장): https://burn001.github.io/gongju-ai-2026/pdf/gongju-ai-2026-slides.pdf
+  - 11. 10.(A반, 59장): https://burn001.github.io/gongju-ai-2026/pdf/gongju-ai-2026-slides-1110.pdf
+- 집에서 따라 해 보기(Claude Code·Codex로 같은 결과 만들기, 실습별 지시문 복사)
+  - 11. 17.(B반): https://burn001.github.io/gongju-ai-2026/live/1117/howto/
+  - 11. 10.(A반): https://burn001.github.io/gongju-ai-2026/live/1110/howto/
 - 오늘의 실습 결과(강의 중 AI가 만든 결과물, 강사가 공개하면 올라옴)
   - 11. 10.: https://burn001.github.io/gongju-ai-2026/live/1110/
   - 11. 17.: https://burn001.github.io/gongju-ai-2026/live/1117/
