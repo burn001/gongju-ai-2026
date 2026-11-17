@@ -1,15 +1,17 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>일하는 엄마 지도 · 11. 17. 실습 결과(준비 중)</title>
+<title>일하는 엄마 지도 · 11. 17. 실습 결과</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700&display=swap">
 <style>
 :root{color-scheme:dark;--void:#05090f;--bg0:#0a1424;--bg1:#17305a;--ink:#eef4fb;--mu:#b4c5de;--mu2:#93a7c6;--dim:#6f83a3;--line:#2a4268;--panel:rgba(17,31,54,.86);--cy:#4fd1e8;--warn:#f4b740;--bad:#ff7a66;--gr:#5fe0a0;
 --f-ui:"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",sans-serif;--f-mono:"JetBrains Mono",Consolas,monospace}
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%}
-body{background:var(--void) radial-gradient(ellipse at 72% -8%,var(--bg1) 0%,var(--bg0) 58%,var(--void) 100%) no-repeat fixed;color:var(--ink);font-family:var(--f-ui);word-break:keep-all;overflow-wrap:anywhere;line-height:1.55;-webkit-text-size-adjust:100%}
+body{background:var(--void);color:var(--ink);font-family:var(--f-ui);word-break:keep-all;overflow-wrap:anywhere;line-height:1.55;-webkit-text-size-adjust:100%}
 a{color:var(--cy)}
+/* 11.16. 스크롤 수리: 배경을 background-attachment:fixed 대신 고정 층으로(fixed 배경은 스크롤마다 화면 전체를 다시 그려 PDF 쪽 그림과 겹치면 스크롤이 끊김) */
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 72% -8%,var(--bg1) 0%,var(--bg0) 58%,var(--void) 100%)}
 .wrap{max-width:1180px;margin:0 auto;padding:22px 16px 40px}
 .hd{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
 .hd .dot{width:12px;height:12px;border-radius:50%;background:var(--cy);box-shadow:0 0 12px var(--cy);flex:none;margin-top:9px;animation:pulse 2.4s ease-in-out infinite}
@@ -34,8 +36,9 @@ h1{font-size:clamp(26px,4.2vw,40px);font-weight:900;margin:2px 0 0;letter-spacin
 .btn:hover{background:rgba(79,209,232,.25)}
 .btn.sub{border-color:#2b3f60;background:#111c2e;color:var(--ink)}
 .frame{display:block;width:100%;height:78vh;min-height:520px;border:1px solid var(--line);border-radius:10px;background:#0a1424}
-.pdfv{border:1px solid var(--line);border-radius:10px;background:#1b2536;padding:12px;min-height:240px;max-height:88vh;overflow:auto}
-.pdfv .pg{display:block;width:100%;height:auto;margin:0 auto 12px;background:#fff;border-radius:3px;box-shadow:0 6px 18px rgba(0,0,0,.45)}
+.pdfv .pg.wt{background:#e9edf2}
+.pdfv{border:1px solid var(--line);border-radius:10px;background:#1b2536;padding:12px;min-height:240px;overflow:visible}
+.pdfv .pg{display:block;width:100%;height:auto;aspect-ratio:var(--ar,0.7071);margin:0 auto 12px;background:#fff;border-radius:3px;box-shadow:0 6px 18px rgba(0,0,0,.45)}
 .pdfv .ld{color:var(--mu);padding:30px 10px;text-align:center}
 .pdfv iframe{display:block;width:100%;height:80vh;border:0;background:#fff}
 .note{font-size:13.5px;color:var(--mu2);margin-top:8px}
@@ -66,22 +69,44 @@ footer .k{font-weight:700;color:var(--cy);margin-right:8px}
 .wait .orb{width:72px;height:72px;margin:0 auto;border-radius:50%;border:3px solid rgba(79,209,232,.35);border-top-color:var(--cy);animation:spin 1.6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.hd .dot,.wait .orb{animation:none}}
-@media (max-width:600px){.frame{height:70vh;min-height:420px}.wrap{padding:16px 14px 32px}}
-</style><meta name="gongju-live" content="placeholder"></head>
-<body data-live="gongju-live:placeholder:1117:s9"><div class="wrap">
+/* 11.16. ?flow=1 — 덱 왼쪽 '결과 펼쳐 보기'에 내용 높이 그대로 들어갈 때: vh 높이를 px 로(덱이 iframe 을 늘릴 때마다 같이 자라지 않게) */
+html.flow,html.flow body{min-height:0}
+html.flow .frame{height:720px}
+html.flow .pdfv iframe{height:900px}
+html.flow .wait{margin-top:40px}
+@media (max-width:600px){.frame{height:70vh;min-height:420px}.wrap{padding:16px 14px 32px}html.flow .frame{height:560px}}
+</style><script>if(/[?&]flow=/.test(location.search))document.documentElement.classList.add("flow")</script><meta name="gongju-live" content="published"></head>
+<body data-live="gongju-live:published:1117:s9:1117-s9-mwk2rmb4" data-pub="1117-s9-mwk2rmb4"><div class="wrap">
 <header class="hd"><span class="dot"></span><div class="tt"><div class="eb">2026. 11. 17.(화) 실습 결과 · 돌봄</div><h1>일하는 엄마 지도</h1></div><a class="back" href="../">← 오늘의 실습 결과</a></header>
-<div class="wait">
-  <div class="orb" aria-hidden="true"></div>
-  <div class="big">실습이 끝나면 결과가 여기에 올라옵니다</div>
-  <div style="font-size:17px;color:var(--mu);line-height:1.6">강사가 화면에서 [결과 공개]를 누르면 1～2분 뒤 이 화면이 저절로 바뀝니다.<br>이 창을 열어 두세요 — 30초마다 확인합니다.</div>
-  <div class="pn" style="margin:24px auto 0;max-width:560px;text-align:left"><div class="lab">공개되면 보실 결과</div><div style="font-size:16px;margin-top:6px;color:#dfe8f4">일자리 지도에 어린이집·유치원·지역아동센터·초등학교를 겹쳐, 아이 맡길 곳이 가깝고 낮 시간에 일하는 일자리를 골랐습니다.</div></div>
-  <div class="note" style="margin-top:16px">마지막 확인 <span class="mono" id="chk">-</span></div>
-</div>
-<footer><span class="k">공주여성새로일하기센터</span>AI 에이전트 활용 강의 · 2026. 11. 17.(화) · <a href="../../../">강의 자료 첫 화면</a></footer>
+<p class="what">일자리 지도에 어린이집·유치원·지역아동센터·초등학교를 겹쳐, 아이 맡길 곳이 가깝고 낮 시간에 일하는 일자리를 골랐습니다.</p>
+<div class="meta"><span>만든 시각 <b>2026. 11. 17. 11:30</b></span><span>AI가 일한 시간 <b>3분 15초</b></span><span>공개 <b>2026. 11. 17. 11:30</b></span></div>
+
+<section class="pn sum"><div class="lab">한눈에</div><ul><li>일하는 엄마 지도 — 돌봄시설이 가까운 주간 일자리 후보는 88건이고, 그중 등·하원 시간 안에 일하는 곳은 15건입니다.</li><li>적합·조건부 일자리 169건 × 돌봄시설 101곳(어린이집·유치원·지역아동센터·초등학교)</li><li>돌봄 병행 후보 88건, 그중 등·하원 시간 안 근무 15건</li><li>1. 2시까지/병원비 청구, 본사지원 상담원 모집/주부, 초보가능 (금흥동) — 09:30~14:00 근무, 1km 안 어린이집 12곳(연장보육 12곳)</li><li>2. 공주원로원 방문요양센터 요양보호사 모집 (신관동) — 08:00~10:00 단시간, 1km 안 어린이집 12곳·유치원 5곳</li><li>3. 올리브영 공주중동점 파트타임 구인 (중동) — 주3일 09:30~13:30, 지역아동센터 4곳·초등학교 3곳 가까움</li><li>가깝다는 것은 입소 가능을 뜻하지 않습니다. 정원·대기는 시설에 확인하세요.</li></ul></section>
+<section class="art"><div class="bar"><span class="lab">일하는 엄마 지도 — 일자리 점을 누르면 1km 안 돌봄시설</span><span class="sp"></span><a class="btn" href="map.html?v=1117-s9-mwk2rmb4" target="_blank" rel="noopener">새 창으로 크게 보기 ↗</a></div>
+<iframe class="frame" src="map.html?v=1117-s9-mwk2rmb4" title="일하는 엄마 지도 — 일자리 점을 누르면 1km 안 돌봄시설" loading="lazy"></iframe></section>
+
+
+<div class="warnband">AI가 만든 <b>초안</b>입니다. 숫자·공고·시설 정보는 원문에서 꼭 다시 확인하세요.</div>
+<footer><span class="k">공주여성새로일하기센터</span>AI 에이전트 활용 강의 · 2026. 11. 17.(화) · 문의 041-850-6061 · <a href="../">오늘의 실습 결과</a> · <a href="https://burn001.github.io/gongju-ai-2026/" target="_top">강의 자료</a></footer>
 </div><script>
-(function(){var M="gongju-live:placeholder:1117:s9",el=document.getElementById("chk");
+(function(){var M="gongju-live:published:1117:s9:1117-s9-mwk2rmb4",el=document.getElementById("chk");
 function t(){var d=new Date();return ("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2)+":"+("0"+d.getSeconds()).slice(-2);}
 if(el)el.textContent=t();
 setInterval(function(){if(document.hidden)return;fetch(location.pathname+"?v="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():"";}).then(function(x){
 if(el)el.textContent=t();if(x&&x.indexOf(M)<0){location.replace(location.pathname+"?v="+Date.now());}}).catch(function(){});},30000);})();
-</script></body></html>
+</script><script>/* flat-scroll v2 (11.16.) */(function(){
+var B=document.body,L=(B.getAttribute("data-live")||"").split(":"),fr=[].slice.call(document.querySelectorAll("iframe.frame"));
+try{if(parent!==window)parent.postMessage({gongjuLive:{kind:L[1]||"",day:L[2]||"",step:L[3]||"",pub:B.getAttribute("data-pub")||""}},"*");}catch(e){}
+function setH(f,h){h=Math.min(30000,Math.ceil(h));var c=f.getBoundingClientRect().height;if(h>c+8||(f._fit&&Math.abs(h-c)>8)){if((f._n=(f._n||0)+1)>12)return;f._fit=1;f.style.height=Math.max(h,320)+"px";f.style.minHeight="0";f.setAttribute("scrolling","no");}}
+fr.forEach(function(f){f.removeAttribute("loading");function same(){try{var d=f.contentDocument;if(!d||!d.documentElement||f._msg)return;setH(f,Math.max(d.documentElement.scrollHeight,d.body?d.body.scrollHeight:0));}catch(e){}}
+f.addEventListener("load",function(){same();setTimeout(same,1500);setTimeout(same,4000);});});
+var want=null;
+function focus(){if(!want)return;var a=document.querySelector(".art")||B,y=a.getBoundingClientRect().top+scrollY-4;scrollTo(0,Math.max(0,y));
+if(want!=="art"&&fr[0]&&fr[0].contentWindow){try{fr[0].contentWindow.postMessage({gongjuFocusQ:want},"*");}catch(e){}}}
+addEventListener("message",function(e){var d=e.data;if(!d||typeof d!=="object")return;
+if(typeof d.gongjuH==="number"){fr.forEach(function(f){if(f.contentWindow===e.source){f._msg=1;setH(f,d.gongjuH);}});return;}
+if(typeof d.gongjuFocusY==="number"&&fr[0]&&fr[0].contentWindow===e.source){var y=fr[0].getBoundingClientRect().top+scrollY+d.gongjuFocusY-6;scrollTo(0,Math.max(0,y));return;}
+if(d.gongjuFocus&&e.source===parent){want=String(d.gongjuFocus);focus();setTimeout(focus,1200);setTimeout(focus,3500);}});
+if(parent!==window&&document.documentElement.classList.contains("flow")){var W=document.querySelector(".wrap")||B,lh=0;function dh(){var h=Math.ceil(W.getBoundingClientRect().bottom+scrollY+8);if(Math.abs(h-lh)>2){lh=h;try{parent.postMessage({gongjuDocH:h},"*");}catch(e){}}}
+addEventListener("load",dh);setTimeout(dh,1500);if(window.ResizeObserver)new ResizeObserver(dh).observe(W);else setInterval(dh,2000);}
+})();</script></body></html>
