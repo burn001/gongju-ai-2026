@@ -15,12 +15,19 @@ html,body{background:#111;overflow:hidden}
 body{font-family:NSR,"Noto Sans KR","Malgun Gothic",sans-serif;color:var(--ink);word-break:keep-all}
 #stage{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden;transform-origin:0 0;
   background:radial-gradient(1400px 900px at 20% 10%,var(--bg1) 0%,var(--bg2) 55%,var(--bg3) 100%)}
-.blob{position:absolute;border-radius:50%;opacity:.55}
+.blob{position:absolute;border-radius:50%;opacity:.6}
+canvas{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none}
+#fxc{z-index:5}
 .scene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;text-align:center;padding:0 90px}
 .a{display:inline-block;opacity:0}
 .split .ch{display:inline-block;opacity:0;white-space:pre}
 svg .draw{fill:none;stroke-linecap:round;stroke-linejoin:round}
 .hl{color:var(--c1)}
+/* 빛 스침(sheen) */
+.card,.c3,.pill,.chip{position:relative;overflow:hidden}
+.bubble{overflow:hidden}
+.card::after,.c3::after,.pill::after,.chip::after,.bubble::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(105deg,rgba(255,255,255,0) 38%,rgba(255,255,255,.85) 50%,rgba(255,255,255,0) 62%);transform:translateX(var(--sh,-130%))}
 /* 공감 질문 */
 .q1{font-weight:700;color:var(--ink2);letter-spacing:-1px}
 .q2{font-weight:800;margin-top:14px;letter-spacing:-2px;line-height:1.15}
@@ -29,7 +36,7 @@ svg .draw{fill:none;stroke-linecap:round;stroke-linejoin:round}
 .tail{font-size:44px;font-weight:700;color:var(--ink2);margin-left:14px}
 /* 센터 소개 */
 .eyebrow{font-size:50px;font-weight:700;color:var(--c1)}
-.name{font-weight:800;letter-spacing:-3px;margin-top:20px}
+.name{font-weight:800;letter-spacing:-3px;margin-top:20px;text-shadow:0 8px 0 rgba(78,159,80,.14)}
 .desc{font-weight:700}
 .pill{margin-top:44px;font-size:42px;font-weight:700;padding:14px 40px;border-radius:999px;border:4px solid var(--c2);color:var(--c2);background:#fff}
 /* 카드 */
@@ -41,7 +48,7 @@ svg .draw{fill:none;stroke-linecap:round;stroke-linejoin:round}
 .more{margin-top:54px;font-size:46px;font-weight:700;color:var(--ink2)}
 /* 사실 하나 */
 .fsmall{font-size:52px;font-weight:700;color:var(--ink2);margin-top:26px}
-.fbig{font-weight:800;color:var(--c1);letter-spacing:-2px;margin-top:6px}
+.fbig{font-weight:800;color:var(--c1);letter-spacing:-2px;margin-top:6px;text-shadow:0 8px 0 rgba(232,106,138,.18)}
 .fbottom{font-size:52px;font-weight:700;margin-top:24px}
 /* 수강생 한마디 */
 .bubbles{position:relative;width:100%;height:470px;margin-top:40px}
@@ -70,21 +77,29 @@ svg .draw{fill:none;stroke-linecap:round;stroke-linejoin:round}
   <div class="blob" id="b1" style="width:760px;height:760px;background:radial-gradient(circle,var(--b1) 0%,rgba(255,255,255,0) 70%)"></div>
   <div class="blob" id="b2" style="width:680px;height:680px;background:radial-gradient(circle,var(--b2) 0%,rgba(255,255,255,0) 70%)"></div>
   <div class="blob" id="b3" style="width:560px;height:560px;background:radial-gradient(circle,var(--b3) 0%,rgba(255,255,255,0) 70%)"></div>
+  <canvas id="bgc" width="1920" height="1080"></canvas>
 <section class="scene sc-question" data-s="0.00" data-e="4.70"><div class="q1 split" data-in="0.30" data-st="0.05" style="font-size:92px">경력은 멈춰도,</div><div class="q2 split" data-in="1.10" data-st="0.05" style="font-size:108px"><span class="hl">다시 시작</span>해도 괜찮을까요?</div><svg width="1300" height="70" viewBox="0 0 1300 70" style="margin-top:14px"><path class="draw" data-in="1.90" data-dur="1.2" pathLength="1" d="M20 46 C 250 6, 420 66, 650 34 S 1050 10, 1270 40" stroke="var(--c1)" stroke-width="8"/></svg><div class="chips"><div class="chip a" data-in="2.20" data-fx="pop">결혼</div><div class="chip a" data-in="2.34" data-fx="pop">출산</div><div class="chip a" data-in="2.48" data-fx="pop">육아</div><div class="tail a" data-in="2.72" data-fx="left">로 쉬었던 시간</div></div></section>
 <section class="scene sc-quote" data-s="4.30" data-e="9.70"><div class="eyebrow a" data-in="4.95" data-fx="up">오늘 수강생이 남긴 말</div><div class="bubbles"><div class="bubble a" data-in="5.45" data-fx="pop" style="left:calc(50% + -300px);top:0px;font-size:50px">“새로운 시작, 자신감”</div><div class="bubble alt a" data-in="6.05" data-fx="pop" style="left:calc(50% + 260px);top:160px;font-size:50px">“다시 뛰는 공주 여성!”</div><div class="bubble a" data-in="6.65" data-fx="pop" style="left:calc(50% + -140px);top:320px;font-size:42px">“일이 스며드는 밝고 경쾌한 일상”</div></div></section>
 <section class="scene sc-title" data-s="9.30" data-e="13.70"><div class="eyebrow a" data-in="10.05" data-fx="up">그 시작을 함께하는 곳</div><div class="name split" data-in="10.45" data-st="0.05" style="font-size:132px">공주여성새로일하기센터</div><svg width="900" height="30" viewBox="0 0 900 30" style="margin:26px 0 30px"><path class="draw" data-in="11.25" data-dur="0.8" pathLength="1" d="M10 15 H890" stroke="var(--c1)" stroke-width="14"/></svg><div class="desc a" data-in="11.65" data-fx="up" style="font-size:48px">경력이 끊긴 여성의 재취업을 돕는 종합 취업지원기관</div><div class="pill a" data-in="12.25" data-fx="pop">국립공주대학교 운영</div></section>
 <section class="scene sc-cards" data-s="13.30" data-e="18.70"><div class="h a" data-in="13.95" data-fx="up">상담부터 <span class="hl">취업 뒤까지</span></div><div class="cards"><div class="card a" data-in="14.45" data-fx="up" style="width:340px"><svg viewBox="0 0 136 136" width="136" height="136"><path class="draw" data-in="14.65" data-dur="0.8" pathLength="1" d="M18 30 h70 a12 12 0 0 1 12 12 v34 a12 12 0 0 1 -12 12 h-40 l-18 16 v-16 h-12 a12 12 0 0 1 -12 -12 v-34 a12 12 0 0 1 12 -12z" stroke="var(--c1)" stroke-width="7"/><path class="draw" data-in="14.80" data-dur="0.8" pathLength="1" d="M108 54 h6 a10 10 0 0 1 10 10 v28 a10 10 0 0 1 -10 10 h-8 v14 l-16 -14 h-26" stroke="var(--c2)" stroke-width="7"/></svg><div class="t">취업상담·알선</div><div class="s">1:1 맞춤 상담</div></div><div class="card a" data-in="14.70" data-fx="up" style="width:340px"><svg viewBox="0 0 136 136" width="136" height="136"><path class="draw" data-in="14.90" data-dur="0.8" pathLength="1" d="M68 30 L124 54 L68 78 L12 54 Z" stroke="var(--c1)" stroke-width="7"/><path class="draw" data-in="15.05" data-dur="0.8" pathLength="1" d="M34 66 v26 c0 14 68 14 68 0 v-26" stroke="var(--c1)" stroke-width="7"/><path class="draw" data-in="15.20" data-dur="0.8" pathLength="1" d="M118 58 v34" stroke="var(--c2)" stroke-width="7"/></svg><div class="t">직업교육훈련</div><div class="s">국비 지원 교육</div></div><div class="card a" data-in="14.95" data-fx="up" style="width:340px"><svg viewBox="0 0 136 136" width="136" height="136"><path class="draw" data-in="15.15" data-dur="0.8" pathLength="1" d="M28 44 h80 a14 14 0 0 1 14 14 v44 a14 14 0 0 1 -14 14 h-80 a14 14 0 0 1 -14 -14 v-44 a14 14 0 0 1 14 -14z" stroke="var(--c1)" stroke-width="7"/><path class="draw" data-in="15.30" data-dur="0.8" pathLength="1" d="M48 44 v-10 a8 8 0 0 1 8 -8 h24 a8 8 0 0 1 8 8 v10" stroke="var(--c1)" stroke-width="7"/><path class="draw" data-in="15.45" data-dur="0.8" pathLength="1" d="M14 74 h108" stroke="var(--c2)" stroke-width="7"/></svg><div class="t">새일여성인턴</div><div class="s">현장에서 쌓는 일 경험</div></div><div class="card a" data-in="15.20" data-fx="up" style="width:340px"><svg viewBox="0 0 136 136" width="136" height="136"><path class="draw" data-in="15.40" data-dur="0.8" pathLength="1" d="M68 118 C 30 92, 12 70, 12 48 a26 26 0 0 1 56 -12 a26 26 0 0 1 56 12 c0 22 -18 44 -56 70z" stroke="var(--c1)" stroke-width="7"/><path class="draw" data-in="15.55" data-dur="0.8" pathLength="1" d="M44 74 l16 -14 l12 10 l22 -22" stroke="var(--c2)" stroke-width="7"/><path class="draw" data-in="15.70" data-dur="0.8" pathLength="1" d="M80 48 h14 v14" stroke="var(--c2)" stroke-width="7"/></svg><div class="t">사후관리</div><div class="s">경력개발·심리상담</div></div></div></section>
 <section class="scene sc-fact" data-s="18.30" data-e="22.70"><div class=" a" data-in="18.95" data-fx="pop"><svg viewBox="0 0 136 136" width="230" height="230"><path class="draw" data-in="19.05" data-dur="0.8" pathLength="1" d="M34 56 a34 34 0 1 0 68 0 a34 34 0 1 0 -68 0" stroke="var(--c1)" stroke-width="7"/><path class="draw" data-in="19.20" data-dur="0.8" pathLength="1" d="M50 84 L38 122 L56 114 L64 126 L68 92" stroke="var(--c2)" stroke-width="7"/><path class="draw" data-in="19.35" data-dur="0.8" pathLength="1" d="M86 84 L98 122 L80 114 L72 126 L68 92" stroke="var(--c2)" stroke-width="7"/><path class="draw" data-in="19.50" data-dur="0.8" pathLength="1" d="M68 36 l6 12 l13 2 l-10 9 l3 13 l-12 -7 l-12 7 l3 -13 l-10 -9 l13 -2z" stroke="var(--c1)" stroke-width="7"/></svg></div><div class="fsmall a" data-in="19.65" data-fx="up">2024년 여성가족부 평가</div><div class="fbig split" data-in="20.05" data-st="0.07" style="font-size:140px">최우수 등급</div><div class="fbottom a" data-in="20.85" data-fx="up">AI도 배우는 새일센터</div><div class="chips"><div class="chip a" data-in="21.25" data-fx="pop">AI 문서작성 교육</div></div></section>
 <section class="scene sc-closing" data-s="22.30" data-e="32.00"><div class="glow a" data-in="22.85" data-fx="fade"></div><div class="c1 split" data-in="23.15" data-st="0.04" style="font-size:76px">새로운 시작을 응원합니다.</div><div class="c2 a" data-in="24.25" data-fx="up" style="font-size:90px">다시 뛰는 공주 여성, <span class="hl">함께</span>합니다</div><div class="c3 a" data-in="25.05" data-fx="pop">공주여성새로일하기센터</div><div class="c4 a" data-in="25.55" data-fx="up">041-850-6061～9 · 전국 대표번호 1544-1199</div></section>
+  <canvas id="fxc" width="1920" height="1080"></canvas>
 </div>
 <script>
 const DUR = 27.6;
 const FPS = 30;
+const W=1920,H=1080,PI=Math.PI;
 const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
 const prog=(t,a,d)=>clamp((t-a)/d);
 const eOut=p=>1-Math.pow(1-p,3);
 const eInOut=p=>p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;
 const eBack=p=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(p-1,3)+c1*Math.pow(p-1,2);};
+const eElastic=p=>p<=0?0:p>=1?1:Math.pow(2,-10*p)*Math.sin((p*10-0.75)*(2*PI/3))+1;
+const rnd=i=>{const x=Math.sin(i*127.1+311.7)*43758.5453;return x-Math.floor(x);}; // 시드 난수(매 프레임 같은 값)
+const COL=['#E86A8A','#4E9F50','#F2B33D','#FAD3DD','#9ED68C','#FFD97A'];
+const rgba=(hex,a)=>{const n=parseInt(hex.slice(1),16);return `rgba(${n>>16},${(n>>8)&255},${n&255},${a})`;};
+
 document.querySelectorAll('.split').forEach(el=>{
   const walk=node=>{[...node.childNodes].forEach(n=>{
     if(n.nodeType===3){const f=document.createDocumentFragment();[...n.textContent].forEach(c=>{const s=document.createElement('span');s.className='ch';s.textContent=c;f.appendChild(s);});n.replaceWith(f);}
@@ -92,33 +107,173 @@ document.querySelectorAll('.split').forEach(el=>{
   walk(el);
 });
 const scenes=[...document.querySelectorAll('.scene')].map(el=>({el,s:+el.dataset.s,e:+el.dataset.e}));
-const anims=[...document.querySelectorAll('.a')].map(el=>({el,in:+el.dataset.in,fx:el.dataset.fx||'up',svg:el instanceof SVGElement}));
+const anims=[...document.querySelectorAll('.a')].map((el,i)=>({el,i,in:+el.dataset.in,fx:el.dataset.fx||'up',svg:el instanceof SVGElement,
+  card:el.classList.contains('card'),sheen:el.matches('.card,.c3,.pill,.chip,.bubble')}));
 const draws=[...document.querySelectorAll('.draw')].map(el=>({el,in:+el.dataset.in,dur:+(el.dataset.dur||1)}));
 const splits=[...document.querySelectorAll('.split')].map(el=>({el,in:+el.dataset.in,st:+el.dataset.st,chs:[...el.querySelectorAll('.ch')]}));
 const $=id=>document.getElementById(id);
-function fx(el,p,kind,svg){
-  const e=eOut(p);let tr='';
-  if(kind==='up')tr=`translate(0px,${(1-e)*60}px)`;
-  else if(kind==='left')tr=`translate(${-(1-e)*90}px,0px)`;
-  else if(kind==='right')tr=`translate(${(1-e)*90}px,0px)`;
-  else if(kind==='pop')tr=`scale(${0.55+0.45*eBack(p)})`;
-  el.style.opacity=kind==='fade'?eOut(p):clamp(p*1.6);
-  if(svg){el.style.transformBox='fill-box';el.style.transformOrigin='center';}
+const bg=$('bgc').getContext('2d'),fxx=$('fxc').getContext('2d');
+
+/* ── 연출 설계(시간·위치) ── */
+const KW=['다시 시작','새로운 시작','새로일하기','취업 뒤까지','최우수 등급','함께합니다']; // 장면별 배경 흐름 글자(본문에 있는 말만)
+const ACC=['#E86A8A','#4E9F50','#E86A8A','#4E9F50','#F2B33D','#E86A8A'];
+const BURSTS=[
+  {t:2.20,x:960,y:770,n:46,p:900,a:-PI/2,sp:PI*1.3},
+  {t:5.50,x:660,y:470,n:22,p:620,a:0,sp:PI*2},
+  {t:6.10,x:1220,y:630,n:22,p:620,a:0,sp:PI*2},
+  {t:6.70,x:820,y:790,n:22,p:620,a:0,sp:PI*2},
+  {t:11.30,x:-20,y:1100,n:70,p:2100,a:-PI/3.2,sp:.8},
+  {t:11.30,x:1940,y:1100,n:70,p:2100,a:-PI+PI/3.2,sp:.8},
+  {t:20.35,x:960,y:600,n:110,p:1400,a:0,sp:PI*2},
+  {t:25.10,x:-20,y:1100,n:100,p:2300,a:-PI/3.2,sp:.9},
+  {t:25.10,x:1940,y:1100,n:100,p:2300,a:-PI+PI/3.2,sp:.9},
+  {t:26.20,x:960,y:520,n:80,p:1200,a:0,sp:PI*2},
+].map((b,i)=>({...b,id:i+1}));
+const RINGS=[
+  {t:2.20,x:960,y:770,r:260,c:0},{t:5.47,x:660,y:470,r:330,c:0},{t:6.07,x:1220,y:630,r:330,c:1},{t:6.67,x:820,y:790,r:360,c:0},
+  {t:12.27,x:960,y:800,r:300,c:1},{t:18.97,x:960,y:300,r:280,c:2},{t:20.35,x:960,y:600,r:700,c:0},{t:20.50,x:960,y:600,r:520,c:2},
+  {t:25.07,x:960,y:690,r:520,c:0},{t:25.22,x:960,y:690,r:380,c:2},
+];
+const STARS=[ // 반짝이: 구간·중심·범위
+  {s:10.7,e:13.6,x:960,y:500,w:1560,h:320,n:14},
+  {s:20.2,e:22.6,x:960,y:610,w:1150,h:340,n:18},
+  {s:24.4,e:DUR+2,x:960,y:520,w:1600,h:560,n:20},
+];
+
+function star(c,x,y,r,rot){c.save();c.translate(x,y);c.rotate(rot);c.beginPath();
+  for(let i=0;i<8;i++){const rr=i%2?r*0.22:r,an=i*PI/4;c.lineTo(Math.cos(an)*rr,Math.sin(an)*rr);}c.closePath();c.fill();c.restore();}
+
+function drawBg(t){
+  const c=bg;c.clearRect(0,0,W,H);
+  // 1) 천천히 도는 햇살
+  c.save();c.translate(960,560);c.rotate(t*0.07);
+  const g=c.createRadialGradient(0,0,80,0,0,1300);g.addColorStop(0,'rgba(255,255,255,0)');g.addColorStop(.35,`rgba(255,255,255,${.30+.08*Math.sin(t*1.3)})`);g.addColorStop(1,'rgba(255,255,255,0)');
+  c.fillStyle=g;const n=28,st=PI*2/n;
+  for(let i=0;i<n;i+=2){c.beginPath();c.moveTo(0,0);c.arc(0,0,1300,i*st,(i+1)*st);c.closePath();c.fill();}
+  c.restore();
+  // 2) 장면별 큰 외곽선 글자가 좌우로 흐름
+  c.font='800 250px NSR,"Malgun Gothic",sans-serif';c.textBaseline='alphabetic';c.lineWidth=3;
+  scenes.forEach((sc,i)=>{
+    const a=Math.min(sc.s<=0?1:prog(t,sc.s,0.6),1-prog(t,sc.e-0.5,0.5));if(a<=0)return;
+    const word=KW[i%KW.length],step=c.measureText(word).width+140;
+    c.strokeStyle=rgba(ACC[i%ACC.length],0.11*a);
+    let off=-((t*70)%step);for(let x=off-step;x<W+step;x+=step)c.strokeText(word,x,235);
+    off=((t*55)%step);for(let x=off-step*2;x<W+step;x+=step)c.strokeText(word,x,1050);
+  });
+  // 3) 떠오르는 조각(원·고리·더하기)
+  for(let i=0;i<52;i++){
+    const r1=rnd(i+1),r2=rnd(i+101),r3=rnd(i+201);
+    const x=r1*W+Math.sin(t*0.5+i)*50,sz=6+r3*14;
+    let y=(r2*1200-t*(18+r3*46))%1200;if(y<0)y+=1200;y-=60;
+    const col=COL[i%3];c.globalAlpha=.20+.25*(.5+.5*Math.sin(t*1.4+i*2.1));
+    c.save();c.translate(x,y);c.rotate(t*(0.3+r1)+i);
+    if(i%3===0){c.fillStyle=col;c.beginPath();c.arc(0,0,sz*.6,0,PI*2);c.fill();}
+    else if(i%3===1){c.strokeStyle=col;c.lineWidth=4;c.beginPath();c.arc(0,0,sz,0,PI*2);c.stroke();}
+    else{c.strokeStyle=col;c.lineWidth=5;c.lineCap='round';c.beginPath();c.moveTo(-sz,0);c.lineTo(sz,0);c.moveTo(0,-sz);c.lineTo(0,sz);c.stroke();}
+    c.restore();
+  }
+  c.globalAlpha=1;
+}
+
+function drawFx(t){
+  const c=fxx;c.clearRect(0,0,W,H);
+  // 1) 충격파 고리
+  for(const r of RINGS)for(let k=0;k<2;k++){
+    const p=prog(t,r.t+k*0.12,0.9);if(p<=0||p>=1)continue;
+    c.strokeStyle=rgba(COL[(r.c+k)%3],(1-p)*.8);c.lineWidth=(1-p)*16+1;c.beginPath();c.arc(r.x,r.y,eOut(p)*r.r*(1-k*.25),0,PI*2);c.stroke();
+  }
+  // 2) 반짝이
+  for(const [si,s] of STARS.entries()){
+    const a=Math.min(prog(t,s.s,0.5),1-prog(t,s.e-0.4,0.4));if(a<=0)continue;
+    for(let i=0;i<s.n;i++){
+      const q=si*50+i,tw=Math.max(0,Math.sin(t*4.2+q*1.9));if(tw<=0)continue;
+      // 글자를 가리지 않게 가장자리 쪽으로 몰기
+      const ux=rnd(q+7)-.5,uy=rnd(q+57)-.5;
+      const x=s.x+Math.sign(ux)*(0.28+Math.abs(ux)*0.72)*s.w/2,y=s.y+uy*s.h;
+      c.globalAlpha=a*tw;c.fillStyle=COL[[2,5,0][i%3]];star(c,x,y,(14+rnd(q+3)*30)*tw,t*.6+q);
+      c.fillStyle='#fff';star(c,x,y,(6+rnd(q+3)*12)*tw,t*.6+q);
+    }
+  }
+  c.globalAlpha=1;
+  // 3) 색종이 폭죽
+  const LIFE=2.6,K=2.0;
+  for(const b of BURSTS){
+    const tau=t-b.t;if(tau<0||tau>LIFE)continue;
+    const d=(1-Math.exp(-K*tau))/K;
+    for(let i=0;i<b.n;i++){
+      const q=b.id*1000+i,an=b.a+(rnd(q)-.5)*b.sp,sp=b.p*(0.35+rnd(q+1)*0.85);
+      const x=b.x+Math.cos(an)*sp*d,y=b.y+Math.sin(an)*sp*d+300*tau*tau,sz=10+rnd(q+2)*14;
+      c.globalAlpha=clamp((LIFE-tau)/0.7);c.fillStyle=COL[i%COL.length];
+      c.save();c.translate(x,y);c.rotate(rnd(q+3)*6+tau*(3+rnd(q+4)*9));c.scale(1,Math.cos(tau*(5+rnd(q+5)*7)+q));
+      if(i%4===0){c.beginPath();c.arc(0,0,sz*.45,0,PI*2);c.fill();}else c.fillRect(-sz/2,-sz*.3,sz,sz*.6);
+      c.restore();
+    }
+  }
+  // 4) 마무리 색종이 비
+  const rt=t-24.6;
+  if(rt>0)for(let i=0;i<130;i++){
+    const q=9000+i,sp=150+rnd(q)*230,yy=rt*sp-rnd(q+1)*1500;if(yy<0)continue;
+    const y=(yy%1200)-60,x=rnd(q+2)*W+Math.sin(rt*1.6+i)*60,sz=10+rnd(q+3)*14;
+    c.globalAlpha=.9*prog(t,24.6,1);c.fillStyle=COL[i%COL.length];
+    c.save();c.translate(x,y);c.rotate(rt*(1+rnd(q+4)*4)+i);c.scale(1,Math.cos(rt*(3+rnd(q+5)*5)+i));c.fillRect(-sz/2,-sz*.3,sz,sz*.6);c.restore();
+  }
+  c.globalAlpha=1;
+  // 5) 장면 전환: 비스듬한 3색 띠가 화면을 훑고 지나감
+  scenes.forEach((sc,i)=>{
+    if(!i)return;const T=sc.s+0.2;if(t<T-0.62||t>T+0.75)return;
+    c.save();if(i%2){c.translate(W,0);c.scale(-1,1);}
+    c.transform(1,0,-0.3,1,0,0);
+    const L=2600,N=6,hh=H/N;
+    for(let k=0;k<3;k++){c.fillStyle=COL[(i+k)%3];
+      for(let j=0;j<N;j++){
+        const p=prog(t,T-0.545+j*0.03+k*0.07,0.8);if(p<=0||p>=1)continue;
+        const lead=eInOut(clamp(p/0.45)),trail=eInOut(clamp((p-0.55)/0.45));
+        c.fillRect(-150+trail*L,j*hh-1,(lead-trail)*L,hh+2);
+      }}
+    c.restore();
+  });
+  // 6) 진행 막대
+  const pg=c.createLinearGradient(0,0,W,0);pg.addColorStop(0,COL[0]);pg.addColorStop(.5,COL[2]);pg.addColorStop(1,COL[1]);
+  c.fillStyle=pg;c.fillRect(0,H-10,W*clamp(t/DUR),10);
+}
+
+function fx(o,t){
+  const el=o.el,kind=o.fx,dur=kind==='fade'?2.5:kind==='pop'?1.0:0.8;
+  const p=prog(t,o.in,dur),e=eOut(p),b=eBack(p),bob=Math.sin((t-o.in)*1.7+o.i)*5*p;
+  let tr='';
+  if(o.card)tr=`perspective(1200px) translateY(${(1-e)*150+bob}px) rotateY(${(1-b)*-75}deg) rotateZ(${(1-e)*-6}deg)`;
+  else if(kind==='up')tr=`translate(0px,${(1-b)*80}px) scale(${0.9+0.1*e})`;
+  else if(kind==='left')tr=`translate(${-(1-b)*170}px,0px) skewX(${(1-e)*-16}deg)`;
+  else if(kind==='right')tr=`translate(${(1-b)*170}px,0px) skewX(${(1-e)*16}deg)`;
+  else if(kind==='pop')tr=`translateY(${bob}px) scale(${eElastic(p)}) rotate(${(1-e)*-12}deg)`;
+  else if(kind==='fade')tr=`scale(${0.5+0.5*e+0.05*Math.sin(t*1.6)*p})`;
+  el.style.opacity=kind==='fade'?e:clamp(p*3);
+  el.style.filter=(kind!=='fade'&&p>0&&p<1)?`blur(${(1-e)*9}px)`:'none';
+  if(o.svg){el.style.transformBox='fill-box';el.style.transformOrigin='center';}
   el.style.transform=tr;
+  if(o.sheen){const d=t-o.in-0.45;el.style.setProperty('--sh',(d<0?-130:-130+clamp((d%3.2)/0.9)*260)+'%');}
 }
 function render(t){
-  $('b1').style.transform=`translate(${-180+Math.sin(t*0.21)*120}px,${-200+Math.cos(t*0.17)*80}px)`;
-  $('b2').style.transform=`translate(${1380+Math.cos(t*0.19)*110}px,${560+Math.sin(t*0.23)*90}px)`;
-  $('b3').style.transform=`translate(${1300+Math.sin(t*0.15+1)*160}px,${-120+Math.cos(t*0.2)*70}px)`;
+  $('b1').style.transform=`translate(${-180+Math.sin(t*0.42)*160}px,${-200+Math.cos(t*0.34)*110}px) scale(${1+.12*Math.sin(t*.8)})`;
+  $('b2').style.transform=`translate(${1380+Math.cos(t*0.38)*150}px,${560+Math.sin(t*0.46)*120}px) scale(${1+.12*Math.sin(t*.7+2)})`;
+  $('b3').style.transform=`translate(${1300+Math.sin(t*0.30+1)*200}px,${-120+Math.cos(t*0.4)*100}px) scale(${1+.14*Math.sin(t*.9+4)})`;
+  drawBg(t);
   for(const sc of scenes){
     const fin=sc.s<=0?1:eOut(prog(t,sc.s,0.5)),fout=1-eInOut(prog(t,sc.e-0.5,0.5));
     const a=Math.min(fin,fout);
     sc.el.style.opacity=a;sc.el.style.visibility=a<=0.001?'hidden':'visible';
-    sc.el.style.transform=`scale(${1-0.04*(1-fout)}) translateY(${-30*(1-fout)}px)`;
+    const kb=1+0.04*prog(t,sc.s,sc.e-sc.s); // 장면 내내 천천히 다가가는 카메라
+    sc.el.style.transform=`scale(${kb*(1+0.10*(1-fin))*(1-0.06*(1-fout))}) translateY(${-30*(1-fout)}px)`;
   }
-  for(const o of anims)fx(o.el,prog(t,o.in,o.fx==='fade'?2.5:0.7),o.fx,o.svg);
+  for(const o of anims)fx(o,t);
   for(const d of draws){const p=eInOut(prog(t,d.in,d.dur));d.el.style.strokeDasharray='1 1';d.el.style.strokeDashoffset=1-p;}
-  for(const s of splits){s.chs.forEach((c,i)=>{const p=prog(t,s.in+i*s.st,0.55),e=eOut(p);c.style.opacity=clamp(p*1.8);c.style.transform=`translate(0px,${(1-e)*50}px) rotate(${(1-e)*6}deg)`;});}
+  for(const s of splits){s.chs.forEach((c,i)=>{
+    const p=prog(t,s.in+i*s.st,0.7),e=eOut(p),b=eBack(p),wave=Math.sin(t*2.4-i*0.55)*4*p;
+    c.style.opacity=clamp(p*2.5);
+    c.style.transform=`translate(0px,${(1-b)*95+wave}px) rotate(${(1-e)*(i%2?16:-16)}deg) scale(${0.3+0.7*b})`;
+    c.style.filter=(p>0&&p<1)?`blur(${(1-e)*10}px)`:'none';
+  });}
+  drawFx(t);
 }
 window.render=render;window.DUR=DUR;window.FPS=FPS;
 if(!location.search.includes('capture')){
