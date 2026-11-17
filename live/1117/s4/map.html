@@ -746,6 +746,8 @@ select,input[type=search]{font:inherit;font-size:16px;padding:8px 12px;border-ra
 .dot.new{background:transparent;border:3px solid var(--gr)}
 #map{height:600px;border-radius:10px;border:1px solid var(--line);z-index:0;background:#0b1626}
 .leaflet-container{font-family:var(--f-ui);background:#0b1626}
+/* 타일 이음매(가는 줄) 방지: 확대 단계는 정수만 쓰고, 타일은 1px 겹쳐 그림 */
+.leaflet-container img.leaflet-tile{width:257px!important;height:257px!important;mix-blend-mode:normal}
 .tiles-dim .leaflet-tile-pane{filter:invert(1) hue-rotate(195deg) brightness(.82) contrast(.9) saturate(.45)}
 .maplegend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px;font-size:14px;color:var(--mu)}
 .maplegend span{display:inline-flex;align-items:center;gap:6px}
@@ -1048,7 +1050,7 @@ if(nNew) document.getElementById("newLegend").hidden = false;
 
 /* ---------- 지도 ---------- */
 const small = matchMedia("(max-width:640px)").matches;
-const map = L.map("map",{scrollWheelZoom:false,zoomControl:!small,zoomSnap:0.25,zoomDelta:0.5}).setView([36.46,127.12],12);
+const map = L.map("map",{scrollWheelZoom:false,zoomControl:!small,zoomSnap:1,zoomDelta:1}).setView([36.46,127.12],12);
 const ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> 기여자';
 // 바탕 지도: OpenStreetMap 타일을 CSS로 어둡게(남색 틀에 맞춤). CARTO 어두운 지도는 키 없이 'API KEY REQUIRED'가 떠서 쓰지 않음(11.09. 확인)
 const osm = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:ATTR});
